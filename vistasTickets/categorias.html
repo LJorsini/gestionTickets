@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="sp" data-bs-theme="auto">
+
+<head>
+    <meta charset="utf-3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <title>Categorias</title>
+    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sidebars/" />
+    <link rel="stylesheet" href="./css/sidebar.css" />
+    <script src="../assets/js/color-modes.js"></script>
+    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <main class="d-flex flex-nowrap">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar" style="width: 280px">
+            <a href="" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+                <span class="fs-4">Gestion Tickets</span>
+            </a>
+            <hr />
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="./index.html" class="nav-link text-white" aria-current="page">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#home"></use>
+                        </svg>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link active">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Categorias
+                    </a>
+                </li>
+            </ul>
+            <hr />
+        </div>
+
+        <div class="b-example-divider b-example-vr"></div>
+
+        <!-- Contenido principal -->
+        <div class="content">
+            <h1>Categoria</h1>
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCategoria">
+                Nueva Categoria
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalCategoria" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="formCategorias">
+                                <div class="mb-3">
+                                    <label for="categoriaDescripcion" class="form-label">Categoria</label>
+                                    <input type="email" class="form-control" id="categoriaDescripcion"
+                                        placeholder="Ingrese el nombre de la categoria" />
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                CERRAR
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="CrearCategoria()">GUARDAR</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./js/sidebar-1.0.0.js"></script>
+</body>
+
+</html>
