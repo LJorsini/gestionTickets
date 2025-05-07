@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+/* using System.ComponentModel.DataAnnotations;
 
 namespace gestionTickets.Models
 {
@@ -32,4 +32,4 @@ namespace gestionTickets.Models
         Media,
         Alta,
     }
-}
+} */

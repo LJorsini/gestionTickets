@@ -1,28 +1,37 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Gestion Tickets</title>
-    <link rel="stylesheet" href="./css/login.css" />
-  </head>
-  <body>
-    <div class="center">
-      <h1>Login</h1>
-      <form method="post">
-        <div class="txt_field">
-          <input type="text" id="nombreLogin" required />
-          <span></span>
-          <label>Usuario</label>
-        </div>
-        <div class="txt_field">
-          <input type="password" id="cñaLogin" required />
-          <span></span>
-          <label>Contraseña</label>
-        </div>
-        <div class="pass">¿Olvido su contraseña?</div>
-        <button class="ingresar">INGRESAR</button>
-        <div class="signup_link">¿No tiene cuenta? <a href="registro.html">Registrarse</a></div>
-      </form>
-    </div>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Gestion Tickets</title>
+  <link rel="stylesheet" href="./css/login.css" />
+</head>
+
+<body>
+  <div class="center">
+    <h1>Login</h1>
+    <form method="post" id="loginForm">
+      <div class="txt_field">
+        <input type="text" id="emailUsuario" required />
+        <span></span>
+        <label>E-mail usuario</label>
+      </div>
+      <div class="txt_field">
+        <input type="password" id="passLogin" required />
+        <span></span>
+        <label>Contraseña</label>
+      </div>
+      <div class="pass">¿Olvido su contraseña?</div>
+      <button class="ingresar">INGRESAR</button>
+      <div class="signup_link">¿No tiene cuenta? <a href="registro.html">Registrarse</a></div>
+    </form>
+
+
+    <h3>Token JWT (A MODO DE PRUEBA)</h3>
+    <pre id="tokenOutput"></pre>
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
+  <script src="./js/login.js"></script>
+</body>
+
 </html>

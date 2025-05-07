@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+/* using System.ComponentModel.DataAnnotations;
 
 namespace gestionTickets.Models
 {
@@ -11,4 +11,4 @@ namespace gestionTickets.Models
         public string Mensaje { get; set; }
         public DateTime FechaCreacion { get; set; } 
     }
-}
+} */

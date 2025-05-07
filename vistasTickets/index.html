@@ -1,1 +1,76 @@
-<h1>Hola</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>CATEGORIAS</h1>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCategorias">
+        NUEVA CATEGORIA
+    </button>
+
+    <!-- Tabla -->
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Descripcion</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        </tbody>
+      </table>
+    </div>
+
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+
+    
+    
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalCategorias" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="formCategorias">
+                        <div class="mb-3">
+                            <label for="categoriaDescripcion" class="form-label">Categoria</label>
+                            <input type="email" class="form-control" id="categoriaDescripcion" placeholder="Ingrese el nombre de la categoria"/>
+                        </div>
+                        
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        CERRAR
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="CrearCategoria()">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Seccion scripts -->
+    <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./js/categoria-1.0.0.js"></script>
+
+</body>
+
+</html>

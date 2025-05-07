@@ -9,7 +9,7 @@ namespace gestionTickets.Models
         public string Descripcion {get; set;}
         public bool Eliminado {get; set;}
 
-        public virtual ICollection<Ticket> Tickets { get; set; }
+        //public virtual ICollection<Ticket> Tickets { get; set; }
         
     }
 }
