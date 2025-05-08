@@ -101,6 +101,9 @@ main {
   .content {
     margin-left: 280px;
     padding: 2rem;
+    height: 100vh;
+    max-height: 100vh;
+    flex-grow: 1;
   }
 
 .dropdown-toggle {
