@@ -1,25 +1,22 @@
-const URL_API_CATEGORIA = "http://localhost:5004/api/categorias"; //URL DE LA API
-
+const URL_API_CATEGORIA = "http://localhost:5004/api/categorias"; //URL donde llama a la API
 
 window.onload = obtenerCategorias();
 
-/* const token = localStorage.getItem("token"); */
-
 const getToken = () => localStorage.getItem("token");
 
-console.log("Token:", getToken()); // Ver token
+console.log("Token:", getToken()); // Consulto a cer si llega bien el token, sacarlo despues de las pruebas 
 
 const authHeaders = () => ({
     "Content-Type": "application/json",
     "Authorization": `Bearer ${getToken()}`
-});
+}); // Pong en una constante el header de autorizacion para no repetirlo en cada fetch
 
 
 /* Funcion asincronica para traer las categorias */
 async function obtenerCategorias() {
     const res = await fetch(URL_API_CATEGORIA);
     const categorias = await res.json();
-    console.log(categorias); // Ver categorías obtenidas
+    console.log(categorias); // Ver categorías obtenidas.. sacar despues de las pruebas
 
     LimpiarModal();
     $("#modalCategoria").modal("hide"); // Cerrar el modal después de obtener las categorías
@@ -37,7 +34,7 @@ async function obtenerCategorias() {
             </td>
 
             <td>
-                <button type="button" class="btn btn-primary" onclick="EditarCategoria(${categoria.categoriaId}, '${categoria.descripcion}')">EDITAR</button>
+                <button type="button" class="btn btn-primary" onclick="AbrirModalEditar(${categoria.categoriaId}, '${categoria.descripcion}')">EDITAR</button>
             </td>
 
 
@@ -47,6 +44,25 @@ async function obtenerCategorias() {
 
 }
 
+
+/* Funcion que decide si editar o crear una nueva categoria */
+async function CrearEditarCategoria() 
+{
+    let id = document.getElementById("categoriaid").value;
+    let descripcion = document.getElementById("categoriaDescripcion").value;
+
+    if (descripcion == "") {
+        alert("Debe ingresar una descripcion");
+        return; 
+    }
+    
+    if (id == 0) {
+         await CrearCategoria();
+    } else 
+    {
+        await EditarCategoria(id);
+    }
+};
 
 /* Funcion asincronica para crear una categoria */
 async function CrearCategoria() {
@@ -76,6 +92,23 @@ async function CrearCategoria() {
     }
 }
 
+async function EditarCategoria(id) {
+    let idEditar = document.getElementById("categoriaid").value;
+    let descripcion = document.getElementById("categoriaDescripcion").value;
+
+    const res = await fetch(`${URL_API_CATEGORIA}/${idEditar}`,
+        {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify({
+                categoriaId: idEditar,
+                descripcion,
+            })
+        }
+    );
+    obtenerCategorias();
+}
+
 /* Funcion validacion eliminar  */
 function ValidacionEliminar(id) {
     const validacion = confirm("¿Desea eliminar la categoria?")
@@ -101,18 +134,17 @@ async function EliminarCategoria(id) {
     }
 }
 
-/* Funcion editar categoria */
-async function EditarCategoria(id, descripcion) {
-    /* document.getElementById("categoriaId").value = id;
-    document.getElementById("categoriaDescripcion").value = descripcion; */
-
-    $("#modalCategoria").modal("show"); // Mostrar el modal para editar la categoría
-}
 
 /* Funcion limpiar modal */
 function LimpiarModal() {
+    document.getElementById("categoriaid").value = 0;
     document.getElementById("categoriaDescripcion").value = "";
-    
 }
 
+/* Abrir modal editar */
+function AbrirModalEditar(id, descripcion) {
+    document.getElementById("categoriaid").value = id;
+    document.getElementById("categoriaDescripcion").value = descripcion;
+    $("#modalCategoria").modal("show");
+}
 
