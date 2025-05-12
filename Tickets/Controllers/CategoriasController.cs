@@ -42,7 +42,7 @@ namespace gestionTickets.Controllers
         }
 
         // PUT: api/Categorias/5
-        
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
         {
@@ -50,6 +50,7 @@ namespace gestionTickets.Controllers
             {
                 return BadRequest();
             }
+
 
             _context.Entry(categoria).State = EntityState.Modified;
 
@@ -73,15 +74,27 @@ namespace gestionTickets.Controllers
         }
 
         // POST: api/Categorias
-        
+
         [HttpPost]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
-             
-            _context.Categorias.Add(categoria);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, categoria);
+            var categoriaExiste = await _context.Categorias.AnyAsync(d => d.Descripcion == categoria.Descripcion);
+
+            if (categoriaExiste == false)
+            {
+                _context.Categorias.Add(categoria);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, categoria);
+
+            }
+            else
+            {
+                return BadRequest("La categoria ya existe");
+            }
+
+
         }
 
         // DELETE: api/Categorias/5
