@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace gestionTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512192510_ComentariosTicketsTickets")]
+    partial class ComentariosTicketsTickets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,12 +237,37 @@ namespace gestionTickets.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Eliminado")
+                    b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
                     b.HasKey("CategoriaId");
 
                     b.ToTable("Categorias");
+                });
+
+            modelBuilder.Entity("gestionTickets.Models.ComentarioTicket", b =>
+                {
+                    b.Property<int>("ComentarioId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ComentarioId"));
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Mensaje")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ComentarioId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("ComentariosTickets");
                 });
 
             modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
@@ -331,6 +359,17 @@ namespace gestionTickets.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("gestionTickets.Models.ComentarioTicket", b =>
+                {
+                    b.HasOne("gestionTickets.Models.Ticket", "Ticket")
+                        .WithMany("Comentarios")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
                 {
                     b.HasOne("gestionTickets.Models.Categoria", "Categoria")
@@ -345,6 +384,11 @@ namespace gestionTickets.Migrations
             modelBuilder.Entity("gestionTickets.Models.Categoria", b =>
                 {
                     b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
+                {
+                    b.Navigation("Comentarios");
                 });
 #pragma warning restore 612, 618
         }

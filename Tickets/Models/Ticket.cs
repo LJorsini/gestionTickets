@@ -1,4 +1,4 @@
-/* using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace gestionTickets.Models
 {
@@ -12,15 +12,16 @@ namespace gestionTickets.Models
         public Prioridad Prioridad {get; set;} //crear enum
         public DateOnly FechaCreacion {get; set;}
         public DateOnly FechaCierre {get; set;}
-        public int UsuarioClienteID {get; set;}
+        //public int UsuarioClienteID {get; set;}
         public int CategoriaId {get; set;}
+        //public virtual ICollection<ComentarioTicket> Comentarios { get; set; }
         public virtual Categoria Categoria { get; set; }
         
     }
 
     public enum Estado
     {
-        Abierto,
+        Abierto ,
         EnProceso,
         Cerrado,
         Cancelado,
@@ -28,8 +29,8 @@ namespace gestionTickets.Models
 
     public enum Prioridad
     {
-        Baja,
+        Baja ,
         Media,
         Alta,
     }
-} */
+}
