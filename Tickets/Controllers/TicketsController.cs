@@ -79,7 +79,7 @@ namespace gestionTickets.Controllers
         public async Task<ActionResult<Ticket>> GetTicket(int id)
         {
             var ticket = await _context.Tickets.FindAsync(id);
-
+            ticket.FechaCreacion.ToString("dd/MM/yyyy");
             if (ticket == null)
             {
                 return NotFound();
@@ -98,8 +98,15 @@ namespace gestionTickets.Controllers
                 return BadRequest();
             }
 
+            var ticketExistente = await _context.Tickets.FindAsync(id);
+            ticketExistente.Titulo = ticket.Titulo;
+            ticketExistente.Descripcion = ticket.Descripcion;
+            ticketExistente.Prioridad = ticket.Prioridad;
+            ticketExistente.CategoriaId = ticket.CategoriaId;
+            //ticket.FechaCreacion.ToString("dd/MM/yyyy");
 
-            _context.Entry(ticket).State = EntityState.Modified;
+
+            //_context.Entry(ticket).State = EntityState.Modified;
 
             try
             {
@@ -130,7 +137,8 @@ namespace gestionTickets.Controllers
 
             if (ticketExiste == false)
             {
-                
+                ticket.Estado = Estado.Abierto;
+                ticket.FechaCreacion = DateOnly.FromDateTime(DateTime.Now);
                 _context.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
 
