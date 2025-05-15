@@ -39,8 +39,8 @@ namespace gestionTickets.Models
         public int TicketId { get; set; }
         public string Titulo { get; set; }
         public string Descripcion { get; set; }
-        public Estado Estado { get; set; } //crear enum
-        public Prioridad Prioridad { get; set; } //crear enum
+        public string Estado { get; set; } //crear enum pero como string
+        public string Prioridad { get; set; } //crear enum pero como string
         public string FechaCreacion { get; set; }
         public string FechaCierre { get; set; }
         public int CategoriaId { get; set; }

@@ -28,15 +28,20 @@ namespace gestionTickets.Controllers
 
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
         {
-            var tickets = await _context.Tickets.ToArrayAsync();
+            var tickets = await _context.Tickets.Include(t => t.Categoria).ToListAsync();
+            
             var vistaTickets = tickets.Select(t => new VistaTicket
             {
+
                 Titulo = t.Titulo,
                 Descripcion = t.Descripcion,
-                Estado = t.Estado,
-                Prioridad = t.Prioridad,
+                Estado = t.Estado.ToString(),
+                Prioridad = t.Prioridad.ToString(),
                 FechaCreacion = t.FechaCreacion.ToString("dd/MM/yyyy"),
-                CategoriaId = t.CategoriaId,
+                CategoriaNombre = t.Categoria.Descripcion,
+                TicketId = t.TicketId,
+                CategoriaId = t.CategoriaId
+                
 
             });
             return Json(vistaTickets);
