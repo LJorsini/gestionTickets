@@ -26,11 +26,21 @@ namespace gestionTickets.Controllers
         // GET: api/Tickets
         [HttpGet]
 
-        public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets()
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
         {
-            return await _context.Tickets.ToListAsync();
-        }
+            var tickets = await _context.Tickets.ToArrayAsync();
+            var vistaTickets = tickets.Select(t => new VistaTicket
+            {
+                Titulo = t.Titulo,
+                Descripcion = t.Descripcion,
+                Estado = t.Estado,
+                Prioridad = t.Prioridad,
+                FechaCreacion = t.FechaCreacion.ToString("dd/MM/yyyy"),
+                CategoriaId = t.CategoriaId,
 
+            });
+            return Json(vistaTickets);
+        }
         [HttpGet("ObtenerEstadosyPrioridad")] //obtengo los estados de los tickets
         public IActionResult ObtenerEstadosyPrioridad()
         {
@@ -42,44 +52,44 @@ namespace gestionTickets.Controllers
                     Nombre = e.ToString()
                 });
 
-                var prioridades = Enum.GetValues(typeof(Prioridad))
-                .Cast<Prioridad>()
-                .Select(e => new
-                {
-                    Id = (int)e,
-                    Nombre = e.ToString()
-                });
+            var prioridades = Enum.GetValues(typeof(Prioridad))
+            .Cast<Prioridad>()
+            .Select(e => new
+            {
+                Id = (int)e,
+                Nombre = e.ToString()
+            });
 
-                var resultado = new
-                {
-                    estados,
-                    prioridades
-                };
+            var resultado = new
+            {
+                estados,
+                prioridades
+            };
 
-                return Json(resultado);      
+            return Json(resultado);
         }
 
         // GET: api/Tickets
         [HttpGet("ObtenerCategorias")]
         public IActionResult ObtenerCategorias()
         {
-            var categorias = _context.Categorias.Select(c => new 
+            var categorias = _context.Categorias.Select(c => new
             {
                 Id = c.CategoriaId,
                 Nombre = c.Descripcion
 
             }).ToList();
-            
+
             return Json(categorias);
         }
 
-        // GET: api/Categorias/5 --- el 5 hace referencia al id, puede ser cualquier otro número
-        [HttpGet("{id}")]
         
+        // GET: api/tickets/5 --- el 5 hace referencia al id, puede ser cualquier otro número
+        [HttpGet("{id}")]
         public async Task<ActionResult<Ticket>> GetTicket(int id)
         {
             var ticket = await _context.Tickets.FindAsync(id);
-            ticket.FechaCreacion.ToString("dd/MM/yyyy");
+
             if (ticket == null)
             {
                 return NotFound();
