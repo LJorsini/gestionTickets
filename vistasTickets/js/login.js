@@ -15,7 +15,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     if (response.ok) {
         const result = await response.json();
-        document.getElementById("tokenOutput").textContent = result.token;
+        //document.getElementById("tokenOutput").textContent = result.token;
         localStorage.setItem("token", result.token);
         alert("Login exitoso");
         window.location.href = "index.html"; // Redirigir a la página principal después de iniciar sesión

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sidebars/" />
     <link rel="stylesheet" href="./css/sidebar.css" />
+    <link rel="stylesheet" href="./lib/fontawesome/css/all.min.css" />
     <!-- <script src="../assets/js/color-modes.js"></script> -->
     <!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet" /> -->
 </head>
@@ -33,11 +34,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link active">
+                    <a href="./categorias.html" class="nav-link active">
                         <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
                             <use xlink:href="#speedometer2"></use>
                         </svg>
                         Categorias
+                    </a>
+                </li>
+                <li>
+                    <a href="./tickets.html" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Tickets
                     </a>
                 </li>
             </ul>
@@ -48,7 +57,7 @@
 
         <!-- Contenido principal -->
         <div class="content">
-            <h1>Categoria</h1>
+            <h1>CATEGORIA</h1>
 
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCategoria">
@@ -86,7 +95,11 @@
                         <input type="" id="categoriaid" value="0"/>
                         <div class="mb-3">
                             <label for="categoriaDescripcion" class="form-label">Categoria</label>
-                            <input type="email" class="form-control" id="categoriaDescripcion" placeholder="Ingrese el nombre de la categoria" />
+                            <input type="text" class="form-control" id="categoriaDescripcion" placeholder="Ingrese el nombre de la categoria" style="text-transform: uppercase"/>
+                            <!-- <span id="errorCategoriaDescripcion"
+                                style="color:red; display:none; font-size: 15px; padding-left: 4px;">
+                                <i class="fa-solid fa-circle-exclamation pe-1"></i>Debe ingresar una categoria
+                            </span> -->
                         </div>
 
                     </form>
@@ -106,6 +119,8 @@
     <script src="./js/sidebar-1.0.0.js"></script>
     <script src="./js/categoria-1.0.0.js"></script>
     <script src="./lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./lib/fontawesome/js/fontawesome.min.js"></script>
 </body>
 
 </html>

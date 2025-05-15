@@ -1,25 +1,37 @@
 const URL_API_CATEGORIA = "http://localhost:5004/api/categorias"; //URL donde llama a la API
 
-window.onload = obtenerCategorias();
+//window.onload = obtenerCategorias();
 
 const getToken = () => localStorage.getItem("token");
 
-console.log("Token:", getToken()); // Consulto a cer si llega bien el token, sacarlo despues de las pruebas 
+//console.log("Token:", getToken()); // Consulto a cer si llega bien el token, sacarlo despues de las pruebas 
 
-const authHeaders = () => ({
+/* const authHeaders = () => ({
     "Content-Type": "application/json",
     "Authorization": `Bearer ${getToken()}`
-}); // Pong en una constante el header de autorizacion para no repetirlo en cada fetch
+}); */ // Pongo en una constante el header  para no repetirlo en cada fetch
 
 
 /* Funcion asincronica para traer las categorias */
 async function obtenerCategorias() {
-    const res = await fetch(URL_API_CATEGORIA);
+    const authHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+});
+    console.log("Token:", getToken());
+    const res = await fetch(URL_API_CATEGORIA,
+        {
+            method: "GET",
+            headers: authHeaders()
+            
+        }
+    );
     const categorias = await res.json();
     console.log(categorias); // Ver categorías obtenidas.. sacar despues de las pruebas
 
     LimpiarModal();
-    $("#modalCategoria").modal("hide"); // Cerrar el modal después de obtener las categorías
+    //$("#modalCategoria").modal("hide"); // Cerrar el modal después de obtener las categorías
+    
     const tbody_categorias = document.getElementById("tbody-categorias");
     tbody_categorias.innerHTML = ""; // Limpio el contenido de la tabla antes de llenarla
 
@@ -46,55 +58,84 @@ async function obtenerCategorias() {
 
 
 /* Funcion que decide si editar o crear una nueva categoria */
-async function CrearEditarCategoria() 
-{
+async function CrearEditarCategoria() {
     let id = document.getElementById("categoriaid").value;
     let descripcion = document.getElementById("categoriaDescripcion").value;
 
+     var validacionCampos = true;
+
     if (descripcion == "") {
-        alert("Debe ingresar una descripcion");
-        return; 
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "¡Por favor ingrese una categoria!",
+
+        });
+        //validacionCampos = false;
     }
-    
+
+     if (!validacionCampos) {
+        return;
+    } 
+
     if (id == 0) {
-         await CrearCategoria();
-    } else 
-    {
+        await CrearCategoria();
+    } else {
         await EditarCategoria(id);
     }
 };
 
 /* Funcion asincronica para crear una categoria */
 async function CrearCategoria() {
+    const authHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+});
 
-    let descripcion = document.getElementById("categoriaDescripcion").value;
-
-
+    //let id = document.getElementById("categoriaid").value;
+    let descripcion = document.getElementById("categoriaDescripcion").value.trim();
+    descripcion = descripcion.toUpperCase(); // Convertir a mayúsculas
+    
+    const categoria = {
+        //categoriaId: id,
+        descripcion: descripcion
+    }
     const res = await fetch(URL_API_CATEGORIA,
         {
             method: "POST",
             headers: authHeaders(),
-            body: JSON.stringify({
-                descripcion,
-            })
+            body: JSON.stringify(categoria)
         }
     );
 
     if (res.ok) {
-        alert("Categoria creada correctamente");
+        Swal.fire({
+            title: "¡Categoria creada!",
+            icon: "success",
+        });
         obtenerCategorias();
     } else {
         const errorText = await res.text();
-        console.log("Error al crear la categoría:", errorText);
-        alert("Error al crear la categoría: " + errorText);
-        console.log("Error al crear la categoría: ");
+        alert("Error al crear la categoría:", errorText);
+        /* Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "La categoria ya existe",
+            
+        }); */
         obtenerCategorias();
     }
 }
 
 async function EditarCategoria(id) {
+    const authHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+});
     let idEditar = document.getElementById("categoriaid").value;
     let descripcion = document.getElementById("categoriaDescripcion").value;
+
+    descripcion = descripcion.toUpperCase(); // Convertir a mayúsculas
 
     const res = await fetch(`${URL_API_CATEGORIA}/${idEditar}`,
         {
@@ -110,15 +151,37 @@ async function EditarCategoria(id) {
 }
 
 /* Funcion validacion eliminar  */
-function ValidacionEliminar(id) {
+/* function ValidacionEliminar(id) {
     const validacion = confirm("¿Desea eliminar la categoria?")
     if (validacion == true) {
         EliminarCategoria(id);
     }
+} */
+
+function ValidacionEliminar(id) {
+    Swal.fire({
+        title: "¿Desea eliminar la categoria?",
+        showDenyButton: false,
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            EliminarCategoria(id)
+
+        } else if (result.isDenied) {
+            Swal.fire("Changes are not saved", "", "info");
+        }
+    });
+
 }
 
 /* Funcion asincronica eliminar */
 async function EliminarCategoria(id) {
+    const authHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+});
     const res = await fetch(`${URL_API_CATEGORIA}/${id}`,
         {
             method: "DELETE",
@@ -126,13 +189,14 @@ async function EliminarCategoria(id) {
         }
     );
     if (res.ok) {
-        alert("Categoria eliminada correctamente");
+        Swal.fire("Categoria eliminada", "", "success");
         obtenerCategorias();
-    } else
-    {
+    } else {
         alert("Error al eliminar la categoria");
     }
 }
+
+
 
 
 /* Funcion limpiar modal */
@@ -147,4 +211,12 @@ function AbrirModalEditar(id, descripcion) {
     document.getElementById("categoriaDescripcion").value = descripcion;
     $("#modalCategoria").modal("show");
 }
+
+obtenerCategorias();
+
+
+//funcion que convierte lo que escribo en los input a mayuscula
+ /* function textoMayuscula(texto) {
+    texto.value = texto.value.toUpperCase();
+} */
 

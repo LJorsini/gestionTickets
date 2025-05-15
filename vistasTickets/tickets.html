@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="sp" data-bs-theme="auto">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <title>Categorias</title>
+    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sidebars/" />
+    <link rel="stylesheet" href="./css/sidebar.css" />
+    <link rel="stylesheet" href="./lib/fontawesome/css/all.min.css" />
+    <!-- <script src="../assets/js/color-modes.js"></script> -->
+    <!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet" /> -->
+</head>
+
+<body>
+    <main class="d-flex flex-nowrap">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar" style="width: 280px">
+            <a href="" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+                <span class="fs-4">Gestion Tickets</span>
+            </a>
+            <hr />
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="./index.html" class="nav-link text-white" aria-current="page">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#home"></use>
+                        </svg>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="./categorias.html" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Categorias
+                    </a>
+                </li>
+                <li>
+                    <a href="./tickets.html" class="nav-link active">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Tickets
+                    </a>
+                </li>
+            </ul>
+            <hr />
+        </div>
+
+        <div class="b-example-divider b-example-vr"></div>
+
+        <!-- Contenido principal -->
+        <div class="content">
+            <h1>TICKET</h1>
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTickets">
+                Nuevo Ticket
+            </button>
+
+             <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Titulo</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Fecha Creacion</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Prioridad</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+
+            </tr>
+        </thead>
+        <tbody id="tbody-Tickets">
+        
+            
+        </tbody>
+    </table>
+        </div>
+    </main>
+
+   
+
+    <!-- Modal nuevo ticket-->
+    <div class="modal fade" id="modalTickets" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="LimpiarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="formCategorias">
+                        <input type="" id="ticketid" value="0" />
+                        <div class="row">
+                            <div class="mb-3 col-6">
+                                <label for="tituloTicket" class="form-label">Titulo</label>
+                                <input type="text" class="form-control" id="tituloTicket"
+                                    placeholder="Ingrese el titulo del ticket" style="text-transform: uppercase" />
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="categoriasSelect" class="form-label">Categoria</label>
+                                <select class="form-select" id="categoriasSelect">
+                                    <option class="option" value="" disabled selected>
+                                        [Seleccione]
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Descripcion" id="floatingTextarea"></textarea>
+                            <label for="floatingTextarea">Descripcion</label>
+                        </div>
+
+                        <div class="row">
+                            <!-- <div class="mb-3 col-6">
+                                <label for="estadoTicket" class="form-label">Estado</label>
+                                <select class="form-select" id="estadoTicket">
+                                    <option class="option" value="" disabled selected>
+                                        [Seleccione]
+                                    </option>
+                                </select>
+                            </div> -->
+                            <div class="mb-3 col-6">
+                                <label for="prioridadTicket" class="form-label">Prioridad</label>
+                                <select class="form-select" id="prioridadTicket">
+                                    <option class="option" value="" disabled selected>
+                                        [Seleccione]
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- <div class="row">
+                            <div class="mb-3 col-6">
+                                <label for="fechaCreacionTicket" class="form-label">Fecha creacion</label>
+                                <input type="date" class="form-control" id="fechaCreacionTicket"
+                                    placeholder="Creado el:" style="text-transform: uppercase" />
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="fechaCierreTicket" class="form-label">Fecha cierre</label>
+                                <input type="date" class="form-control" id="fechaCierreTicket" placeholder="Cerrado el:"
+                                    style="text-transform: uppercase" />
+                            </div>
+                        </div> -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarModal()">
+                        CERRAR
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="CrearEditarTicket()">
+                        GUARDAR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- >Modal editar ticket -->
+     <!-- <div class="modal fade" id="modalEditarTickets" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="LimpiarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="formCategorias">
+                        <input type="" id="editaTicketid" value="0" />
+                        <div class="row">
+                            <div class="mb-3 col-6">
+                                <label for="editarTituloTicket" class="form-label">Titulo</label>
+                                <input type="text" class="form-control" id="editarTituloTicket"
+                                    placeholder="Ingrese el titulo del ticket" style="text-transform: uppercase" />
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="editarCategoriasSelect" class="form-label">Categoria</label>
+                                <select class="form-select" id="editarCategoriasSelect">
+                                    <option class="option" value="" disabled selected>
+                                        [Seleccione]
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Descripcion" id="EditarfloatingTextarea"></textarea>
+                            <label for="EditarfloatingTextarea">Descripcion</label>
+                        </div>
+
+                        <div class="row">
+                            <div class="mb-3 col-6">
+                                <label for="EditarestadoTicket" class="form-label">Estado</label>
+                                <select class="form-select" id="EditarestadoTicket">
+                                    <option class="option" value="" disabled selected>
+                                        [Seleccione]
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="editarprioridadTicket" class="form-label">Prioridad</label>
+                                <select class="form-select" id="editarprioridadTicket">
+                                    <option class="option" value="" disabled selected>
+                                        [Seleccione]
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="mb-3 col-6">
+                                <label for="editarfechaCreacionTicket" class="form-label">Fecha creacion</label>
+                                <input type="date" class="form-control" id="editarfechaCreacionTicket"
+                                    placeholder="Creado el:" style="text-transform: uppercase" />
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="editarfechaCierreTicket" class="form-label">Fecha cierre</label>
+                                <input type="date" class="form-control" id="editarfechaCierreTicket" placeholder="Cerrado el:"
+                                    style="text-transform: uppercase" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarModal()">
+                        CERRAR
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="CrearEditarTicket()">
+                        GUARDAR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- <script src="../assets/dist/js/bootstrap.bundle.min.js"></script> -->
+    <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./js/sidebar-1.0.0.js"></script>
+    <script src="./js/tickets-1.0.0.js"></script>
+    <script src="./lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./lib/fontawesome/js/fontawesome.min.js"></script>
+</body>
+
+</html>
