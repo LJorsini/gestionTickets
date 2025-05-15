@@ -27,7 +27,7 @@ namespace gestionTickets.Controllers
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
         {
             return await _context.Categorias.ToListAsync();
-        }
+        }   ////cambio editar
 
         // GET: api/Categorias/5
         [HttpGet("{id}")]
@@ -74,6 +74,39 @@ namespace gestionTickets.Controllers
 
             return NoContent();
         }
+
+        //habilitar categoria
+        [HttpPut("activar/{id}")]
+        public async Task<IActionResult> ActivarCategoria(int id)
+        {
+            var categoria = await _context.Categorias.FindAsync(id);
+            if (categoria == null)
+            {
+                return NotFound();
+            }
+
+
+            categoria.Eliminado = false;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        //deshabilitar categoria
+        [HttpPut("desactivar/{id}")]
+        public async Task<IActionResult> DesactivarCategoria(int id)
+        {
+            var categoria = await _context.Categorias.FindAsync(id);
+            if (categoria == null)
+            {
+                return NotFound();
+            }
+
+            categoria.Eliminado = true;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
 
         // POST: api/Categorias
 
