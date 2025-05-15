@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using gestionTickets.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace gestionTickets.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
 
@@ -124,10 +126,11 @@ namespace gestionTickets.Controllers
         public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
         {
 
-            var ticketExiste = await _context.Tickets.AnyAsync(d => d.Titulo == ticket.Titulo);
+            var ticketExiste = await _context.Tickets.AnyAsync(t => t.TicketId == ticket.TicketId);
 
             if (ticketExiste == false)
             {
+                
                 _context.Tickets.Add(ticket);
                 await _context.SaveChangesAsync();
 

@@ -11,17 +11,17 @@ namespace gestionTickets.Models
         public  Estado Estado {get; set;} //crear enum
         public Prioridad Prioridad {get; set;} //crear enum
         public DateOnly FechaCreacion {get; set;}
-        public DateOnly FechaCierre {get; set;}
+        public DateOnly? FechaCierre {get; set;}
         //public int UsuarioClienteID {get; set;}
         public int CategoriaId {get; set;}
         //public virtual ICollection<ComentarioTicket> Comentarios { get; set; }
-        public virtual Categoria Categoria { get; set; }
+        public virtual Categoria? Categoria { get; set; }
         
     }
 
     public enum Estado
     {
-        Abierto ,
+        Abierto =1,
         EnProceso,
         Cerrado,
         Cancelado,
@@ -29,7 +29,7 @@ namespace gestionTickets.Models
 
     public enum Prioridad
     {
-        Baja ,
+        Baja =1, 
         Media,
         Alta,
     }
