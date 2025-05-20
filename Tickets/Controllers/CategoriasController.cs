@@ -53,11 +53,14 @@ namespace gestionTickets.Controllers
                 return BadRequest();
             }
 
+            
+
 
             _context.Entry(categoria).State = EntityState.Modified;
 
             try
             {
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

@@ -16,6 +16,7 @@ namespace gestionTickets.Models
         public int CategoriaId { get; set; }
         //public virtual ICollection<ComentarioTicket> Comentarios { get; set; }
         public virtual Categoria? Categoria { get; set; }
+        public virtual ICollection<Historial>? Historiales { get; set; }
 
     }
 
