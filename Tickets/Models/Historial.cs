@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using gestionTickets.Models;
 
 
@@ -11,7 +12,10 @@ public class Historial
 
     public DateTime FechaModificacion { get; set; }
 
-    public virtual Ticket Tickets { get; set; }
+    [NotMapped]
+    public string FechaModificacionString { get { return FechaModificacion.ToString("dd/MM/yyyy HH:mm"); } }
+
+    /* public virtual Ticket Ticket { get; set; } */
 
 }
 

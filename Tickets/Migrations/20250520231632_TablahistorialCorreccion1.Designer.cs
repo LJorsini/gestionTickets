@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace gestionTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250520231632_TablahistorialCorreccion1")]
+    partial class TablahistorialCorreccion1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,6 +119,8 @@ namespace gestionTickets.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("HistorialId");
+
+                    b.HasIndex("TicketId");
 
                     b.ToTable("Historial");
                 });
@@ -310,6 +315,17 @@ namespace gestionTickets.Migrations
                     b.ToTable("Tickets");
                 });
 
+            modelBuilder.Entity("Historial", b =>
+                {
+                    b.HasOne("gestionTickets.Models.Ticket", "Ticket")
+                        .WithMany("Historiales")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -375,6 +391,11 @@ namespace gestionTickets.Migrations
             modelBuilder.Entity("gestionTickets.Models.Categoria", b =>
                 {
                     b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
+                {
+                    b.Navigation("Historiales");
                 });
 #pragma warning restore 612, 618
         }

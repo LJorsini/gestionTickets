@@ -89,6 +89,15 @@ namespace gestionTickets.Controllers
             return Json(categorias);
         }
 
+        /* [HttpGet("ObtenerHistorialTicket/{ticketId}")]
+
+        public IActionResult GetHistorial(int ticketId)
+        {
+            var historial = _context.Historial.Include(t => t.Ticket).Where(h => h.TicketId == ticketId).ToList();
+
+            return Json(historial);
+        } */
+
 
         // GET: api/tickets/5 --- el 5 hace referencia al id, puede ser cualquier otro número
         [HttpGet("{id}")]
