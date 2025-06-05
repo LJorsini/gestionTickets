@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="sp" data-bs-theme="auto">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <title>Categorias</title>
+    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sidebars/" />
+    <link rel="stylesheet" href="./css/sidebar.css" />
+    <link rel="stylesheet" href="./lib/fontawesome/css/all.min.css" />
+    <!-- <script src="../assets/js/color-modes.js"></script> -->
+    <!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet" /> -->
+</head>
+
+<body>
+    <main class="d-flex flex-nowrap">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar" style="width: 280px">
+            <a href="" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+                <span class="fs-4">Gestion Tickets</span>
+            </a>
+            <hr />
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="./index.html" class="nav-link text-white" aria-current="page">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#home"></use>
+                        </svg>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="./categorias.html" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Categorias
+                    </a>
+                </li>
+                <li>
+                    <a href="./tickets.html" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Tickets
+                    </a>
+                </li>
+                <li>
+                    <a href="./clientes.html" class="nav-link active">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Clientes
+                    </a>
+                </li>
+            </ul>
+            <hr />
+        </div>
+
+        <div class="b-example-divider b-example-vr"></div>
+
+        <!-- Contenido principal -->
+        <div class="content">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalClientes">
+                Nuevo Cliente
+            </button>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Telefono</th>
+                        <th scope="col">Cuit</th>
+                        <th scope="col">Observaciones</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyClientes">
+
+
+                </tbody>
+            </table>
+
+            <!-- Modal nuevo ticket-->
+            <div class="modal fade" id="modalClientes" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                onclick="LimpiarModal()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="formCategorias">
+                                <input type="" id="clienteId" value="0" />
+                                <div class="row">
+                                    <div class="mb-3 col-6">
+                                        <label for="nombreCliente" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="nombreCliente"
+                                            placeholder="Ingrese el nombre" style="text-transform: uppercase" />
+                                    </div>
+
+                                    <div class="mb-3 col-6">
+                                        <label for="emailCliente" class="form-label">Email</label>
+                                        <input type="text" class="form-control" id="emailCliente"
+                                            placeholder="Ingrese el email" style="text-transform: uppercase" />
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="mb-3 col-6">
+                                        <label for="telCliente" class="form-label">Telfono</label>
+                                        <input type="text" class="form-control" id="telCliente"
+                                            placeholder="Ingrese el telefono" style="text-transform: uppercase" />
+                                    </div>
+
+                                    <div class="mb-3 col-6">
+                                        <label for="cuitCliente" class="form-label">Cuit</label>
+                                        <input type="text" class="form-control" id="cuitCliente"
+                                            placeholder="Ingrese el cuit" style="text-transform: uppercase" />
+                                    </div>
+
+                                </div>
+
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Descripcion"
+                                        id="floatingTextarea"></textarea>
+                                    <label for="floatingTextarea">Observaciones</label>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                CERRAR
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="CrearoEditarCliente()">
+                                GUARDAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- <script src="../assets/dist/js/bootstrap.bundle.min.js"></script> -->
+        <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+        <script src="./js/sidebar-1.0.0.js"></script>
+        <script src="./js/clientes-1.0.0.js"></script>
+        <script src="./lib/jquery/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="./lib/fontawesome/js/fontawesome.min.js"></script>
+</body>
+
+</html>

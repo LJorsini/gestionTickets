@@ -1,6 +1,7 @@
 const URL_API_TICKETS = "http://localhost:5004/api/tickets"; //URL donde llama a la API
 const URL_API_ESTADOS = "http://localhost:5004/api/tickets/ObtenerEstadosyPrioridad"; //URL donde llama a la API donde traigo estados y prioridades
-const URL_API_CATEGORIAS = "http://localhost:5004/api/tickets/ObtenerCategorias"; //URL donde llama a la API donde traigo categorias
+const URL_API_CATEGORIAS = "http://localhost:5004/api/tickets/ObtenerCategorias";
+const URL_API_HISTORIAL = "http://localhost:5004/api/historiales" //URL donde llama a la API donde traigo categorias
 //window.onload = ObtenerEstadosyPrioridad();
 //window.onload = ObtenerCategorias();
 
@@ -110,6 +111,9 @@ tickets.forEach(ticket => {
             <td>
                 <button type="button" class="btn btn-primary btn-editar" onclick="AbrirModalEditar(${ticket.ticketId}, '${ticket.titulo}', '${ticket.categoriaId}', '${ticket.descripcion}', '${ticket.prioridad}')">EDITAR</button>
         </td>
+        <td>
+                <button type="button" class="btn btn-primary btn-editar" onclick="MostrarHistorial(${ticket.ticketId})">Historial</button>
+        </td>
 
         
         
@@ -121,6 +125,8 @@ tickets.forEach(ticket => {
 } )
 
 }
+
+
 
 function CrearEditarTicket(id) {
     let ticketId = document.getElementById("ticketid").value;
@@ -190,8 +196,51 @@ function AbrirModalEditar(id, titulo, categoriaId, descripcion, prioridad,) {
     //document.getElementById("fechaCierreTicket").value = fechaCierre;
     
 
-    $('#modalTickets').modal('show');
+    $('#modalClientes').modal('show');
 }
+
+async function MostrarHistorial(id) {
+    const authHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+});
+
+const res = await fetch(`${URL_API_HISTORIAL}/${id}`,
+    {
+        method: "GET",
+        headers: authHeaders()
+    }
+);
+const historial = await res.json();
+console.log(historial); // Ver tickets obtenidos.. sacar despues de las pruebas
+
+const tbody_historial = document.getElementById("tbody-Historial");
+tbody_historial.innerHTML = ""; // Limpio el contenido de la tabla antes de llenarla
+
+historial.forEach(hist => {
+    const row = document.createElement("tr");
+    
+
+    row.innerHTML = `
+        <td>${hist.ticketId}</td>
+        <td>${hist.camposModificados}</td>
+        <td>${hist.valorAnterior}</td>
+        <td>${hist.valorNuevo}</td>
+        <td>${hist.fechaModificacionString}</td>
+        
+    
+
+        
+        
+        
+        
+        `;
+    tbody_historial.appendChild(row);
+
+} )
+    $('#modalHistorial').modal('show');
+}
+      
 
 async function EditarTicket(id) {
     const authHeaders = () => ({

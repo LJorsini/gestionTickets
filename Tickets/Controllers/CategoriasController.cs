@@ -91,7 +91,7 @@ namespace gestionTickets.Controllers
 
             categoria.Eliminado = false;
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok();
         }
 
         //deshabilitar categoria
