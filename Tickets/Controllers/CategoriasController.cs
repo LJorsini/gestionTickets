@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using gestionTickets.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace gestionTickets.Controllers
 {
@@ -26,7 +27,11 @@ namespace gestionTickets.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
         {
+            var usuarioLoguedoId = HttpContext.User.Identity.Name;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             return await _context.Categorias.ToListAsync();
+            
         }   ////cambio editar
 
         // GET: api/Categorias/5

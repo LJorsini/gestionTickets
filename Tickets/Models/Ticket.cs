@@ -12,10 +12,11 @@ namespace gestionTickets.Models
         public Prioridad Prioridad { get; set; } //crear enum
         public DateOnly FechaCreacion { get; set; }
         public DateOnly? FechaCierre { get; set; }
-        //public int UsuarioClienteID {get; set;}
+        public string? UsuarioClienteID { get; set; }
         public int CategoriaId { get; set; }
         //public virtual ICollection<ComentarioTicket> Comentarios { get; set; }
         public virtual Categoria? Categoria { get; set; }
+
         /* public virtual ICollection<Historial>? Historiales { get; set; } */
 
     }
@@ -34,7 +35,7 @@ namespace gestionTickets.Models
         Media,
         Alta,
     }
-    
+
     public class VistaTicket
     {
         public int TicketId { get; set; }
@@ -46,5 +47,13 @@ namespace gestionTickets.Models
         public string FechaCierre { get; set; }
         public int CategoriaId { get; set; }
         public string CategoriaNombre { get; set; }
+        public string UsuarioClienteID { get; set; }
+    }
+
+    public class FiltroTickets
+    {
+        //public int? Estado { get; set; }
+        public Prioridad? Prioridad { get; set; }
+        
     }
 }

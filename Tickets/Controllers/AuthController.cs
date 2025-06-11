@@ -62,8 +62,11 @@ public class AuthController : ControllerBase
             //SI EL USUARIO ES ENCONTRADO Y LA CONTRASEÑA ES CORRECTA
             var claims = new[]
             {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.Role, "ADMIN"),
+            
+
             };
 
             //RECUPERAMOS LA KEY SETEADA EN EL APPSETTING
