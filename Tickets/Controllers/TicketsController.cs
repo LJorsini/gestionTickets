@@ -47,9 +47,10 @@ namespace gestionTickets.Controllers
 
 
             });
-            return Json(vistaTickets);
+            return Ok(vistaTickets);
         }
-        [HttpGet("ObtenerEstadosyPrioridad")] //obtengo los estados de los tickets
+        
+        /* [HttpGet("ObtenerEstadosyPrioridad")] //obtengo los estados de los tickets
         public IActionResult ObtenerEstadosyPrioridad()
         {
             var estados = Enum.GetValues(typeof(Estado))
@@ -75,7 +76,7 @@ namespace gestionTickets.Controllers
             };
 
             return Json(resultado);
-        }
+        } */
 
         // GET: api/Tickets
         [HttpGet("ObtenerCategorias")]

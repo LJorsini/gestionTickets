@@ -59,34 +59,67 @@
         <div class="content">
             <h1>TICKET</h1>
 
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTickets">
-                Nuevo Ticket
-            </button>
 
-             <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Titulo</th>
-                <th scope="col">Descripcion</th>
-                <th scope="col">Fecha Creacion</th>
-                <th scope="col">Categoria</th>
-                <th scope="col">Estado</th>
-                <th scope="col">Prioridad</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
 
-            </tr>
-        </thead>
-        <tbody id="tbody-Tickets">
-        
-            
-        </tbody>
-    </table>
+            <div class="row align-items-end gy-2">
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal"
+                        data-bs-target="#modalTickets">
+                        Nuevo Ticket
+                    </button>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="ticketFiltroPrioridad" class="form-label">Filtrar por prioridad:</label>
+                    <select class="form-select" id="ticketFiltroPrioridad">
+                        <option value="">Todas</option>
+                        <option value="1">Baja</option>
+                        <option value="2">Media</option>
+                        <option value="3">Alta</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="ticketFiltroEstado" class="form-label">Filtrar por estado:</label>
+                    <select class="form-select" id="ticketFiltroEstado">
+                        <option value="">Todos</option>
+                        <option value="1">Abierto</option>
+                        <option value="2">En proceso</option>
+                        <option value="3">Cerrado</option>
+                        <option value="4">Cancelado</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <button class="btn btn-success w-100" onclick="Filtrar()">FILTRAR</button>
+                </div>
+            </div>
+
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Titulo</th>
+                        <th scope="col">Descripcion</th>
+                        <th scope="col">Fecha Creacion</th>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Prioridad</th>
+                        <!-- <th scope="col">Id usuario</th> -->
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+
+                    </tr>
+                </thead>
+                <tbody id="tbody-Tickets">
+
+
+                </tbody>
+            </table>
         </div>
     </main>
 
-   
+
 
     <!-- Modal nuevo ticket-->
     <div class="modal fade" id="modalTickets" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -133,9 +166,9 @@
                             <div class="mb-3 col-6">
                                 <label for="prioridadTicket" class="form-label">Prioridad</label>
                                 <select class="form-select" id="prioridadTicket">
-                                    <option class="option" value="" disabled selected>
-                                        [Seleccione]
-                                    </option>
+                                    <option value="1">Baja</option>
+                                    <option value="2">Media</option>
+                                    <option value="3">Alta</option>
                                 </select>
                             </div>
                         </div>
@@ -167,41 +200,41 @@
     </div>
 
     <!-- Modal historial -->
-     <!-- Modal -->
-<div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Id</th>
-      <th scope="col">Campo Modificado</th>
-      <th scope="col">Valor anterior</th>
-      <th scope="col">Valor nuevo</th>
-      <th scope="col">Fecha Modificacion</th>
-    </tr>
-  </thead>
-  <tbody id="tbody-Historial">
-    
-    
-  </tbody>
-</table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
+    <!-- Modal -->
+    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Campo Modificado</th>
+                                <th scope="col">Valor anterior</th>
+                                <th scope="col">Valor nuevo</th>
+                                <th scope="col">Fecha Modificacion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-Historial">
+
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
     <!-- >Modal editar ticket -->
-     <!-- <div class="modal fade" id="modalEditarTickets" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade" id="modalEditarTickets" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
