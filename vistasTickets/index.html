@@ -5,86 +5,100 @@
     <meta charset="UTF-3" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sidebars/" />
+    <link rel="stylesheet" href="./css/sidebar.css" />
+
     <title>Gestion Tickets</title>
 </head>
 
+
+
 <body>
 
+    <!-- NAVBAR FIJA ARRIBA -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Gestion Tickets</a>
 
+            <div class="d-flex ms-auto align-items-center">
+                <span id="usuarioEmail" class="navbar-text text-white me-3"></span>
+                <button class="btn btn-outline-light btn-sm" onclick="CerrarSesion()">Logout</button>
+            </div>
+        </div>
+    </nav>
 
-    <!DOCTYPE html>
-    <html lang="en" data-bs-theme="auto">
+    <!-- ESPACIO PARA QUE NO QUEDEN PEGADOS EL SIDEBAR Y NAVBAR FIJA -->
+    <div style="height: 56px;"></div> <!-- altura navbar Bootstrap por defecto -->
 
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="" />
-        <title>Gestion Tickets</title>
-        <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
-        <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sidebars/" />
-        <link rel="stylesheet" href="./css/sidebar.css" />
-        <!-- <script src="../assets/js/color-modes.js"></script> -->
-        <!-- <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet" /> -->
-    </head>
-
-    <body>
-        <main class="d-flex flex-nowrap">
-            <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar" style="width: 280px">
-                <a href="" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                    <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true">
-                        <use xlink:href="#bootstrap"></use>
-                    </svg>
-                    <span class="fs-4">Gestion Tickets</span>
-                </a>
-                <hr />
-                <ul class="nav nav-pills flex-column mb-auto">
-                    <li class="nav-item">
-                        <a href="./index.html" class="nav-link active" aria-current="page">
-                            <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
-                                <use xlink:href="#home"></use>
-                            </svg>
-                            Home
-                        </a>
-                    </li>
-                    <li>
-                        <a href="./categorias.html" class="nav-link text-white">
-                            <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
-                                <use xlink:href="#speedometer2"></use>
-                            </svg>
-                            Categorias
-                        </a>
-                    </li>
-                    <li>
-                    <a href="./tickets.html" class="nav-link text-white">
+    <main class="d-flex flex-nowrap">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar" style="width: 280px">
+            <a href="" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true">
+                    <use xlink:href="#bootstrap"></use>
+                </svg>
+                <span class="fs-4">Gestion Tickets</span>
+            </a>
+            <hr />
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="#" onclick="CargarVista('home')" class="nav-link active" aria-current="page">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#home"></use>
+                        </svg>
+                        Home
+                    </a>
+                </li>
+                <a href="#" onclick="CargarVista('usuarios')" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Usuarios
+                    </a>
+                <li>
+                    <a href="#" onclick="CargarVista('categorias')" class="nav-link text-white">
+                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+                            <use xlink:href="#speedometer2"></use>
+                        </svg>
+                        Categorias
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="CargarVista('tickets')" class="nav-link text-white">
                         <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
                             <use xlink:href="#speedometer2"></use>
                         </svg>
                         Tickets
                     </a>
-                    <a href="./clientes.html" class="nav-link text-white">
+                    <a href="#" onclick="CargarVista('clientes')" class="nav-link text-white">
                         <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
                             <use xlink:href="#speedometer2"></use>
                         </svg>
                         Clientes
                     </a>
                 </li>
-                </ul>
-                <hr />
-            </div>
+            </ul>
+            <hr />
+        </div>
 
-            <div class="b-example-divider b-example-vr"></div>
+        <div class="b-example-divider b-example-vr"></div>
 
-            <!-- Contenido principal -->
-            <div class="content">
+        <!-- Contenido principal -->
+        <div id="contenidoPrincipal" class="content">
 
 
-            </div>
-        </main>
-        <!-- <script src="../assets/dist/js/bootstrap.bundle.min.js"></script> -->
-        <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
-        <script src="./js/sidebar-1.0.0.js"></script>
-    </body>
+        </div>
+    </main>
+    <!-- <script src="../assets/dist/js/bootstrap.bundle.min.js"></script> -->
+     <script src="./js/login.js"></script>
+    <script src="./lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./js/main-1.0.0.js"></script>
+    <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./js/sidebar-1.0.0.js"></script>
+    
 
 </body>
+
+
 
 </html>

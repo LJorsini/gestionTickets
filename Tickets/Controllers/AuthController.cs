@@ -18,23 +18,42 @@ using System.Text;
 [ApiController]
 public class AuthController : ControllerBase
 {
+    private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _rolManager;
     private readonly IConfiguration _configuration;
 
     public AuthController(
+        ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager,
         IConfiguration configuration)
     {
+        _context = context;
         _userManager = userManager;
         _signInManager = signInManager;
+        _rolManager = roleManager;
         _configuration = configuration;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
+        //Si no existe el rol Administrador se crea
+        var rolCrearExiste = _context.Roles.Where(r => r.Name == "ADMINISTRADOR").FirstOrDefault();
+        if (rolCrearExiste == null)
+        {
+            var rolResult = await _rolManager.CreateAsync(new IdentityRole("ADMINISTRADOR"));
+        }
+        
+        var clienteCrearExiste = _context.Roles.Where(r => r.Name == "CLIENTE").FirstOrDefault();
+        if (clienteCrearExiste == null)
+        { 
+            var clienteResult = await _rolManager.CreateAsync(new IdentityRole("CLIENTE"));
+        }
+        
         //ARMAMOS EL OBJETO COMPLETANDO LOS ATRIBUTOS COMPLETADOS POR EL USUARIO
         var user = new ApplicationUser
         {
@@ -44,7 +63,7 @@ public class AuthController : ControllerBase
         };
 
         //HACEMOS USO DEL MÉTODO REGISTRAR USUARIO
-        var result = await _userManager.CreateAsync(user, model.Password);
+        var result = await _userManager.CreateAsync(user, model.Password = "Ezpeleta2025");
 
         if (result.Succeeded)
             return Ok("Usuario registrado");

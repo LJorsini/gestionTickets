@@ -30,7 +30,18 @@ namespace gestionTickets.Controllers
 
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
         {
-            var tickets = await _context.Tickets.Include(t => t.Categoria).ToListAsync();
+            /* var tickets = await _context.Tickets.Include(t => t.Categoria).ToListAsync(); */
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var tickets = await _context.Tickets
+                .Include(t => t.Categoria)
+                .Where(t => t.UsuarioClienteID == userId)
+                .ToListAsync();
+
+            
 
             var vistaTickets = tickets.Select(t => new VistaTicket
             {

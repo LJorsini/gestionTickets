@@ -1,0 +1,72 @@
+<h1>Configuracion usuario</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Email</th>
+            <th></th>
+            
+        </tr>
+    </thead>
+    <tbody id="tbodyUsuarios">
+
+    </tbody>
+</table>
+
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario">
+    Editar
+</button> -->
+
+<!-- Modal editar usuario -->
+<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    onclick="LimpiarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="formCategorias">
+                    <input type="" id="usuarioId"  />
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="nombreUsuario" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombreUsuario" placeholder="Ingrese el nuevo nombre"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                        <div class="mb-3 col-6">
+                            <label for="emailUsuario" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="emailUsuario" placeholder="Ingrese el nuevo email"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="contraseñaUsuario" class="form-label">Contraseña</label>
+                            <input type="text" class="form-control" id="contraseñaUsuario" placeholder="Ingrese la nueva contraseña"
+                                style="text-transform: uppercase" />
+                        </div>
+                    </div>
+
+                    
+
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    CERRAR
+                </button>
+                <button type="button" class="btn btn-primary" onclick="EditarUsuario()">
+                    GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+<h1>CATEGORIA</h1>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCategoria">
+    Nueva Categoria
+</button>
+
+
+<!-- Tabla categorias -->
+<table class="table">
+    <thead>
+        <tr>
+
+            <th scope="col">Categoria</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody id="tbody-categorias">
+
+    </tbody>
+</table>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalCategoria" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    onclick="LimpiarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="formCategorias">
+                    <input type="" id="categoriaid" value="0" />
+                    <div class="mb-3">
+                        <label for="categoriaDescripcion" class="form-label">Categoria</label>
+                        <input type="text" class="form-control" id="categoriaDescripcion"
+                            placeholder="Ingrese el nombre de la categoria" style="text-transform: uppercase" />
+                        <!-- <span id="errorCategoriaDescripcion"
+                                style="color:red; display:none; font-size: 15px; padding-left: 4px;">
+                                <i class="fa-solid fa-circle-exclamation pe-1"></i>Debe ingresar una categoria
+                            </span> -->
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarModal()">
+                    CERRAR
+                </button>
+                <button type="button" class="btn btn-primary" onclick="CrearEditarCategoria()">GUARDAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+ <!-- <script src="../js/categorias.js"></script>  -->

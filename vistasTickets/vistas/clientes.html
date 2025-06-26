@@ -1,0 +1,82 @@
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalClientes">
+    Nuevo Cliente
+</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Email</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Cuit</th>
+            <th scope="col">Observaciones</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody id="tbodyClientes">
+
+
+    </tbody>
+</table>
+
+<!-- Modal nuevo ticket-->
+<div class="modal fade" id="modalClientes" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    onclick="LimpiarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="formCategorias">
+                    <input type="" id="clienteId" value="0" />
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="nombreCliente" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombreCliente" placeholder="Ingrese el nombre"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                        <div class="mb-3 col-6">
+                            <label for="emailCliente" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="emailCliente" placeholder="Ingrese el email"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="telCliente" class="form-label">Telfono</label>
+                            <input type="text" class="form-control" id="telCliente" placeholder="Ingrese el telefono"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                        <div class="mb-3 col-6">
+                            <label for="cuitCliente" class="form-label">Cuit</label>
+                            <input type="text" class="form-control" id="cuitCliente" placeholder="Ingrese el cuit"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                    </div>
+
+                    <div class="form-floating">
+                        <textarea class="form-control" placeholder="Descripcion" id="floatingTextarea"></textarea>
+                        <label for="floatingTextarea">Observaciones</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    CERRAR
+                </button>
+                <button type="button" class="btn btn-primary" onclick="CrearoEditarCliente()">
+                    GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,7 +5,7 @@ const apiBase = "http://localhost:5004/api/auth"; //MEDIO DE CONEXION A LA API
             const data = {
                 nombreCompleto: document.getElementById("nombreRegistro").value,
                 email: document.getElementById("emailRegistro").value,
-                password: document.getElementById("cñaRegistro").value
+                //password: document.getElementById("cñaRegistro").value
             };
 
             const response = await fetch(`${apiBase}/register`, {

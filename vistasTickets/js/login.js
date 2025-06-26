@@ -25,9 +25,9 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 });
 
 //FUNCION DE LEER TOKEN DEL DISPOSITIVO
-/* const getToken = () => localStorage.getItem("token");
+/* /const getToken = () => localStorage.getItem("token"); */
 
-async function cerrarSesion() {
+async function CerrarSesion() {
     const token = getToken();
     const email = localStorage.getItem("email"); // suponiendo que guardaste el email al hacer login
 
@@ -55,11 +55,11 @@ async function cerrarSesion() {
         }
     } catch (error) {
         console.error("Error en logout:", error);
-    } */
+    }
 
     // Limpiar token y redirigir
-    /* localStorage.removeItem("token");
+     localStorage.removeItem("token");
     localStorage.removeItem("email");
     window.location.href = "login.html";
 }
- */
+ 
