@@ -28,13 +28,13 @@ public class AuthController : ControllerBase
         ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        RoleManager<IdentityRole> roleManager,
+        RoleManager<IdentityRole> rolManager,
         IConfiguration configuration)
     {
         _context = context;
         _userManager = userManager;
         _signInManager = signInManager;
-        _rolManager = roleManager;
+        _rolManager = rolManager;
         _configuration = configuration;
     }
 
@@ -42,16 +42,16 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
         //Si no existe el rol Administrador se crea
-        var rolCrearExiste = _context.Roles.Where(r => r.Name == "ADMINISTRADOR").FirstOrDefault();
-        if (rolCrearExiste == null)
+        var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "ADMINISTRADOR").SingleOrDefault();
+        if (nombreRolCrearExiste == null)
         {
             var rolResult = await _rolManager.CreateAsync(new IdentityRole("ADMINISTRADOR"));
         }
         
-        var clienteCrearExiste = _context.Roles.Where(r => r.Name == "CLIENTE").FirstOrDefault();
-        if (clienteCrearExiste == null)
+        var nombreClienteCrearExiste = _context.Roles.Where(r => r.Name == "CLIENTE").SingleOrDefault();
+        if (nombreClienteCrearExiste == null)
         { 
-            var clienteResult = await _rolManager.CreateAsync(new IdentityRole("CLIENTE"));
+            var rolResult = await _rolManager.CreateAsync(new IdentityRole("CLIENTE"));
         }
         
         //ARMAMOS EL OBJETO COMPLETANDO LOS ATRIBUTOS COMPLETADOS POR EL USUARIO
@@ -66,9 +66,13 @@ public class AuthController : ControllerBase
         var result = await _userManager.CreateAsync(user, model.Password = "Ezpeleta2025");
 
         if (result.Succeeded)
+        { 
+            await _userManager.AddToRoleAsync(user, "ADMINISTRADOR");
             return Ok("Usuario registrado");
 
-        return BadRequest(result.Errors);
+       
+        }
+             return BadRequest(result.Errors);
     }
 
     [HttpPost("login")]

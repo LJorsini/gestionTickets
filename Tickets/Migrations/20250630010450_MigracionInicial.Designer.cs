@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace gestionTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250515212317_Tablahistorial")]
-    partial class Tablahistorial
+    [Migration("20250630010450_MigracionInicial")]
+    partial class MigracionInicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,8 +119,6 @@ namespace gestionTickets.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("HistorialId");
-
-                    b.HasIndex("TicketId");
 
                     b.ToTable("Historial");
                 });
@@ -277,6 +275,37 @@ namespace gestionTickets.Migrations
                     b.ToTable("Categorias");
                 });
 
+            modelBuilder.Entity("gestionTickets.Models.Cliente", b =>
+                {
+                    b.Property<int>("ClienteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClienteId"));
+
+                    b.Property<string>("Cuit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Eliminado")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefono")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ClienteId");
+
+                    b.ToTable("Clientes");
+                });
+
             modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
                 {
                     b.Property<int>("TicketId")
@@ -308,22 +337,14 @@ namespace gestionTickets.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UsuarioClienteID")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("TicketId");
 
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Tickets");
-                });
-
-            modelBuilder.Entity("Historial", b =>
-                {
-                    b.HasOne("gestionTickets.Models.Ticket", "Tickets")
-                        .WithMany("Historiales")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -391,11 +412,6 @@ namespace gestionTickets.Migrations
             modelBuilder.Entity("gestionTickets.Models.Categoria", b =>
                 {
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
-                {
-                    b.Navigation("Historiales");
                 });
 #pragma warning restore 612, 618
         }
