@@ -1,7 +1,7 @@
-let URL_API_USUARIOS = "http://localhost:5004/api/usuarios/usuario-actual";
-let URL_API_EDITAR_USUARIO = "http://localhost:5004/api/usuarios/editar-usuario";
+//let URL_API_USUARIOS = "http://localhost:5004/api/usuarios/usuario-actual";
+//let URL_API_EDITAR_USUARIO = "http://localhost:5004/api/usuarios/editar-usuario";
 
-const getToken = () => localStorage.getItem("token");
+//const getToken = () => localStorage.getItem("token");
 
 async function obtenerUsuarios() {
 
@@ -10,7 +10,7 @@ async function obtenerUsuarios() {
         "Authorization": `Bearer ${getToken()}`
     });
 
-    const res = await fetch(URL_API_USUARIOS, {
+    const res = await fetch(`${URL_BASE_API}usuarios/usuario-actual`, {
     method: "GET",
     headers: authHeaders()
 });
@@ -56,7 +56,7 @@ async function EditarUsuario() {
     });
 
     
-    const res = await fetch(URL_API_EDITAR_USUARIO, {
+    const res = await fetch(`${URL_BASE_API}usuarios/editar-usuario`, {
         method: "PUT",
         headers: authHeaders(),
         body: JSON.stringify({

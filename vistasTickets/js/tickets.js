@@ -1,41 +1,3 @@
-const URL_API_TICKETS = "http://localhost:5004/api/tickets"; 
-const URL_API_ESTADOS ="http://localhost:5004/api/tickets/ObtenerEstadosyPrioridad"; 
-const URL_API_CATEGORIAS ="http://localhost:5004/api/tickets/ObtenerCategorias";
-const URL_API_HISTORIAL = "http://localhost:5004/api/historiales"; 
-
-
-const getToken = () => localStorage.getItem("token");
-
-//funcion para llenar el dropdown prioridad y estado
-/* async function ObtenerEstadosyPrioridad() {
-  const authHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken()}`,
-  });
-  const res = await fetch(URL_API_ESTADOS, {
-    method: "GET",
-    headers: authHeaders(),
-  });
-  const resultado = await res.json();
-  console.log(resultado); 
-  const selectEstado = document.getElementById("estadoTicket"); */
-
-  /* resultado.estados.forEach(e => {
-          const option = document.createElement("option");
-          option.value = e.id;
-          option.text = e.nombre;
-          selectEstado.appendChild(option);
-      }); */
-
-  /* const selectPrioridad = document.getElementById("prioridadTicket"); */
-
-  /* resultado.prioridades.forEach((p) => {
-    const option = document.createElement("option");
-    option.value = p.id;
-    option.text = p.nombre;
-    selectPrioridad.appendChild(option);
-  }); */
-//}
 
 //Funcion para cargar las categorias al dropdown categorias
 async function ObtenerCategorias() {
@@ -43,7 +5,7 @@ async function ObtenerCategorias() {
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
-  const res = await fetch(URL_API_CATEGORIAS, {
+  const res = await fetch(`${URL_BASE_API}tickets/ObtenerCategorias`, {
     method: "GET",
     headers: authHeaders(),
   });
@@ -60,13 +22,59 @@ async function ObtenerCategorias() {
   });
 }
 
+const inputFechaDesde = document.getElementById("buscarFechaDesde");
+inputFechaDesde.onchange = function () {
+  MostrarTickets();
+};
+
+const inputFechaHasta = document.getElementById("buscarFechaHasta");
+inputFechaHasta.onchange = function () {
+  MostrarTickets();
+};
+
+inputPrioridad = document.getElementById("ticketFiltroPrioridad");
+inputPrioridad.onchange = function () {
+  MostrarTickets();
+};
+
+inputEstado = document.getElementById("ticketFiltroEstado");
+inputEstado.onchange = function () {
+  MostrarTickets();
+}
+
+const inputCategori = document.getElementById("buscarCategoria");
+inputCategoria.onchange = function () {
+  MostrarTickets();
+};
+
 async function MostrarTickets() {
+
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
 
-  const res = await fetch(URL_API_TICKETS, {
+  let fechaDesde = document.getElementById("buscarFechaDesde").value;
+  let fechaHasta = document.getElementById("buscarFechaHasta").value;
+
+
+  const fecha1 = new Date(fechaDesde);
+  const fecha2 = new Date(fechaHasta);
+
+  if (fecha1 > fecha2) {
+    fechaHasta = fechaDesde;
+    document.getElementById("buscarFechaHasta").value = fechaDesde;
+  }
+
+  const filtro = {
+    fechaDesde : fechaDesde,
+    fechaHasta : fechaHasta,
+    categoriaId: document.getElementById("ticketBuscarCategoria").value,
+    prioridad: document.getElementById("ticketFiltroPrioridad").value,
+    estado: document.getElementById("ticketFiltroEstado").value,
+  }
+
+  const res = await fetch(`${URL_BASE_API}tickets`, {
     method: "GET",
     headers: authHeaders(),
   });
@@ -118,7 +126,7 @@ async function Filtrar() {
     //estado: filtroEstado
   };
 
-  const res = await fetch(`${URL_API_TICKETS}/filtrar`, {
+  const res = await fetch(`${URL_BASE_API}tickets/filtrar`, {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(filtro),
@@ -198,7 +206,7 @@ async function CrearTicket() {
   };
 
   try {
-    const res = await fetch(URL_API_TICKETS, {
+    const res = await fetch(`${URL_BASE_API}tickets`, {
       method: "POST",
       headers: authHeaders(),
       body: JSON.stringify(ticket),
@@ -236,7 +244,7 @@ async function MostrarHistorial(id) {
     Authorization: `Bearer ${getToken()}`,
   });
 
-  const res = await fetch(`${URL_API_HISTORIAL}/${id}`, {
+  const res = await fetch(`${URL_BASE_API}historiales/${id}`, {
     method: "GET",
     headers: authHeaders(),
   });
@@ -289,7 +297,7 @@ async function EditarTicket(id) {
   };
 
   try {
-    const res = await fetch(`${URL_API_TICKETS}/${ticketId}`, {
+    const res = await fetch(`${URL_BASE_API}tickets/${ticketId}`, {
       method: "PUT",
       headers: authHeaders(),
       body: JSON.stringify(ticket),
@@ -329,7 +337,7 @@ async function EliminarTicket(id) {
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
-  const res = await fetch(`${URL_API_TICKETS}/${id}`, {
+  const res = await fetch(`${URL_BASE_API}tickets/${id}`, {
     method: "DELETE",
     headers: authHeaders(),
   });

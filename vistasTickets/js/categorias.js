@@ -1,6 +1,6 @@
-const URL_API_CATEGORIA = "http://localhost:5004/api/categorias";
+//const URL_API_CATEGORIA = "http://localhost:5004/api/categorias";
 
-const getToken = () => localStorage.getItem("token");
+//const getToken = () => localStorage.getItem("token");
 
 /* Funcion asincronica para traer las categorias */
 async function obtenerCategorias() {
@@ -9,7 +9,7 @@ async function obtenerCategorias() {
         "Authorization": `Bearer ${getToken()}`
     });
     console.log("Token:", getToken());
-    const res = await fetch(URL_API_CATEGORIA,
+    const res = await fetch(`${URL_BASE_API}categorias`,
         {
             method: "GET",
             headers: authHeaders()
@@ -97,7 +97,7 @@ async function CrearCategoria() {
         descripcion: descripcion,
         eliminado: false // Asignar valor por defecto
     }
-    const res = await fetch(URL_API_CATEGORIA,
+    const res = await fetch(`${URL_BASE_API}categorias`,
         {
             method: "POST",
             headers: authHeaders(),
@@ -134,7 +134,7 @@ async function EditarCategoria(id) {
 
     descripcion = descripcion.toUpperCase(); // Convertir a mayúsculas
 
-    const res = await fetch(`${URL_API_CATEGORIA}/${idEditar}`,
+    const res = await fetch(`${URL_BASE_API}categorias/${idEditar}`,
         {
             method: "PUT",
             headers: authHeaders(),
@@ -179,7 +179,7 @@ async function EliminarCategoria(id) {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${getToken()}`
     });
-    const res = await fetch(`${URL_API_CATEGORIA}/${id}`,
+    const res = await fetch(`${URL_BASE_API}categorias/${id}`,
         {
             method: "DELETE",
             headers: authHeaders()
@@ -215,7 +215,7 @@ async function ActivarCategoria(id) {
         Authorization: `Bearer ${getToken()}`,
     });
 
-    const res = await fetch(`${URL_API_CATEGORIA}/activar/${id}`, {
+    const res = await fetch(`${URL_BASE_API}categorias/activar/${id}`, {
         method: "PUT",
         headers: authHeaders(),
     });
@@ -254,7 +254,7 @@ async function DesactivarCategoria(id) {
     });
 
 
-    const res = await fetch(`${URL_API_CATEGORIA}/desactivar/${id}`, {
+    const res = await fetch(`${URL_BASE_API}categorias/desactivar/${id}`, {
         method: "PUT",
         headers: authHeaders(),
     });

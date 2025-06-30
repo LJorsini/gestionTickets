@@ -1,6 +1,6 @@
-let URL_API_CLIENTE = "http://localhost:5004/api/clientes";
+//let URL_API_CLIENTE = "http://localhost:5004/api/clientes";
 
-const getToken = () => localStorage.getItem("token");
+//const getToken = () => localStorage.getItem("token");
 
 
 async function obtenerCliente() {
@@ -10,7 +10,7 @@ async function obtenerCliente() {
         "Authorization": `Bearer ${getToken()}`
     });
 
-    const res = await fetch(URL_API_CLIENTE,
+    const res = await fetch(`${URL_BASE_API}clientes`,
         {
             method: "GET",
             headers: authHeaders()
@@ -112,7 +112,7 @@ async function CrearCliente() {
 
     console.log(cliente);
 
-    const res = await fetch(URL_API_CLIENTE, {
+    const res = await fetch(`${URL_BASE_API}clientes`, {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify(cliente),
@@ -145,7 +145,7 @@ async function EditarCliente(id) {
 
     }
 
-    const res = await fetch(`${URL_API_CLIENTE}/${clienteId}`, {
+    const res = await fetch(`${URL_BASE_API}clientes/${clienteId}`, {
         method: "PUT",
         headers: authHeaders(),
         body: JSON.stringify(clienteEditado),
@@ -160,7 +160,7 @@ async function ActivarCliente(id) {
         Authorization: `Bearer ${getToken()}`,
     });
 
-    const res = await fetch(`${URL_API_CLIENTE}/activar/${id}`, {
+    const res = await fetch(`${URL_BASE_API}clientes/activar/${id}`, {
         method: "PUT",
         headers: authHeaders(),
     });
@@ -198,7 +198,7 @@ async function DesactivarCliente(id) {
         Authorization: `Bearer ${getToken()}`,
     });
 
-    const res = await fetch(`${URL_API_CLIENTE}/desactivar/${id}`, {
+    const res = await fetch(`${URL_BASE_API}clientes/desactivar/${id}`, {
         method: "PUT",
         headers: authHeaders(),
     });
