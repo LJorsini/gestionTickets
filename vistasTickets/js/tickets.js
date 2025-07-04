@@ -1,25 +1,44 @@
-
+/* const res = await fetch(`${URL_BASE_API}tickets/ObtenerCategorias`, {
+    method: "GET",
+    headers: authHeaders(),
+  }); */
 //Funcion para cargar las categorias al dropdown categorias
+
+
 async function ObtenerCategorias() {
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
-  const res = await fetch(`${URL_BASE_API}tickets/ObtenerCategorias`, {
+  console.log("Token:", getToken());
+  const res = await fetch(`${URL_BASE_API}categorias`, {
     method: "GET",
     headers: authHeaders(),
   });
   const resultado = await res.json();
-  console.log(resultado); 
+  console.log(resultado);
 
   const selectCategoria = document.getElementById("categoriasSelect");
+  selectCategoria.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
+  const selectCategoriaBuscar = document.getElementById("ticketBuscarCategoria");
+  selectCategoriaBuscar.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
 
-  resultado.forEach((c) => {
-    const option = document.createElement("option");
+  let opcionesBuscar = `<option value="0">[Todas las categorias]</option>`;
+  let opciones = "";
+
+  resultado.forEach(cat => {
+    opciones += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
+    opcionesBuscar += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
+
+    /* const option = document.createElement("option");
     option.value = c.id;
     option.text = c.nombre;
-    selectCategoria.appendChild(option);
+    selectCategoria.appendChild(option); */
   });
+  selectCategoria.innerHTML = opciones;
+  selectCategoriaBuscar.innerHTML = opcionesBuscar;
+
+  MostrarTickets(); // Llamo a la funcion MostrarTickets para que cargue los tickets con las categorias
 }
 
 const inputFechaDesde = document.getElementById("buscarFechaDesde");
@@ -32,17 +51,17 @@ inputFechaHasta.onchange = function () {
   MostrarTickets();
 };
 
-inputPrioridad = document.getElementById("ticketFiltroPrioridad");
+const inputPrioridad = document.getElementById("ticketFiltroPrioridad");
 inputPrioridad.onchange = function () {
   MostrarTickets();
 };
 
-inputEstado = document.getElementById("ticketFiltroEstado");
+const inputEstado = document.getElementById("ticketFiltroEstado");
 inputEstado.onchange = function () {
   MostrarTickets();
 }
 
-const inputCategori = document.getElementById("buscarCategoria");
+const inputCategoria = document.getElementById("ticketBuscarCategoria");
 inputCategoria.onchange = function () {
   MostrarTickets();
 };
@@ -67,40 +86,43 @@ async function MostrarTickets() {
   }
 
   const filtro = {
-    fechaDesde : fechaDesde,
-    fechaHasta : fechaHasta,
+    fechaDesde: fechaDesde,
+    fechaHasta: fechaHasta,
     categoriaId: document.getElementById("ticketBuscarCategoria").value,
     prioridad: document.getElementById("ticketFiltroPrioridad").value,
     estado: document.getElementById("ticketFiltroEstado").value,
   }
 
-  const res = await fetch(`${URL_BASE_API}tickets`, {
-    method: "GET",
+  const res = await fetch(`${URL_BASE_API}tickets/filtrar`, {
+    method: "POST",
     headers: authHeaders(),
+    body: JSON.stringify(filtro),
   });
   const tickets = await res.json();
   console.log(tickets); // Ver tickets obtenidos.. sacar despues de las pruebas
 
   const tbody_tickets = document.getElementById("tbody-Tickets");
-  tbody_tickets.innerHTML = ""; // Limpio el contenido de la tabla antes de llenarla
+  tbody_tickets.innerHTML = ""; 
 
-  tickets.forEach((ticket) => {
+  tickets.forEach(ticket => {
     const row = document.createElement("tr");
 
     row.innerHTML = `
         <td>${ticket.titulo}</td>
-        <td>${ticket.descripcion}</td>
-        <td>${ticket.fechaCreacion}</td>
-        <td>${ticket.categoriaId}</td>
-        <td>${ticket.estado}</td>
-        <td>${ticket.prioridad}</td>
+        <td>${ticket.fechaCreacionString}</td>
+        <td>${ticket.categoriaString}</td>
+        <td>${ticket.estadoString}</td>
+        <td>${ticket.prioridadString}</td>
+        <td>${ticket.nombreUsuario}</td>
+        <td>${ticket.emailUsuario}</td>
+        
         
         <td>
                 <button type="button" class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">ELIMINAR</button>
             </td>
 
             <td>
-                <button type="button" class="btn btn-primary btn-editar" onclick="AbrirModalEditar(${ticket.ticketId}, '${ticket.titulo}', '${ticket.categoriaId}', '${ticket.descripcion}', '${ticket.prioridad}')">EDITAR</button>
+                <button type="button" class="btn btn-primary btn-editar" onclick="AbrirModalEditar(${ticket.ticketId})">EDITAR</button>
         </td>
         <td>
                 <button type="button" class="btn btn-primary btn-editar" onclick="MostrarHistorial(${ticket.ticketId})">Historial</button>
@@ -110,7 +132,7 @@ async function MostrarTickets() {
   });
 }
 
-async function Filtrar() {
+/* async function Filtrar() {
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
@@ -167,7 +189,7 @@ async function Filtrar() {
  `;
     tbody_tickets.appendChild(row);
   });
-}
+} */
 
 function CrearEditarTicket(id) {
   let ticketId = document.getElementById("ticketid").value;
@@ -185,23 +207,16 @@ async function CrearTicket() {
     Authorization: `Bearer ${getToken()}`,
   });
 
-  console.log(getToken()); // Consulto a cer si llega bien el token, sacarlo despues de las pruebas
-  //const ticketId = document.getElementById("ticketId").value;
   const tituloTicket = document.getElementById("tituloTicket").value;
   const floatingTextarea = document.getElementById("floatingTextarea").value;
   const prioridadTicket = Number(document.getElementById("prioridadTicket").value)
-  //const fechaCreacion = document.getElementById("fechaCreacionTicket").value;
-  //const fechaCierreTicket = document.getElementById("fechaCierreTicket").value;
-  const categoriasSelect = document.getElementById("categoriasSelect").value;
+  const categoriasSelect = Number(document.getElementById("categoriasSelect").value);
 
   const ticket = {
-    //ticketId: parseInt(ticketId),
+  
     titulo: tituloTicket,
     descripcion: floatingTextarea,
-    //estado: estadoTicket,
     prioridad: prioridadTicket,
-    //fechaCreacion: fechaCreacion,
-    //fechaCierre: fechaCierreTicket ? fechaCierreTicket : null,
     categoriaId: categoriasSelect,
   };
 
@@ -225,13 +240,22 @@ async function CrearTicket() {
   }
 }
 
-function AbrirModalEditar(id, titulo, categoriaId, descripcion, prioridad) {
-  document.getElementById("ticketid").value = id;
-  document.getElementById("tituloTicket").value = titulo;
-  document.getElementById("categoriasSelect").value = categoriaId;
-  document.getElementById("floatingTextarea").value = descripcion;
+async function AbrirModalEditar(ticketId)
+{
+  const res = await fetch(`${URL_BASE_API}tickets/${ticketId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`,
+    },
+  })
+  const ticket = await res.json();
+  document.getElementById("ticketid").value = ticket.ticketId;
+  document.getElementById("tituloTicket").value = ticket.titulo;
+  document.getElementById("categoriasSelect").value = ticket.categoriaId;
+  document.getElementById("floatingTextarea").value = ticket.descripcion;
   //document.getElementById("estadoTicket").value = estado;
-  document.getElementById("prioridadTicket").value = prioridad;
+  document.getElementById("prioridadTicket").value = ticket.prioridad;
   //document.getElementById("fechaCreacionTicket").value = fechaCreacion;
   //document.getElementById("fechaCierreTicket").value = fechaCierre;
 

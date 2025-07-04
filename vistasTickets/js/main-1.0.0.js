@@ -39,6 +39,12 @@ function CargarScriptDeVista(nombreVista) {
         case "usuarios":
             rutaScript = "js/usuarios.js";
             break;
+        case "puestos":
+            rutaScript = "js/puestos.js";
+            break;
+        case "desarrolladores":
+            rutaScript = "js/desarrolladores.js";
+            break;
         default:
             return;
     }

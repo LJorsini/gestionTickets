@@ -1,6 +1,4 @@
-//let URL_API_CLIENTE = "http://localhost:5004/api/clientes";
 
-//const getToken = () => localStorage.getItem("token");
 
 
 async function obtenerCliente() {

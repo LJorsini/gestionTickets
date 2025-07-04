@@ -1,0 +1,126 @@
+<h1>Puestos</h1>
+
+<div class="col-md-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPuestos">
+        Nuevo Puesto
+    </button>
+</div>
+
+<!-- Tabla puestos -->
+<table class="table">
+    <thead>
+        <tr>
+
+            <th scope="col">Puesto</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody id="tbody-puestos">
+
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="modalPuestos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    onclick="LimpiarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="formCategorias">
+                    <input type="" id="puestoId" value="0" />
+                    <div class="mb-3">
+                        <label for="puestoNombre" class="form-label">Puesto</label>
+                        <input type="text" class="form-control" id="puestoNombre"
+                            placeholder="Ingrese el nombre del puesto" style="text-transform: uppercase" />
+                        <!-- <span id="errorCategoriaDescripcion"
+                                style="color:red; display:none; font-size: 15px; padding-left: 4px;">
+                                <i class="fa-solid fa-circle-exclamation pe-1"></i>Debe ingresar una categoria
+                            </span> -->
+                    </div>
+
+                    <!-- <div class=" mb-3">
+                        <label class="control-label">Categoria</label>
+                        <select class="form-control form-control-sm" id="categoriaSelect"></select>
+                    </div> -->
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarModal()">
+                    CERRAR
+                </button>
+                <button type="button" class="btn btn-primary" onclick="CrearEditarPuesto()">GUARDAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal asociar-->
+<div class="modal fade" id="modalAsociar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    onclick="LimpiarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="formCategorias">
+                    <input type="" id="puestoIdAsociar" value="0" />
+
+                    <div class=" mb-3">
+                        <label class="control-label">Categoria</label>
+                        <select class="form-control form-control-sm" id="categoriaSelect"></select>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarModal()">
+                    CERRAR
+                </button>
+                <button type="button" class="btn btn-primary" onclick="AsociarCategoria()">GUARDAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal ver -->
+<div class="modal fade" id="modalVer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Tabla puestos -->
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th scope="col">Puesto Asociada</th>
+                            <th scope="col">Categoria Asociada</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-categoriaAsociada">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

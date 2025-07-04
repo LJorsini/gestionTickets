@@ -1,0 +1,101 @@
+<h1>Desarrolladores</h1>
+
+<div class="col-md-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDesarrollador">
+        Nuevo Desarrollador
+    </button>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Email</th>
+            <th scope="col">DNI</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Puesto</th>
+            <th scope="col">Observaciones</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody id="tbody-Desarrolladores">
+        <!-- Aquí se llenarán los desarrolladores -->
+
+
+    </tbody>
+</table>
+
+<!-- Modal nuevo ticket-->
+<div class="modal fade" id="modalDesarrollador" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    onclick="LimpiarModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="formCategorias">
+                    <input type="" id="desarrolladorId" value="0" />
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="nombreDesarrollador" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="nombreDesarrollador" placeholder="Ingrese el Nombre"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                        <div class="mb-3 col-6">
+                            <label for="emailDesarrollador" class="form-label">Email Desarrollador</label>
+                            <input type="text" class="form-control" id="emailDesarrollador" placeholder="Ingrese el email"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="telDesarrollador" class="form-label">Telfono</label>
+                            <input type="text" class="form-control" id="telDesarrollador" placeholder="Ingrese el telefono"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                        <div class="mb-3 col-6">
+                            <label for="dniDesarrollador" class="form-label">DNI</label>
+                            <input type="text" class="form-control" id="dniDesarrollador" placeholder="Ingrese el DNI"
+                                style="text-transform: uppercase" />
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="puestosSelect" class="form-label">Puesto</label>
+                            <select class="form-select" id="puestosSelect">
+                                <option class="option" value="" disabled selected>
+                                    [Seleccione]
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-floating">
+                        <textarea class="form-control" placeholder="Descripcion" id="floatingTextarea"></textarea>
+                        <label for="floatingTextarea">Observaciones</label>
+                    </div>
+
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    CERRAR
+                </button>
+                <button type="button" class="btn btn-primary" onclick="CrearoEditarDesarrollador()">
+                    GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

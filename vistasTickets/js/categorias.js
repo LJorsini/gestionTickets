@@ -1,8 +1,4 @@
-//const URL_API_CATEGORIA = "http://localhost:5004/api/categorias";
 
-//const getToken = () => localStorage.getItem("token");
-
-/* Funcion asincronica para traer las categorias */
 async function obtenerCategorias() {
     const authHeaders = () => ({
         "Content-Type": "application/json",
