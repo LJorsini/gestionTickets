@@ -1,3 +1,4 @@
+using gestionTickets;
 using gestionTickets.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
@@ -16,10 +17,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
     public DbSet<Categoria> Categorias { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
-
     public DbSet<Historial> Historial { get; set; }
-
     public DbSet<Cliente> Clientes { get; set; }
-    //public DbSet<ComentarioTicket> ComentariosTickets { get; set; }
+    public DbSet<Puesto> Puestos { get; set; }
+    public DbSet<Desarrollador> Desarrolladores { get; set; }
+
+    public DbSet<PuestoCategoria> PuestoCategorias { get; set; }
+    
 
 }

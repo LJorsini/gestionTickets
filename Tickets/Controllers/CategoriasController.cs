@@ -25,7 +25,8 @@ namespace gestionTickets.Controllers
             var usuarioLoguedoId = HttpContext.User.Identity.Name;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-            return await _context.Categorias.ToListAsync();
+            //return await _context.Categorias.ToListAsync();
+            return await _context.Categorias.OrderBy(c => c.Descripcion).ToListAsync();
             
         }   ////cambio editar
 
@@ -52,9 +53,6 @@ namespace gestionTickets.Controllers
             {
                 return BadRequest();
             }
-
-            
-
 
             _context.Entry(categoria).State = EntityState.Modified;
 

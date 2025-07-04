@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace gestionTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250702004538_CambioTipoDatosTickets")]
+    partial class CambioTipoDatosTickets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,64 +306,6 @@ namespace gestionTickets.Migrations
                     b.ToTable("Clientes");
                 });
 
-            modelBuilder.Entity("gestionTickets.Models.Desarrollador", b =>
-                {
-                    b.Property<int>("DesarrolladorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DesarrolladorId"));
-
-                    b.Property<string>("DNI")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NombreCompleto")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Observacion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PuestoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Telefono")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("DesarrolladorId");
-
-                    b.HasIndex("PuestoId");
-
-                    b.ToTable("Desarrolladores");
-                });
-
-            modelBuilder.Entity("gestionTickets.Models.Puesto", b =>
-                {
-                    b.Property<int>("PuestoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PuestoId"));
-
-                    b.Property<bool>("Activo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NombrePuesto")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PuestoId");
-
-                    b.ToTable("Puestos");
-                });
-
             modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
                 {
                     b.Property<int>("TicketId")
@@ -400,25 +345,6 @@ namespace gestionTickets.Migrations
                     b.HasIndex("CategoriaId");
 
                     b.ToTable("Tickets");
-                });
-
-            modelBuilder.Entity("gestionTickets.PuestoCategoria", b =>
-                {
-                    b.Property<int>("PuestoCategoriaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PuestoCategoriaId"));
-
-                    b.Property<int>("CategoriaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PuestoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PuestoCategoriaId");
-
-                    b.ToTable("PuestoCategorias");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -472,17 +398,6 @@ namespace gestionTickets.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("gestionTickets.Models.Desarrollador", b =>
-                {
-                    b.HasOne("gestionTickets.Models.Puesto", "Puesto")
-                        .WithMany("Desarrolladores")
-                        .HasForeignKey("PuestoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Puesto");
-                });
-
             modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
                 {
                     b.HasOne("gestionTickets.Models.Categoria", "Categoria")
@@ -497,11 +412,6 @@ namespace gestionTickets.Migrations
             modelBuilder.Entity("gestionTickets.Models.Categoria", b =>
                 {
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("gestionTickets.Models.Puesto", b =>
-                {
-                    b.Navigation("Desarrolladores");
                 });
 #pragma warning restore 612, 618
         }

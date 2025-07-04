@@ -9,6 +9,7 @@ using gestionTickets.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System.Security.Claims;
+using System.IO.Compression;
 
 namespace gestionTickets.Controllers
 {
@@ -26,11 +27,11 @@ namespace gestionTickets.Controllers
         }
 
         // GET: api/Tickets
-        [HttpGet]
+        /* [HttpGet]
 
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
         {
-            /* var tickets = await _context.Tickets.Include(t => t.Categoria).ToListAsync(); */
+            var tickets = await _context.Tickets.Include(t => t.Categoria).ToListAsync(); 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
@@ -59,7 +60,7 @@ namespace gestionTickets.Controllers
 
             });
             return Ok(vistaTickets);
-        }
+        } */
         
         /* [HttpGet("ObtenerEstadosyPrioridad")] //obtengo los estados de los tickets
         public IActionResult ObtenerEstadosyPrioridad()
@@ -235,28 +236,14 @@ namespace gestionTickets.Controllers
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
-            var ticketExiste = await _context.Tickets.AnyAsync(t => t.TicketId == ticket.TicketId);
+            ticket.Estado = Estado.Abierto;
+            ticket.FechaCreacion = DateTime.Now;
+            ticket.FechaCierre = Convert.ToDateTime("01/01/0001");
+            ticket.UsuarioClienteID = userId;
+            _context.Tickets.Add(ticket);
+            await _context.SaveChangesAsync();
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("No se pudo identificar al usuario.");
-            }
-
-            if (ticketExiste == false)
-            {
-                ticket.Estado = Estado.Abierto;
-                ticket.FechaCreacion = DateOnly.FromDateTime(DateTime.Now);
-                ticket.UsuarioClienteID = userId;
-                _context.Tickets.Add(ticket);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction("GetTicket", new { id = ticket.TicketId }, ticket);
-
-            }
-            else
-            {
-                return BadRequest("El ticket ya existe");
-            }
+            return CreatedAtAction("GetTicket", new { id = ticket.TicketId }, ticket);
 
 
         }
@@ -264,30 +251,73 @@ namespace gestionTickets.Controllers
         [HttpPost("filtrar")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> FiltroTickets([FromBody] FiltroTickets filtro)
         {
-            var ticketsFiltro = _context.Tickets.AsQueryable();
+            List<VistaTicket> vista = new List<VistaTicket>();
 
-            if (filtro.Prioridad.HasValue)
+            var tickets = _context.Tickets.Include(t => t.Categoria).AsQueryable();
+
+            var usuarioNombre = HttpContext.User.Identity.Name;
+            var nombreUsuario = HttpContext.User.FindFirst("NombreCompleto")?.Value;
+            var usuarioEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (rol == "CLIENTE")
             {
-                ticketsFiltro = ticketsFiltro.Where(t => t.Prioridad == filtro.Prioridad.Value);
+                tickets = tickets.Where(t => t.UsuarioClienteID == userId);
             }
 
-            var vistaTickets = await ticketsFiltro
-                .Select(t => new VistaTicket
-                {
-                    TicketId = t.TicketId,
-                    Titulo = t.Titulo,
-                    Descripcion = t.Descripcion,
-                    Estado = t.Estado.ToString(),
-                    Prioridad = t.Prioridad.ToString(),
-                    FechaCreacion = t.FechaCreacion.ToString("dd/MM/yyyy"),
-                    FechaCierre = t.FechaCierre.HasValue ? t.FechaCierre.Value.ToString("dd/MM/yyyy") : "",
-                    CategoriaNombre = t.Categoria.Descripcion,
-                    CategoriaId = t.CategoriaId,
-                    UsuarioClienteID = t.UsuarioClienteID
-                })
-                .ToListAsync();
+            DateTime fechaDesde = new DateTime();
+            bool fechaDesdeValida = DateTime.TryParse(filtro.FechaDesde, out fechaDesde);  
 
-            return Ok(vistaTickets);
+            DateTime fechaHasta = new DateTime();
+            bool fechaHastaValida = DateTime.TryParse(filtro.FechaHasta, out fechaHasta);
+
+            if (fechaDesdeValida && fechaHastaValida)
+            {
+                fechaHasta = fechaHasta.AddHours(23);
+                fechaHasta = fechaHasta.AddMinutes(59);
+                fechaHasta = fechaHasta.AddSeconds(59);
+
+                tickets = tickets.Where(t => t.FechaCreacion >= fechaDesde && t.FechaCreacion <= fechaHasta);
+            }
+
+            if (filtro.CategoriaId > 0)
+            {
+                tickets = tickets.Where(t => t.CategoriaId == filtro.CategoriaId);
+            }
+
+            if (filtro.Prioridad > 0)
+            {
+                tickets = tickets.Where(t => t.Prioridad == (Prioridad)filtro.Prioridad); 
+
+            }
+
+            if (filtro.Estado > 0)
+            {
+                tickets = tickets.Where(t => t.Estado == (Estado)filtro.Estado);
+            }
+
+            foreach (var ticket in tickets.OrderByDescending(t => t.FechaCreacion))
+            {
+                var mostrarTicket = new VistaTicket
+                {
+                    TicketId = ticket.TicketId,
+                    Titulo = ticket.Titulo,
+                    FechaCreacionString = ticket.FechaCreacionString,
+                    Prioridad = ticket.Prioridad,
+                    EstadoString = ticket.EstadoString,
+                    CategoriaString = ticket.CategoriaString,
+                    PrioridadString = ticket.PrioridadString,
+                    //NombreUsuario = ticket.UsuarioCliente.NombreCompleto,
+                    //EmailUsuario = ticket.UsuarioCliente?.Email,
+                    
+                };
+                vista.Add(mostrarTicket);
+            }
+
+            
+
+            return vista.ToList();
         }
 
 
