@@ -30,21 +30,6 @@ namespace gestionTickets.Models
 
         }
 
-        // GET: api/obtenerPuestos
-        /* [HttpGet("obtenerPuestos")]
-        public IActionResult ObtenerPuestos()
-        {
-            var puestos = _context.Puestos.Select(c => new
-            {
-                Id = c.PuestoId,
-                Nombre = c.NombrePuesto
-
-            }).ToList();
-
-            return Json(puestos);
-        }
- */
-
         [HttpPost]
         public async Task<ActionResult<Categoria>> PostPuesto(Puesto puesto)
         {
@@ -70,17 +55,9 @@ namespace gestionTickets.Models
         [HttpPost("asociar")]
         public async Task<ActionResult<Cliente>> PostAsociar(PuestoCategoria asociar)
         {
-
-
-
             _context.PuestoCategorias.Add(asociar);
             await _context.SaveChangesAsync();
             ;
-
-
-
-
-
             return Ok();
         }
 
@@ -93,9 +70,6 @@ namespace gestionTickets.Models
             {
                 return BadRequest();
             }
-
-
-
 
             _context.Entry(puesto).State = EntityState.Modified;
 
@@ -158,15 +132,28 @@ namespace gestionTickets.Models
         [HttpGet("mostrarAsociadas")]
         public async Task<ActionResult<IEnumerable<PuestoCategoria>>> GetPuestoCategorias()
         {
+
+            var datos = await _context.PuestoCategorias
+                .Include(pc => pc.Puesto)
+                .Include(pc => pc.Categoria)
+                .Select(pc => new
+                {
+                    pc.PuestoCategoriaId,
+                    nombrePuesto = pc.Puesto.NombrePuesto,
+                    descripcionCategoria = pc.Categoria.Descripcion
+                })
+                .ToListAsync();
+
+            
             var usuarioLoguedoId = HttpContext.User.Identity.Name;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             //return await _context.Categorias.ToListAsync();
 
-            return await _context.PuestoCategorias.ToListAsync();
+            return Ok(datos);
 
         }   ////cambio editar
-        
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoria(int id)
@@ -184,8 +171,4 @@ namespace gestionTickets.Models
         }
 
     }
-
-    
-    
-    
 }

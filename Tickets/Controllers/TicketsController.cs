@@ -26,76 +26,14 @@ namespace gestionTickets.Controllers
             _context = context;
         }
 
-        // GET: api/Tickets
-        /* [HttpGet]
-
-        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
-        {
-            var tickets = await _context.Tickets.Include(t => t.Categoria).ToListAsync(); 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            var tickets = await _context.Tickets
-                .Include(t => t.Categoria)
-                .Where(t => t.UsuarioClienteID == userId)
-                .ToListAsync();
-
-            
-
-            var vistaTickets = tickets.Select(t => new VistaTicket
-            {
-
-                Titulo = t.Titulo,
-                Descripcion = t.Descripcion,
-                Estado = t.Estado.ToString(),
-                Prioridad = t.Prioridad.ToString(),
-                FechaCreacion = t.FechaCreacion.ToString("dd/MM/yyyy"),
-                CategoriaNombre = t.Categoria.Descripcion,
-                TicketId = t.TicketId,
-                CategoriaId = t.CategoriaId,
-                UsuarioClienteID = t.UsuarioClienteID.ToString(),
-
-
-            });
-            return Ok(vistaTickets);
-        } */
-        
-        /* [HttpGet("ObtenerEstadosyPrioridad")] //obtengo los estados de los tickets
-        public IActionResult ObtenerEstadosyPrioridad()
-        {
-            var estados = Enum.GetValues(typeof(Estado))
-                .Cast<Estado>()
-                .Select(e => new
-                {
-                    Id = (int)e,
-                    Nombre = e.ToString()
-                });
-
-            var prioridades = Enum.GetValues(typeof(Prioridad))
-            .Cast<Prioridad>()
-            .Select(e => new
-            {
-                Id = (int)e,
-                Nombre = e.ToString()
-            });
-
-            var resultado = new
-            {
-                estados,
-                prioridades
-            };
-
-            return Json(resultado);
-        } */
+    
 
         // GET: api/Tickets
         [HttpGet("ObtenerCategorias")]
         public IActionResult ObtenerCategorias()
         {
             var categorias = _context.Categorias.Select(c => new
-            {
+{
                 Id = c.CategoriaId,
                 Nombre = c.Descripcion
 
@@ -104,14 +42,7 @@ namespace gestionTickets.Controllers
             return Json(categorias);
         }
 
-        /* [HttpGet("ObtenerHistorialTicket/{ticketId}")]
 
-        public IActionResult GetHistorial(int ticketId)
-        {
-            var historial = _context.Historial.Include(t => t.Ticket).Where(h => h.TicketId == ticketId).ToList();
-
-            return Json(historial);
-        } */
 
 
         // GET: api/tickets/5 --- el 5 hace referencia al id, puede ser cualquier otro número
@@ -308,8 +239,8 @@ namespace gestionTickets.Controllers
                     EstadoString = ticket.EstadoString,
                     CategoriaString = ticket.CategoriaString,
                     PrioridadString = ticket.PrioridadString,
-                    //NombreUsuario = ticket.UsuarioCliente.NombreCompleto,
-                    //EmailUsuario = ticket.UsuarioCliente?.Email,
+                    NombreUsuario = nombreUsuario,
+                    EmailUsuario = usuarioEmail,
                     
                 };
                 vista.Add(mostrarTicket);

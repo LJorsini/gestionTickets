@@ -9,9 +9,11 @@ namespace gestionTickets.Models
         public int PuestoId { get; set; }
         public string NombrePuesto { get; set; }
         public bool Activo { get; set; }
-        
+
 
         public virtual ICollection<Desarrollador>? Desarrolladores { get; set; }
+        
+        public virtual ICollection<PuestoCategoria>? PuestosCategorias { get; set; }
     }
 
 }

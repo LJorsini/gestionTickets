@@ -152,11 +152,11 @@ namespace gestionTickets.Controllers
         [HttpPost]
         public async Task<ActionResult<Desarrollador>> PostCliente(Desarrollador desarrollador)
         {
-            var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "DESARROLLADOR").SingleOrDefault();
+            /* var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "DESARROLLADOR").SingleOrDefault();
             if (nombreRolCrearExiste == null)
             {
                 var roleResult = await _rolManager.CreateAsync(new IdentityRole("DESARROLLADOR"));
-            }
+            } */
             _context.Desarrolladores.Add(desarrollador);
             await _context.SaveChangesAsync();
 

@@ -117,7 +117,7 @@ namespace gestionTickets.Controllers
 
             var categoriaExiste = await _context.Categorias.AnyAsync(d => d.Descripcion == categoria.Descripcion);
 
-            if (categoriaExiste == false)
+            if (!categoriaExiste)
             {
                 _context.Categorias.Add(categoria);
                 await _context.SaveChangesAsync();
@@ -127,7 +127,7 @@ namespace gestionTickets.Controllers
             }
             else
             {
-                return BadRequest("La categoria ya existe");
+                return Conflict("La categoria ya existe");
             }
 
 

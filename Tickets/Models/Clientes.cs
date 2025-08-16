@@ -6,13 +6,24 @@ namespace gestionTickets.Models
     {
         [Key]
         public int ClienteId { get; set; }
-        public string? Nombre {get; set;}
-        public string? Email {get; set;}
-        public string? Telefono {get; set;}
+        public string? Nombre { get; set; }
+        public string? Email { get; set; }
+        public string? Telefono { get; set; }
         public string? Cuit { get; set; }
         public string? Observaciones { get; set; }
-        public bool? Eliminado { get; set; } 
-        
-        
+        public bool? Eliminado { get; set; }
+
+
+    }
+
+    public class VistaCliente
+    {
+        public int ClineteId { get; set; }
+        public string Nombre { get; set; }
+        public string Email { get; set; }
+        public string Telefono { get; set; }
+        public string Cuit { get; set; }
+        public string Observaciones { get; set; }
+        //public bool Eliminado { get; set; }
     }
 }

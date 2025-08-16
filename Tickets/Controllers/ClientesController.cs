@@ -16,11 +16,36 @@ namespace gestionTickets.Controllers
         {
             _context = context;
         }
-        [HttpGet]
+       /*  [HttpGet]
         public async Task<ActionResult<IEnumerable<Cliente>>> GetCliente()
         {
             return await _context.Clientes.ToListAsync();
-        }   ////cambio editar
+        }  */  ////cambio editar
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<VistaCliente>>> GetCliente()
+        {
+            List<VistaCliente> vistaClientes = new List<VistaCliente>();
+
+            var clientes = await _context.Clientes.ToListAsync();
+
+            foreach (var cliente in clientes)
+            {
+                var mostrarCliente = new VistaCliente
+                {
+                    ClineteId = cliente.ClienteId,
+                    Nombre = cliente.Nombre,
+                    Email = cliente.Email,
+                    Telefono = cliente.Telefono,
+                    Cuit = cliente.Cuit,
+                    Observaciones = cliente.Observaciones,
+
+                };
+                
+                vistaClientes.Add(mostrarCliente);
+            }
+            return vistaClientes.ToList();
+        }
 
         [HttpPost]
         public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)

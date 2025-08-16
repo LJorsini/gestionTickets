@@ -40,7 +40,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-        //CREAR ROLES SI NO EXISTEN
+        //VERIFICO QUE LOS ROLES EXISTA, EN CASO DE QUE NO, LOS CREO
         var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "ADMINISTRADOR").SingleOrDefault();
         if (nombreRolCrearExiste == null)
         {
@@ -53,16 +53,23 @@ public class AuthController : ControllerBase
             var roleResult = await _rolManager.CreateAsync(new IdentityRole("CLIENTE"));
         }
 
+        var desarrolladorRolCrearExiste = _context.Roles.Where(r => r.Name == "DESARROLLADOR").SingleOrDefault();
 
-        //ARMAMOS EL OBJETO COMPLETANDO LOS ATRIBUTOS COMPLETADOS POR EL USUARIO
-        var user = new ApplicationUser
+        if (desarrolladorRolCrearExiste == null)
+        { 
+            var roleResult = await _rolManager.CreateAsync(new IdentityRole("DESARROLLADOR"));
+        }
+
+
+        //ARMO EL OBJETO DEL USUARIO QUE SE REGISTRA 
+            var user = new ApplicationUser
         {
             UserName = model.Email,
             Email = model.Email,
             NombreCompleto = model.NombreCompleto
         };
 
-        //HACEMOS USO DEL MÉTODO REGISTRAR USUARIO
+        //SE CREA EL USUARIO QUE SE REGISTRA CON UNA CONTRASEÑA POR DEFECTO
         var result = await _userManager.CreateAsync(user, model.Password = "Ezpeleta2025");
 
         if (result.Succeeded)
