@@ -63,7 +63,7 @@ async function CrearEditarCategoria() {
             text: "¡Por favor ingrese una categoria!",
 
         });
-        //validacionCampos = false;
+        
     }
 
     if (!validacionCampos) {
@@ -84,9 +84,20 @@ async function CrearCategoria() {
         "Authorization": `Bearer ${getToken()}`
     });
 
+    
     //let id = document.getElementById("categoriaid").value;
     let descripcion = document.getElementById("categoriaDescripcion").value.trim();
     descripcion = descripcion.toUpperCase(); // Convertir a mayúsculas
+
+    if( descripcion == "") {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "¡El campo categoria es obligatorio!",
+        });
+        return; // Salir de la función si la descripción está vacía
+
+    }
 
     const categoria = {
         //categoriaId: id,
@@ -109,13 +120,13 @@ async function CrearCategoria() {
         obtenerCategorias();
     } else {
         const errorText = await res.text();
-        alert("Error al crear la categoría:", errorText);
-        /* Swal.fire({
+        //alert("La categoria ya existe:", errorText);
+        Swal.fire({
             icon: "error",
             title: "Oops...",
             text: "La categoria ya existe",
             
-        }); */
+        });
         obtenerCategorias();
     }
 }
@@ -129,6 +140,15 @@ async function EditarCategoria(id) {
     let descripcion = document.getElementById("categoriaDescripcion").value;
 
     descripcion = descripcion.toUpperCase(); // Convertir a mayúsculas
+
+    if (!descripcion) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "¡El campo categoria no puede estar vacio!",
+        });
+        return; // Salir de la función si la descripción está vacía
+    }
 
     const res = await fetch(`${URL_BASE_API}categorias/${idEditar}`,
         {

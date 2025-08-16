@@ -1,9 +1,3 @@
-/* const res = await fetch(`${URL_BASE_API}tickets/ObtenerCategorias`, {
-    method: "GET",
-    headers: authHeaders(),
-  }); */
-//Funcion para cargar las categorias al dropdown categorias
-
 
 async function ObtenerCategorias() {
   const authHeaders = () => ({
@@ -30,10 +24,7 @@ async function ObtenerCategorias() {
     opciones += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
     opcionesBuscar += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
 
-    /* const option = document.createElement("option");
-    option.value = c.id;
-    option.text = c.nombre;
-    selectCategoria.appendChild(option); */
+    
   });
   selectCategoria.innerHTML = opciones;
   selectCategoriaBuscar.innerHTML = opcionesBuscar;
@@ -132,64 +123,7 @@ async function MostrarTickets() {
   });
 }
 
-/* async function Filtrar() {
-  const authHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken()}`,
-  });
 
-  let filtroPrioridad = parseInt(document.getElementById("ticketFiltroPrioridad").value);
-  //let filtroEstado = parseInt(document.getElementById("ticketFiltroEstado").value);
-
-  console.log(filtroPrioridad); // Ver filtros sacar despues de las pruebas
-
-  const filtro = {
-    prioridad: filtroPrioridad,
-    //estado: filtroEstado
-  };
-
-  const res = await fetch(`${URL_BASE_API}tickets/filtrar`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify(filtro),
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("Error del servidor:", text);
-    return;
-  }
-
-  const ticketsFiltrados = await res.json();
-  console.log("Tickets filtrados:", ticketsFiltrados); // Ver tickets filtrados obtenidos.. sacar despues de las pruebas
-
-  const tbody_tickets = document.getElementById("tbody-Tickets");
-  tbody_tickets.innerHTML = ""; // Limpio el contenido de la tabla antes de llenarla
-
-  ticketsFiltrados.forEach((ticket) => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-        <td>${ticket.titulo}</td>
-        <td>${ticket.descripcion}</td>
-        <td>${ticket.fechaCreacion}</td>
-        <td>${ticket.categoriaId}</td>
-        <td>${ticket.estado}</td>
-        <td>${ticket.prioridad}</td>
-        
-        <td>
-                <button type="button" class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">ELIMINAR</button>
-            </td>
-
-            <td>
-                <button type="button" class="btn btn-primary btn-editar" onclick="AbrirModalEditar(${ticket.ticketId}, '${ticket.titulo}', '${ticket.categoriaId}', '${ticket.descripcion}', '${ticket.prioridad}')">EDITAR</button>
-        </td>
-        <td>
-                <button type="button" class="btn btn-primary btn-editar" onclick="MostrarHistorial(${ticket.ticketId})">Historial</button>
-        </td>
- `;
-    tbody_tickets.appendChild(row);
-  });
-} */
 
 function CrearEditarTicket(id) {
   let ticketId = document.getElementById("ticketid").value;
@@ -211,6 +145,15 @@ async function CrearTicket() {
   const floatingTextarea = document.getElementById("floatingTextarea").value;
   const prioridadTicket = Number(document.getElementById("prioridadTicket").value)
   const categoriasSelect = Number(document.getElementById("categoriasSelect").value);
+
+  if (!tituloTicket) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'El título del ticket es obligatorio.',
+    });
+    return;
+  }
 
   const ticket = {
   
@@ -302,12 +245,20 @@ async function EditarTicket(id) {
   const tituloTicket = document.getElementById("tituloTicket").value;
   const floatingTextarea = document.getElementById("floatingTextarea").value;
   //const estadoTicket = parseInt(document.getElementById("estadoTicket").value);
-  const prioridadTicket = parseInt(
-    document.getElementById("prioridadTicket").value
-  );
+  const prioridadTicket = parseInt(document.getElementById("prioridadTicket").value);
   //const fechaCreacion = document.getElementById("fechaCreacionTicket").value;
   //const fechaCierreTicket = document.getElementById("fechaCierreTicket").value;
   const categoriasSelect = document.getElementById("categoriasSelect").value;
+
+  if (!tituloTicket) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'El título del ticket es obligatorio.',
+    });
+    return;
+
+  }
 
   const ticket = {
     ticketId: parseInt(ticketId),

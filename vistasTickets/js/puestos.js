@@ -152,13 +152,13 @@ async function CrearPuesto() {
 
     //let id = document.getElementById("categoriaid").value;
     let nombrePuesto = document.getElementById("puestoNombre").value.trim();
-    let categoria = document.getElementById("Categoria").value;
+    //let categoria = document.getElementById("Categoria").value;
     nombrePuesto = nombrePuesto.toUpperCase(); // Convertir a mayúsculas
 
     const puesto = {
         //categoriaId: id,
         nombrePuesto: nombrePuesto,
-        categoria: categoria,
+        //categoria: categoria,
         activo: false // Asignar valor por defecto
     }
     const res = await fetch(`${URL_BASE_API}puestos`,
@@ -314,11 +314,14 @@ async function AsociarCategoria() {
 
 }
 
-async function VerRegistro(puestoId) {
+async function VerRegistro(puestoCategoriaId) {
     const authHeaders = () => ({
         "Content-Type": "application/json",
         "Authorization": `Bearer ${getToken()}`
     });
+
+    
+    console.log(puestoCategoriaId);
     const res = await fetch(`${URL_BASE_API}puestos/mostrarAsociadas`, {
         method: "GET",
         headers: authHeaders(),
@@ -337,8 +340,8 @@ async function VerRegistro(puestoId) {
 
         row.innerHTML = `
             
-            <td>${categoria.puestoId}</td>
-            <td>${categoria.categoriaId}</td>
+            <td>${categoria.nombrePuesto}</td>
+            <td>${categoria.descripcionCategoria}</td>
             
 
             <td>

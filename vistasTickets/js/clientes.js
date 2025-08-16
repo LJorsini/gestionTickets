@@ -1,6 +1,3 @@
-
-
-
 async function obtenerCliente() {
 
     const authHeaders = () => ({
@@ -23,6 +20,9 @@ async function obtenerCliente() {
 
     const tbodyClientes = document.getElementById("tbodyClientes");
     tbodyClientes.innerHTML = "";
+
+    LimpiarModal();
+    $("#modalClientes").modal("hide");
 
     clientes.forEach(cliente => {
         const row = document.createElement("tr");
@@ -98,6 +98,15 @@ async function CrearCliente() {
     let cuit = document.getElementById("cuitCliente").value.trim();
     let observaciones = document.getElementById("floatingTextarea").value;
 
+    if (nombre == "") {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "El nombre del cliente es obligatorio",
+        });
+        return;
+    }
+
 
     const cliente = {
         nombre: nombre,
@@ -115,6 +124,8 @@ async function CrearCliente() {
         headers: authHeaders(),
         body: JSON.stringify(cliente),
     });
+
+    LimpiarModal();
 
 
 }
@@ -212,6 +223,17 @@ async function DesactivarCliente(id) {
             
         });
     }
+}
+
+function LimpiarModal() 
+{
+    document.getElementById("clienteId").value = 0;
+    document.getElementById("nombreCliente").value = "";
+    document.getElementById("emailCliente").value = "";
+    document.getElementById("telCliente").value = "";
+    document.getElementById("cuitCliente").value = ""; // Asignar valor vacío al campo cuit
+    document.getElementById("floatingTextarea").value = "";
+
 }
 
 obtenerCliente()
