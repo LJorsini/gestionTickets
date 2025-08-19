@@ -3,16 +3,17 @@ async function ObtenerCategorias() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getToken()}`,
     });
-    console.log("Token:", getToken());
+    
     const res = await fetch(`${URL_BASE_API}categorias`, {
         method: "GET",
         headers: authHeaders(),
     });
+
     const resultado = await res.json();
     console.log(resultado);
 
     const selectCategoria = document.getElementById("categoriaSelect");
-    selectCategoria.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
+    selectCategoria.innerHTML = ""; 
 
 
     let opciones = "";
@@ -21,44 +22,11 @@ async function ObtenerCategorias() {
         opciones += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
 
 
-        /* const option = document.createElement("option");
-        option.value = c.id;
-        option.text = c.nombre;
-        selectCategoria.appendChild(option); */
     });
     selectCategoria.innerHTML = opciones;
 
-
-
 }
 
-
-/* async function ObtenerCategorias() {
-  const authHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken()}`,
-  });
-  //console.log("Token:", getToken());
-  const res = await fetch(`${URL_BASE_API}categorias`, {
-    method: "GET",
-    headers: authHeaders(),
-  });
-  const puestos = await res.json();
-  //console.log(puestos);
-
-  const selectPuestos = document.getElementById("categoriaSelect");
-  selectPuestos.innerHTML = "";
-
-  // Agregar opción por defecto
-  let opciones = `<option value="" disabled selected>[Seleccione]</option>`;
-
-  puestos.forEach(puesto => {
-    opciones += `<option value="${categorias.categoriaId}">${categorias.categoriaId}</option>`;
-  });
-
-  selectPuestos.innerHTML = opciones;
-
-} */
 
 
 async function obtenerPuestos() {
@@ -66,7 +34,7 @@ async function obtenerPuestos() {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${getToken()}`
     });
-    console.log("Token:", getToken());
+    
     const res = await fetch(`${URL_BASE_API}puestos`,
         {
             method: "GET",
@@ -75,10 +43,10 @@ async function obtenerPuestos() {
         }
     );
     const puestos = await res.json();
-    //console.log(puestos); // Ver categorías obtenidas.. sacar despues de las pruebas
+    
 
-    //LimpiarModal();
-    //$("#modalCategoria").modal("hide"); // Cerrar el modal después de obtener las categorías
+    LimpiarModal();
+    $("#modalPuestos").modal("hide"); // Cerrar el modal después de obtener las categorías
 
     const tbody_puestos = document.getElementById("tbody-puestos");
     tbody_puestos.innerHTML = ""; // Limpio el contenido de la tabla antes de llenarla
@@ -89,7 +57,7 @@ async function obtenerPuestos() {
         const btnDeshabilitar = puesto.activo
 
             ? `<button type="button" class="btn btn-danger" onclick="ActivarPuesto(${puesto.puestoId})">Activar</button>`
-            : `<button type="button" class="btn btn-success" onclick="ValidacionDesactivar(${puesto.puestoId})">Desactivar</button>`
+            : `<button type="button" class="btn btn-success" onclick="ValidacionDesactivar(${puesto.puestoCategoria})">Desactivar</button>`
 
         row.innerHTML = `
             
@@ -103,11 +71,11 @@ async function obtenerPuestos() {
             </td>
 
             <td>
-                <button type="button" class="btn btn-primary" onclick="ModalAsociar(${puesto.puestoId})">Categoria</button>
+                <button type="button" class="btn btn-primary" onclick="ModalAsociar(${puesto.puestoId})">Asociar Categoria</button>
             </td>
 
             <td>
-                <button type="button" class="btn btn-primary" onclick="VerRegistro(${puesto.puestoCategoriaId})">VER</button>
+                <button type="button" class="btn btn-primary" onclick="VerRegistro(${puesto.puestoId})">VER</button>
             </td>
 
 
@@ -143,50 +111,71 @@ async function CrearEditarPuesto() {
     }
 };
 
-/* Funcion asincronica para crear una categoria */
+
 async function CrearPuesto() {
-    const authHeaders = () => ({
+
+    try 
+    {
+        const authHeaders = () => ({
         "Content-Type": "application/json",
         "Authorization": `Bearer ${getToken()}`
-    });
+        });
 
-    //let id = document.getElementById("categoriaid").value;
-    let nombrePuesto = document.getElementById("puestoNombre").value.trim();
-    //let categoria = document.getElementById("Categoria").value;
-    nombrePuesto = nombrePuesto.toUpperCase(); // Convertir a mayúsculas
-
-    const puesto = {
-        //categoriaId: id,
-        nombrePuesto: nombrePuesto,
-        //categoria: categoria,
-        activo: false // Asignar valor por defecto
-    }
-    const res = await fetch(`${URL_BASE_API}puestos`,
+        let nombrePuesto = document.getElementById("puestoNombre").value.trim().toUpperCase(); // Convertir a mayúsculas
+        
+        if (nombrePuesto == "")
         {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "¡Por favor ingrese un nombre de puesto!",
+            });
+            return; // Los return cortan la ejecución de la función si no se cumple la condición
+        }
+
+        const puesto =
+        {
+            nombrePuesto: nombrePuesto, 
+            activo: false // Por defecto, al crear un puesto, se establece como inactivo
+        }
+
+        const res = await fetch(`${URL_BASE_API}puestos`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(puesto)
-        }
-    );
-
-    if (res.ok) {
-        Swal.fire({
-            title: "¡Puesto creado!",
-            icon: "success",
         });
-        obtenerPuestos();
-    } else {
-        const errorText = await res.text();
-        alert("Error al crear el puesto:", errorText);
-        /* Swal.fire({
+
+        const resultado = await res.text();
+
+        if (res.ok)
+        {
+            Swal.fire({
+                title: "¡Puesto creado!",
+                icon: "success",
+            });
+            obtenerPuestos();
+        } else
+        {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: `Error al crear el puesto: ${resultado}`,
+            });
+            obtenerPuestos();
+        }
+    }
+    catch (error)
+    {
+        Swal.fire({
             icon: "error",
-            title: "Oops...",
-            text: "La categoria ya existe",
-            
-        }); */
-        obtenerPuestos();
+            title: "Error de red",
+            text: "No se pudo conectar con el servidor.",
+        });
+        console.error("Error al crear el puesto:", error);
     }
 }
+
+
 
 async function EditarPuesto(id) {
     const authHeaders = () => ({
@@ -288,20 +277,23 @@ function ModalAsociar(puestoId) {
     $("#modalAsociar").modal("show");
 }
 
-async function AsociarCategoria() {
+/* async function AsociarCategoria() {
+
     const authHeaders = () => ({
         "Content-Type": "application/json",
         "Authorization": `Bearer ${getToken()}`
     });
-    let puestoId = document.getElementById("puestoIdAsociar").value;
-    let categoriaId = document.getElementById("categoriaSelect").value;
+    let puestoId = parseInt(document.getElementById("puestoIdAsociar").value);
+    let categoriaId = parseInt(document.getElementById("categoriaSelect").value);
+
     var asociar = {
-        puestoId: puestoId,
-        categoriaId: categoriaId
+        PuestoId: puestoId,
+        CategoriaId: categoriaId
     }
-    console.log(asociar)
 
-
+    console.log("PuestoId:", puestoId);
+    console.log("CategoriaId:", categoriaId);   
+    
     const res = await fetch(`${URL_BASE_API}puestos/asociar`,
         {
             method: "POST",
@@ -309,54 +301,80 @@ async function AsociarCategoria() {
             body: JSON.stringify(asociar)
         }
     );
+} */
 
-
-
-}
-
-async function VerRegistro(puestoCategoriaId) {
+    async function AsociarCategoria() {
     const authHeaders = () => ({
         "Content-Type": "application/json",
         "Authorization": `Bearer ${getToken()}`
     });
 
-    
-    console.log(puestoCategoriaId);
-    const res = await fetch(`${URL_BASE_API}puestos/mostrarAsociadas`, {
+    let puestoId = document.getElementById("puestoIdAsociar").value;
+    let categoriaId = document.getElementById("categoriaSelect").value;
+
+    var asociar = {
+        PuestoId: puestoId,
+        CategoriaId: categoriaId
+    };
+
+    console.log("Body que mando:", JSON.stringify(asociar));
+
+    const res = await fetch(`${URL_BASE_API}puestos/asociar`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(asociar)
+    });
+
+    console.log("Status:", res.status);
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Error:", errorText);
+    }
+}
+
+async function VerRegistro(puestoId) {
+    const authHeaders = () => ({
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getToken()}`
+    });
+
+    console.log("PuestoId recibido:", puestoId);
+
+    const res = await fetch(`${URL_BASE_API}puestos/mostrarAsociadas/${puestoId}`, {
         method: "GET",
         headers: authHeaders(),
     });
-    const categorias = await res.json();
-    console.log(categorias); // Ver categorías obtenidas.. sacar despues de las pruebas
 
-    
-    
+    const datos = await res.json();
+    console.log("Datos recibidos:", datos);
 
     const tbody_categoriaAsociada = document.getElementById("tbody-categoriaAsociada");
-    tbody_categoriaAsociada.innerHTML = ""; // Limpio el contenido de la tabla antes de llenarla
+    tbody_categoriaAsociada.innerHTML = ""; // Limpio la tabla antes de llenarla
 
-    categorias.forEach(categoria => {
+    datos.forEach(dato => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
-            
-            <td>${categoria.nombrePuesto}</td>
-            <td>${categoria.descripcionCategoria}</td>
-            
-
+            <td>${dato.descripcionCategoria}</td>
             <td>
-                <button type="button" class="btn btn-primary" onclick="ValidacionEliminar(${categoria.puestoCategoriaId})">ELIMINAR</button>
+                <button type="button" class="btn btn-primary" onclick="ValidacionEliminar(${dato.puestoCategoriaId})">ELIMINAR</button>
             </td>
-
-
         `;
-        tbody_categoriaAsociada.appendChild(row);
-    })
-    
 
-$("#modalVer").modal("show"); // Cerrar el modal después de obtener las categorías
-        
+        tbody_categoriaAsociada.appendChild(row);
+    });
+
+    // Mostrar modal
+    $("#modalVer").modal("show");
+
+    // Título
+    if (datos.length > 0) {
+        $("#tituloModalVer").text(datos[0].nombrePuesto);
+    } else {
+        $("#tituloModalVer").text("Sin categorías asociadas");
+    }
 }
+
 
 
 

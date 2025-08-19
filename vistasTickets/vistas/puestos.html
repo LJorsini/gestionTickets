@@ -39,16 +39,7 @@
                         <label for="puestoNombre" class="form-label">Puesto</label>
                         <input type="text" class="form-control" id="puestoNombre"
                             placeholder="Ingrese el nombre del puesto" style="text-transform: uppercase" />
-                        <!-- <span id="errorCategoriaDescripcion"
-                                style="color:red; display:none; font-size: 15px; padding-left: 4px;">
-                                <i class="fa-solid fa-circle-exclamation pe-1"></i>Debe ingresar una categoria
-                            </span> -->
                     </div>
-
-                    <!-- <div class=" mb-3">
-                        <label class="control-label">Categoria</label>
-                        <select class="form-control form-control-sm" id="categoriaSelect"></select>
-                    </div> -->
 
                 </form>
             </div>
@@ -95,10 +86,10 @@
 
 <!-- Modal ver -->
 <div class="modal fade" id="modalVer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <h1 class="modal-title fs-5" id="tituloModalVer"></h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -107,9 +98,9 @@
                     <thead>
                         <tr>
 
-                            <th scope="col">Puesto Asociada</th>
-                            <th scope="col">Categoria Asociada</th>
                             
+                            <th scope="col">Categoria Asociada</th>
+
                         </tr>
                     </thead>
                     <tbody id="tbody-categoriaAsociada">
