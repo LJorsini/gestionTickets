@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace gestionTickets.Models
@@ -26,41 +27,119 @@ namespace gestionTickets.Models
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             //return await _context.Categorias.ToListAsync();
+
             return await _context.Puestos.OrderBy(c => c.NombrePuesto).ToListAsync();
 
+            /* var puestos = await _context.Puestos
+                .Include(p => p.PuestosCategorias)
+                .Select(p => new
+                {
+                    p.PuestoId,
+                    p.NombrePuesto,
+                    p.Activo,
+                    PuestoCategoria = p.PuestosCategorias.Select(pc => new
+                    {
+                        pc.PuestoCategoriaId,
+                    })
+                })
+                .OrderBy(p => p.NombrePuesto)
+                .ToListAsync();
+
+            return Ok(puestos); */
         }
 
         [HttpPost]
         public async Task<ActionResult<Categoria>> PostPuesto(Puesto puesto)
         {
-
-            var puestoExiste = await _context.Puestos.AnyAsync(p => p.NombrePuesto == puesto.NombrePuesto);
-
-            if (puestoExiste == false)
+            try
             {
+                var puestoExiste = await _context.Puestos.AnyAsync(p => p.NombrePuesto == puesto.NombrePuesto);
+
+                if (puestoExiste)
+                {
+                    return Conflict("El puesto ya existe"); //devuelve un 409, el registro ya existe
+                }
+
                 _context.Puestos.Add(puesto);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction("GetPuesto", new { id = puesto.PuestoId }, puesto);
+                return CreatedAtAction(nameof(GetPuesto), new { id = puesto.PuestoId }, puesto); //devuelve un 201, se creo el regiatro
 
             }
-            else
+
+            catch (DbUpdateException ex) //error 500, errores en la base de datos
             {
-                return BadRequest("La categoria ya existe");
+                return StatusCode(500, $"Error al guardar en la base de datos: {ex.InnerException?.Message ?? ex.Message}");
             }
 
+            catch (Exception ex)
+            {
+                // Errores inesperados
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
 
         }
 
-        [HttpPost("asociar")]
-        public async Task<ActionResult<Cliente>> PostAsociar(PuestoCategoria asociar)
+        /* [HttpPost("asociar")]
+        public async Task<ActionResult> PostAsociar([FromBody] PuestoCategoria asociar)
         {
-            _context.PuestoCategorias.Add(asociar);
-            await _context.SaveChangesAsync();
-            ;
-            return Ok();
-        }
 
+
+            try
+            {
+                var asociacionExiste = await _context.PuestoCategorias.AnyAsync(pc => pc.PuestoId == asociar.PuestoId && pc.CategoriaId == asociar.CategoriaId);
+
+                if (asociacionExiste)
+                {
+                    return Conflict("La asociacion ya existe"); 
+                }
+
+                Console.WriteLine($"PuestoId: {asociar.PuestoId}, CategoriaId: {asociar.CategoriaId}");
+
+                _context.PuestoCategorias.Add(asociar);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+                
+                
+            }
+            catch
+            {
+                return StatusCode(500, "Error al guardar en la base de datos");
+            }
+            
+
+           
+            
+            
+        }
+ */
+[HttpPost("asociar")]
+public async Task<ActionResult> PostAsociar([FromBody] PuestoCategoria asociar)
+{
+    if (asociar == null)
+        return BadRequest("El body está vacío");
+
+    Console.WriteLine($"PuestoId: {asociar.PuestoId}, CategoriaId: {asociar.CategoriaId}");
+
+    try
+    {
+        var existe = await _context.PuestoCategorias
+            .AnyAsync(pc => pc.PuestoId == asociar.PuestoId && pc.CategoriaId == asociar.CategoriaId);
+
+        if (existe)
+            return Conflict("La asociación ya existe");
+
+        _context.PuestoCategorias.Add(asociar);
+        await _context.SaveChangesAsync();
+
+        return Ok(asociar); // devuelve el objeto creado
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"Error al guardar en la base de datos: {ex.Message}");
+    }
+}
 
 
         [HttpPut("{id}")]
@@ -129,11 +208,19 @@ namespace gestionTickets.Models
             return _context.Categorias.Any(e => e.CategoriaId == id);
         }
 
-        [HttpGet("mostrarAsociadas")]
-        public async Task<ActionResult<IEnumerable<PuestoCategoria>>> GetPuestoCategorias()
+        [HttpGet("mostrarAsociadas/{puestoId}")]
+        public async Task<ActionResult<IEnumerable<PuestoCategoria>>> GetPuestoCategorias(int puestoId)
         {
 
+
+            var usuarioLoguedoId = HttpContext.User.Identity.Name;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            //return await _context.Categorias.ToListAsync();
+
+            
             var datos = await _context.PuestoCategorias
+                .Where(pc => pc.PuestoId == puestoId)
                 .Include(pc => pc.Puesto)
                 .Include(pc => pc.Categoria)
                 .Select(pc => new
@@ -144,15 +231,11 @@ namespace gestionTickets.Models
                 })
                 .ToListAsync();
 
-            
-            var usuarioLoguedoId = HttpContext.User.Identity.Name;
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-            //return await _context.Categorias.ToListAsync();
+
 
             return Ok(datos);
 
-        }   ////cambio editar
+        }
 
 
         [HttpDelete("{id}")]
