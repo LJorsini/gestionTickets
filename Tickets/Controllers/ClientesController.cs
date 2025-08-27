@@ -1,5 +1,6 @@
 using gestionTickets.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +12,18 @@ namespace gestionTickets.Controllers
     public class ClientesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ClientesController(ApplicationDbContext context)
+        public ClientesController(
+                ApplicationDbContext context,
+                UserManager<ApplicationUser> userManager,
+                SignInManager<ApplicationUser> signInManager,
+                RoleManager<IdentityRole> rolManager,
+                IConfiguration configuration)
         {
             _context = context;
+            _userManager = userManager;
+            
         }
        /*  [HttpGet]
         public async Task<ActionResult<IEnumerable<Cliente>>> GetCliente()
@@ -56,6 +65,19 @@ namespace gestionTickets.Controllers
             {
                 _context.Clientes.Add(cliente);
                 await _context.SaveChangesAsync();
+
+                var usuarioCliente = new ApplicationUser
+                {
+                    UserName = cliente.Email,
+                    Email = cliente.Email,
+                    NombreCompleto = cliente.Nombre,
+                };
+
+                var resultado = await _userManager.CreateAsync(usuarioCliente, "Ezpeleta2025");
+                if (resultado.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(usuarioCliente, "CLIENTE");
+                }
             }
             else
             {

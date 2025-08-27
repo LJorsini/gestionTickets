@@ -160,6 +160,22 @@ namespace gestionTickets.Controllers
             _context.Desarrolladores.Add(desarrollador);
             await _context.SaveChangesAsync();
 
+            var usuario = new ApplicationUser
+            {
+                UserName = desarrollador.Email,
+                Email = desarrollador.Email,
+                NombreCompleto = desarrollador.NombreCompleto,
+
+            };
+
+            var result = await _userManager.CreateAsync(usuario, "Ezpeleta2025");
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(usuario, "DESARROLLADOR");
+
+            }
+
 
 
             return Ok();

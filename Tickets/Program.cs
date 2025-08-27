@@ -69,6 +69,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 
@@ -81,6 +84,7 @@ app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 
 app.UseCors("AllowAll");

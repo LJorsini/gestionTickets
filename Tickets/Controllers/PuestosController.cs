@@ -1,3 +1,4 @@
+using System.Runtime.Intrinsics.X86;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -216,26 +217,33 @@ public async Task<ActionResult> PostAsociar([FromBody] PuestoCategoria asociar)
             var usuarioLoguedoId = HttpContext.User.Identity.Name;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-            //return await _context.Categorias.ToListAsync();
-
             
-            var datos = await _context.PuestoCategorias
+            var puesto = await _context.Puestos.FirstOrDefaultAsync(p => p.PuestoId == puestoId);
+
+            if (puesto == null)
+            {
+                return NotFound("El puesto no existe");
+            }
+
+            var categoriasAsociadas = await _context.PuestoCategorias
                 .Where(pc => pc.PuestoId == puestoId)
-                .Include(pc => pc.Puesto)
                 .Include(pc => pc.Categoria)
                 .Select(pc => new
                 {
                     pc.PuestoCategoriaId,
-                    nombrePuesto = pc.Puesto.NombrePuesto,
-                    descripcionCategoria = pc.Categoria.Descripcion
+                    pc.CategoriaId,
+                    NombreCategoria = pc.Categoria.Descripcion,
                 })
                 .ToListAsync();
 
-
-
-            return Ok(datos);
-
-        }
+                return Ok( new
+                {
+                    puestoId = puesto.PuestoId,
+                    nombrePuesto = puesto.NombrePuesto,
+                    Categorias = categoriasAsociadas,
+                });
+                
+            }
 
 
         [HttpDelete("{id}")]

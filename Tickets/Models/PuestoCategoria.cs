@@ -9,7 +9,6 @@ namespace gestionTickets
         public int PuestoCategoriaId { get; set; }
         public int PuestoId { get; set; }
         public int CategoriaId { get; set; }
-
         public virtual Puesto? Puesto { get; set; }
         public virtual Categoria? Categoria { get; set; }
 
@@ -20,7 +19,7 @@ namespace gestionTickets
         public int PuestoCategoriaId { get; set; }
         public int PuestoId { get; set; }
         public int CategoriaId { get; set; }
-        public string NobrePuesto { get; set; }
+        public string NombrePuesto { get; set; }
         public string NombreCategoria { get; set; }
 
         
