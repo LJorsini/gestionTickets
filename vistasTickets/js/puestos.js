@@ -338,41 +338,62 @@ async function VerRegistro(puestoId) {
         "Authorization": `Bearer ${getToken()}`
     });
 
-    console.log("PuestoId recibido:", puestoId);
 
     const res = await fetch(`${URL_BASE_API}puestos/mostrarAsociadas/${puestoId}`, {
         method: "GET",
         headers: authHeaders(),
     });
-
+    
     const datos = await res.json();
-    console.log("Datos recibidos:", datos);
+
+    
+    const titulo = document.getElementById("tituloModalVer");
+    titulo.textContent = datos.nombrePuesto;
 
     const tbody_categoriaAsociada = document.getElementById("tbody-categoriaAsociada");
     tbody_categoriaAsociada.innerHTML = ""; // Limpio la tabla antes de llenarla
 
-    datos.forEach(dato => {
+    if (datos.categorias.length > 0) { //si categorias no llega vacio, o sea que el array tiene elementos me lo muestra en la tabla
+        datos.categorias.forEach(cat => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${cat.nombreCategoria}</td>
+                <td>
+                    <button type="button" class="btn btn-primary" onclick="ValidacionEliminar(${cat.puestoCategoriaId})">ELIMINAR</button>
+                </td>
+            `;
+            tbody_categoriaAsociada.appendChild(row);
+        });
+    } else {
+        // Si no tiene categorías, o sea que el array llega vacio, muestro el mensaje en la tabla
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td colspan="2" class="text-center text-danger">Este puesto no tiene categorías asociadas</td>
+        `;
+        tbody_categoriaAsociada.appendChild(row);
+    }
+   /*  datos.forEach(dato => {
         const row = document.createElement("tr");
 
+        
+
         row.innerHTML = `
-            <td>${dato.descripcionCategoria}</td>
+            <td>${dato.nombreCategoria}</td>
             <td>
                 <button type="button" class="btn btn-primary" onclick="ValidacionEliminar(${dato.puestoCategoriaId})">ELIMINAR</button>
             </td>
         `;
 
         tbody_categoriaAsociada.appendChild(row);
-    });
+    }); */
 
     // Mostrar modal
     $("#modalVer").modal("show");
 
-    // Título
-    if (datos.length > 0) {
-        $("#tituloModalVer").text(datos[0].nombrePuesto);
-    } else {
-        $("#tituloModalVer").text("Sin categorías asociadas");
-    }
+    
+    
+        
+    
 }
 
 

@@ -1,4 +1,5 @@
 const URL_BASE_API = "http://localhost:5004/api/";
+/* const URL_BASE_API = "https://localhost:7281/api/auth"; */
 
 function getToken() {
     return localStorage.getItem("token");

@@ -1,4 +1,5 @@
-const apiBase = "http://localhost:5004/api/auth"; //MEDIO DE CONEXION A LA API
+const URL_BASE_API = "http://localhost:5004/api/auth"; 
+/* const URL_BASE_API = "https://localhost:7281/api/auth"; */
 
         document.getElementById("formRegistro").addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -8,7 +9,7 @@ const apiBase = "http://localhost:5004/api/auth"; //MEDIO DE CONEXION A LA API
                 //password: document.getElementById("cñaRegistro").value
             };
 
-            const response = await fetch(`${apiBase}/register`, {
+            const response = await fetch(`${URL_BASE_API}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
