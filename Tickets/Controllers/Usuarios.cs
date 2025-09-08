@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 namespace gestionTickets.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/auth/[controller]")]
     [ApiController]
 
     public class UsuariosController : ControllerBase

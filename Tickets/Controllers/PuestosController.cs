@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace gestionTickets.Models
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/auth/[controller]")]
     [ApiController]
 
     public class PuestosController : Controller

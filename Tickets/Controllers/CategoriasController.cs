@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace gestionTickets.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/auth/[controller]")]
     [ApiController]
     public class CategoriasController : ControllerBase
     {

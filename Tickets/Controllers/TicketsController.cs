@@ -14,7 +14,7 @@ using System.IO.Compression;
 namespace gestionTickets.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/auth/[controller]")]
     [ApiController]
 
     public class TicketsController : Controller
@@ -184,14 +184,20 @@ namespace gestionTickets.Controllers
         {
             List<VistaTicket> vista = new List<VistaTicket>();
 
-            var tickets = _context.Tickets.Include(t => t.Categoria).AsQueryable();
+            var tickets = _context.Tickets
+                .Include(t => t.Categoria).AsQueryable();
+                /* .Include(t => t.UsuarioClienteID).AsQueryable(); */
 
             var usuarioNombre = HttpContext.User.Identity.Name;
             var nombreUsuario = HttpContext.User.FindFirst("NombreCompleto")?.Value;
             var usuarioEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-
+            
+            if (rol == "ADMINISTRADOR")
+            {
+                tickets = tickets;
+            }
             if (rol == "CLIENTE")
             {
                 tickets = tickets.Where(t => t.UsuarioClienteID == userId);
@@ -239,6 +245,7 @@ namespace gestionTickets.Controllers
                     EstadoString = ticket.EstadoString,
                     CategoriaString = ticket.CategoriaString,
                     PrioridadString = ticket.PrioridadString,
+                    UsuarioClienteID = ticket.UsuarioClienteID,
                     NombreUsuario = nombreUsuario,
                     EmailUsuario = usuarioEmail,
                     
