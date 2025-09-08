@@ -1,5 +1,6 @@
-const URL_BASE_API = "http://localhost:5004/api/";
-/* const URL_BASE_API = "https://localhost:7281/api/auth"; */
+/* const URL_BASE_API = "http://localhost:5004/api/"; */
+const URL_BASE_API = "https://localhost:7281/api/auth/";
+/* const API_URL = "https://localhost:7281/api/"; */
 
 function getToken() {
     return localStorage.getItem("token");
@@ -19,7 +20,7 @@ function saveTokens(token, refreshToken) {
 }
 
 function refreshToken() {
-  return fetch(API_URL + "auth/refresh-token", {
+  return fetch(URL_BASE_API + "refresh-token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

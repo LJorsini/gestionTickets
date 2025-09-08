@@ -1,5 +1,5 @@
-const URL_BASE_API = "http://localhost:5004/api/auth";
-/* const URL_BASE_API = "https://localhost:7281/api/auth"; */
+/* const URL_BASE_API = "http://localhost:5004/api/auth"; */
+const URL_BASE_API = "https://localhost:7281/api/auth/";
 
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -8,7 +8,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         password: document.getElementById("passLogin").value
     };
 
-    const response = await fetch(`${URL_BASE_API}/login`, {
+    const response = await fetch(`${URL_BASE_API}login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)

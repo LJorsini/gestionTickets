@@ -104,7 +104,7 @@ async function MostrarTickets() {
         <td>${ticket.categoriaString}</td>
         <td>${ticket.estadoString}</td>
         <td>${ticket.prioridadString}</td>
-        <td>${ticket.nombreUsuario}</td>
+        <td>${ticket.usuarioClienteID}</td>
         <td>${ticket.emailUsuario}</td>
         
         

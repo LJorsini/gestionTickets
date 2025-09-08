@@ -1,5 +1,5 @@
-const URL_BASE_API = "http://localhost:5004/api/auth"; 
-/* const URL_BASE_API = "https://localhost:7281/api/auth"; */
+/* const URL_BASE_API = "http://localhost:5004/api/auth"; */ 
+const URL_BASE_API = "https://localhost:7281/api/auth/";
 
         document.getElementById("formRegistro").addEventListener("submit", async (e) => {
             e.preventDefault();
