@@ -25,10 +25,10 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     }
 });
 
-//FUNCION DE LEER TOKEN DEL DISPOSITIVO
-/* /const getToken = () => localStorage.getItem("token"); */
+//FUNCION DE LEER TOKEN DEL DISPOSITIV
+/* const getToken = () => localStorage.getItem("token"); */
 
-async function CerrarSesion() {
+/* async function CerrarSesion() {
     const token = getToken();
     const email = localStorage.getItem("email"); // suponiendo que guardaste el email al hacer login
 
@@ -40,7 +40,7 @@ async function CerrarSesion() {
     }
 
     try {
-        const res = await fetch("https://localhost:5268/api/auth/logout", {
+        const res = await fetch(`${URL_BASE_API}logout`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -62,5 +62,5 @@ async function CerrarSesion() {
      localStorage.removeItem("token");
     localStorage.removeItem("email");
     window.location.href = "login.html";
-}
+} */
  

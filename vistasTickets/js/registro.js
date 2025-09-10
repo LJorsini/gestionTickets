@@ -9,7 +9,7 @@ const URL_BASE_API = "https://localhost:7281/api/auth/";
                 //password: document.getElementById("cñaRegistro").value
             };
 
-            const response = await fetch(`${URL_BASE_API}/register`, {
+            const response = await fetch(`${URL_BASE_API}register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
