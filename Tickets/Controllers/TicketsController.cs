@@ -26,14 +26,14 @@ namespace gestionTickets.Controllers
             _context = context;
         }
 
-    
+
 
         // GET: api/Tickets
         [HttpGet("ObtenerCategorias")]
         public IActionResult ObtenerCategorias()
         {
             var categorias = _context.Categorias.Select(c => new
-{
+            {
                 Id = c.CategoriaId,
                 Nombre = c.Descripcion
 
@@ -42,6 +42,44 @@ namespace gestionTickets.Controllers
             return Json(categorias);
         }
 
+        //Obtener  cliente
+        [HttpGet("SelectClientes")]
+
+        public IActionResult ObtenerClientes()
+        {
+            var clientes = _context.Clientes.Select(c => new
+            {
+                ClienteId = c.ClienteId,
+                Nombre = c.Nombre,
+            }
+            ).ToList();
+            
+            return Ok(clientes);
+        }
+
+
+        [HttpGet(" SelectTicketsPorCliente/{clienteId}")]
+
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketsPorCliente(int clienteId)
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+          /*   var tickets = _context.Tickets
+                //.Include(t => t.Categoria)
+                //.Include(t => t.UsuarioCliente)
+                .Where(t => t.UsuarioClienteID == clienteId)
+                .AsQueryable(); */
+
+                 var tickets = _context.Tickets
+                .Include(t => t.Categoria)
+                .Include(t => t.UsuarioCliente)
+                .AsQueryable();
+
+            
+            return Ok();
+
+        }
 
 
 
@@ -182,61 +220,61 @@ namespace gestionTickets.Controllers
         [HttpPost("filtrar")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> FiltroTickets([FromBody] FiltroTickets filtro)
         {
-            List<VistaTicket> vista = new List<VistaTicket>();
-
-            var tickets = _context.Tickets
-                .Include(t => t.Categoria).AsQueryable();
-                /* .Include(t => t.UsuarioClienteID).AsQueryable(); */
-
-            var usuarioNombre = HttpContext.User.Identity.Name;
-            var nombreUsuario = HttpContext.User.FindFirst("NombreCompleto")?.Value;
-            var usuarioEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            var tickets = _context.Tickets
+                .Include(t => t.Categoria)
+                .Include(t => t.UsuarioCliente)
+                .AsQueryable();
+
             
             if (rol == "ADMINISTRADOR")
             {
-                tickets = tickets;
+                
             }
-            if (rol == "CLIENTE")
+            else if (rol == "CLIENTE")
             {
                 tickets = tickets.Where(t => t.UsuarioClienteID == userId);
             }
-
-            DateTime fechaDesde = new DateTime();
-            bool fechaDesdeValida = DateTime.TryParse(filtro.FechaDesde, out fechaDesde);  
-
-            DateTime fechaHasta = new DateTime();
-            bool fechaHastaValida = DateTime.TryParse(filtro.FechaHasta, out fechaHasta);
-
-            if (fechaDesdeValida && fechaHastaValida)
+            else if (rol == "DESARROLLADOR")
             {
-                fechaHasta = fechaHasta.AddHours(23);
-                fechaHasta = fechaHasta.AddMinutes(59);
-                fechaHasta = fechaHasta.AddSeconds(59);
+                tickets = tickets.Where(t =>
+                          t.Categoria.PuestosCategorias
+                          .Any(pc => pc.Puesto.Desarrolladores
+                          .Any(d => d.UsuarioClienteID == userId)));
+            }
 
+            
+            if (DateTime.TryParse(filtro.FechaDesde, out var fechaDesde) &&
+                DateTime.TryParse(filtro.FechaHasta, out var fechaHasta))
+            {
+                fechaHasta = fechaHasta.AddHours(23).AddMinutes(59).AddSeconds(59);
                 tickets = tickets.Where(t => t.FechaCreacion >= fechaDesde && t.FechaCreacion <= fechaHasta);
             }
 
+            // 🔎 Filtro por categoría
             if (filtro.CategoriaId > 0)
             {
                 tickets = tickets.Where(t => t.CategoriaId == filtro.CategoriaId);
             }
 
+            // 🔎 Filtro por prioridad
             if (filtro.Prioridad > 0)
             {
-                tickets = tickets.Where(t => t.Prioridad == (Prioridad)filtro.Prioridad); 
-
+                tickets = tickets.Where(t => t.Prioridad == (Prioridad)filtro.Prioridad);
             }
 
+            // 🔎 Filtro por estado
             if (filtro.Estado > 0)
             {
                 tickets = tickets.Where(t => t.Estado == (Estado)filtro.Estado);
             }
 
-            foreach (var ticket in tickets.OrderByDescending(t => t.FechaCreacion))
-            {
-                var mostrarTicket = new VistaTicket
+            
+            var vista = await tickets
+                .OrderByDescending(t => t.FechaCreacion)
+                .Select(ticket => new VistaTicket
                 {
                     TicketId = ticket.TicketId,
                     Titulo = ticket.Titulo,
@@ -246,17 +284,15 @@ namespace gestionTickets.Controllers
                     CategoriaString = ticket.CategoriaString,
                     PrioridadString = ticket.PrioridadString,
                     UsuarioClienteID = ticket.UsuarioClienteID,
-                    NombreUsuario = nombreUsuario,
-                    EmailUsuario = usuarioEmail,
-                    
-                };
-                vista.Add(mostrarTicket);
-            }
+                    NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
+                    EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null
+                })
+                .ToListAsync();
 
-            
-
-            return vista.ToList();
+            return vista;
         }
+
+
 
 
 

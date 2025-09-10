@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace gestionTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250703015924_CorreccionTabla")]
-    partial class CorreccionTabla
+    [Migration("20250908190345_AgregarRelacionUsuarioCliente")]
+    partial class AgregarRelacionUsuarioCliente
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -396,13 +396,38 @@ namespace gestionTickets.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UsuarioClienteID")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("TicketId");
 
                     b.HasIndex("CategoriaId");
 
+                    b.HasIndex("UsuarioClienteID");
+
                     b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("gestionTickets.PuestoCategoria", b =>
+                {
+                    b.Property<int>("PuestoCategoriaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PuestoCategoriaId"));
+
+                    b.Property<int>("CategoriaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PuestoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PuestoCategoriaId");
+
+                    b.HasIndex("CategoriaId");
+
+                    b.HasIndex("PuestoId");
+
+                    b.ToTable("PuestoCategorias");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -475,17 +500,46 @@ namespace gestionTickets.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ApplicationUser", "UsuarioCliente")
+                        .WithMany()
+                        .HasForeignKey("UsuarioClienteID");
+
                     b.Navigation("Categoria");
+
+                    b.Navigation("UsuarioCliente");
+                });
+
+            modelBuilder.Entity("gestionTickets.PuestoCategoria", b =>
+                {
+                    b.HasOne("gestionTickets.Models.Categoria", "Categoria")
+                        .WithMany("PuestosCategorias")
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("gestionTickets.Models.Puesto", "Puesto")
+                        .WithMany("PuestosCategorias")
+                        .HasForeignKey("PuestoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Categoria");
+
+                    b.Navigation("Puesto");
                 });
 
             modelBuilder.Entity("gestionTickets.Models.Categoria", b =>
                 {
+                    b.Navigation("PuestosCategorias");
+
                     b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("gestionTickets.Models.Puesto", b =>
                 {
                     b.Navigation("Desarrolladores");
+
+                    b.Navigation("PuestosCategorias");
                 });
 #pragma warning restore 612, 618
         }

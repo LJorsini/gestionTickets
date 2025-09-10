@@ -334,6 +334,9 @@ namespace gestionTickets.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UsuarioClienteID")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("DesarrolladorId");
 
                     b.HasIndex("PuestoId");
@@ -393,11 +396,13 @@ namespace gestionTickets.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UsuarioClienteID")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("TicketId");
 
                     b.HasIndex("CategoriaId");
+
+                    b.HasIndex("UsuarioClienteID");
 
                     b.ToTable("Tickets");
                 });
@@ -495,7 +500,13 @@ namespace gestionTickets.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ApplicationUser", "UsuarioCliente")
+                        .WithMany()
+                        .HasForeignKey("UsuarioClienteID");
+
                     b.Navigation("Categoria");
+
+                    b.Navigation("UsuarioCliente");
                 });
 
             modelBuilder.Entity("gestionTickets.PuestoCategoria", b =>

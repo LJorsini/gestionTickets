@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace gestionTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250813193314_RelacionesTablaPuestoCategoria")]
-    partial class RelacionesTablaPuestoCategoria
+    [Migration("20250908174033_MigracionInicial")]
+    partial class MigracionInicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

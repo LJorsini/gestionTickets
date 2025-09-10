@@ -9,11 +9,11 @@ namespace gestionTickets.Models
         public int TicketId { get; set; }
         public string Titulo { get; set; }
         public string Descripcion { get; set; }
-        public Estado Estado { get; set; } 
+        public Estado Estado { get; set; }
 
         [NotMapped]
         public string EstadoString { get { return Estado.ToString(); } }
-        public Prioridad Prioridad { get; set; } 
+        public Prioridad Prioridad { get; set; }
 
         [NotMapped]
         public string PrioridadString { get { return Prioridad.ToString(); } }
@@ -25,10 +25,13 @@ namespace gestionTickets.Models
         [NotMapped]
         public string? CategoriaString { get { return Categoria?.Descripcion; } }
         public DateTime? FechaCierre { get; set; }
-         public int CategoriaId { get; set; }
-        
+        public int CategoriaId { get; set; }
+
         public string? UsuarioClienteID { get; set; }
         public virtual Categoria? Categoria { get; set; }
+
+        public virtual ApplicationUser? UsuarioCliente { get; set; }
+        
 
     }
 

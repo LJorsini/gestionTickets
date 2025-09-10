@@ -12,6 +12,7 @@ namespace gestionTickets.Models
         public string? Cuit { get; set; }
         public string? Observaciones { get; set; }
         public bool? Eliminado { get; set; }
+        /* public string ? UsuarioClienteID { get; set; } */
 
 
     }

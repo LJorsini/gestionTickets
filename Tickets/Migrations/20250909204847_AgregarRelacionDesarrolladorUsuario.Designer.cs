@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace gestionTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250813200439_RelacionesTablaPuestoCategoria1")]
-    partial class RelacionesTablaPuestoCategoria1
+    [Migration("20250909204847_AgregarRelacionDesarrolladorUsuario")]
+    partial class AgregarRelacionDesarrolladorUsuario
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -337,6 +337,9 @@ namespace gestionTickets.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UsuarioClienteID")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("DesarrolladorId");
 
                     b.HasIndex("PuestoId");
@@ -396,11 +399,13 @@ namespace gestionTickets.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UsuarioClienteID")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("TicketId");
 
                     b.HasIndex("CategoriaId");
+
+                    b.HasIndex("UsuarioClienteID");
 
                     b.ToTable("Tickets");
                 });
@@ -498,7 +503,13 @@ namespace gestionTickets.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ApplicationUser", "UsuarioCliente")
+                        .WithMany()
+                        .HasForeignKey("UsuarioClienteID");
+
                     b.Navigation("Categoria");
+
+                    b.Navigation("UsuarioCliente");
                 });
 
             modelBuilder.Entity("gestionTickets.PuestoCategoria", b =>
