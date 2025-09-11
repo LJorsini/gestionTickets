@@ -26,10 +26,9 @@ namespace gestionTickets.Models
         public string? CategoriaString { get { return Categoria?.Descripcion; } }
         public DateTime? FechaCierre { get; set; }
         public int CategoriaId { get; set; }
-
+        public int ClienteId { get; set; }
         public string? UsuarioClienteID { get; set; }
         public virtual Categoria? Categoria { get; set; }
-
         public virtual ApplicationUser? UsuarioCliente { get; set; }
         
 

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using gestionTickets.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -59,25 +60,32 @@ namespace gestionTickets.Controllers
         [HttpPost]
         public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)
         {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var cuitExiste = await _context.Clientes.AnyAsync(c => c.Cuit == cliente.Cuit && c.ClienteId != cliente.ClienteId);
 
             if (!cuitExiste)
             {
-                _context.Clientes.Add(cliente);
-                await _context.SaveChangesAsync();
-
+                
                 var usuarioCliente = new ApplicationUser
                 {
                     UserName = cliente.Email,
                     Email = cliente.Email,
                     NombreCompleto = cliente.Nombre,
+
                 };
 
                 var resultado = await _userManager.CreateAsync(usuarioCliente, "Ezpeleta2025");
                 if (resultado.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(usuarioCliente, "CLIENTE");
+
+                    cliente.UsuarioClienteID = usuarioCliente.Id;
+
+                    _context.Clientes.Add(cliente);
+                    await _context.SaveChangesAsync();
                 }
+                
+                
             }
             else
             {

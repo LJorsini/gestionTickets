@@ -21,7 +21,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Puesto> Puestos { get; set; }
     public DbSet<Desarrollador> Desarrolladores { get; set; }
-
     public DbSet<PuestoCategoria> PuestoCategorias { get; set; }
     
 
