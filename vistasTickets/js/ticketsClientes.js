@@ -9,9 +9,9 @@ async function CargarClientes() {
     headers: authHeaders(),
   });
 
-  const resultado = await res.json();
+  const resultadoClientes = await res.json();
 
-  console.log(resultado);
+  console.log(resultadoClientes);
 
   const ticketCliente = document.getElementById("ticketCliente");
   ticketCliente.innerHTML = "";
@@ -19,12 +19,15 @@ async function CargarClientes() {
   let opcionesBuscar = `<option value="0">[Todas las categorias]</option>`;
   let opciones = "";
 
-  resultado.forEach(cliente => {
+  resultadoClientes.forEach(cliente => {
     opcionesBuscar += `<option value="${cliente.clienteId}">${cliente.nombre}</option>`;
     
+});
 
-    
-  });
+/* let clienteSeleccionado = resultadoClientes[0];
+document.getElementById("tituloTicketCliente").innerText = `Cliente: ${clienteSeleccionado.nombre}`; */
+
+  console.log(resultadoClientes);
 
   ticketCliente.innerHTML = opcionesBuscar;
 
@@ -39,20 +42,45 @@ async function CargarClientes() {
 }
 
 async function TicketPorCliente(clienteId) {
-  /* const authHeaders = () => ({
+  const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
-  }); */
+  });
 
-  const idCliente = clienteId;
   console.log(clienteId);
 
-  /* const res = await fetch(`${URL_BASE_API}Tickets/SelectTicketsPorCliente${clienteId}}`, {
+
+  const res = await fetch(`${URL_BASE_API}Tickets/GetTicketsPorCliente/${clienteId}`, {
     method: "GET",
     headers: authHeaders(),
-  }); */
+  });
 
-  /* const resultado = await res.json(); */
+  const resultado = await res.json();
+  console.log(resultado);
+
+ 
+
+
+  
+
+  const tbodyTicketsClientes = document.getElementById("tbody-ticketsClientes");
+  tbodyTicketsClientes.innerHTML = "";
+
+  resultado.forEach((ticket) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+            <td>${ticket.titulo}</td>
+            <td>${ticket.fechaCreacionString}</td>
+            <td>${ticket.categoriaString}</td>
+            <td>${ticket.estadoString}</td>
+            <td>${ticket.prioridadString}</td>
+            <td>${ticket.nombreUsuario}</td>
+            <td>${ticket.emailUsuario}</td>
+            `
+            tbodyTicketsClientes.appendChild(row);
+  });
+  
 
 
 }
