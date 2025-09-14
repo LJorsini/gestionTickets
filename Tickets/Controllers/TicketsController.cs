@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System.Security.Claims;
 using System.IO.Compression;
+using gestionTickets.Models.Vistas;
+using gestionTickets.ModelsVistas;
 
 namespace gestionTickets.Controllers
 {
@@ -28,7 +30,7 @@ namespace gestionTickets.Controllers
 
 
 
-        // GET: api/Tickets
+        //OBTENGO LAS CATEGORIAS PARA LLENAR EL DROPDOWN DEL SELECT
         [HttpGet("ObtenerCategorias")]
         public IActionResult ObtenerCategorias()
         {
@@ -42,7 +44,7 @@ namespace gestionTickets.Controllers
             return Json(categorias);
         }
 
-        //Obtener  cliente
+        //OBTENGO CLIENTES PARA EL SELECT DE FILTRAR TICKETS POR CLIENTE
         [HttpGet("SelectClientes")]
 
         public IActionResult ObtenerClientes()
@@ -57,6 +59,121 @@ namespace gestionTickets.Controllers
             return Ok(clientes);
         }
 
+        //METODO PARA OBTENER EL INFORME DE 2 NIVELES QUE ME TRAE LOS TICKETS POR CATEGORIA
+        [HttpGet("ticketsCategorias")]
+
+        public async Task<ActionResult<IEnumerable<VistaCategorias>>> GetTicketsCategorias()
+        {
+            List<VistaCategorias> vistaCategorias = new List<VistaCategorias>();
+
+            var tickets = _context.Tickets
+                          .Include(t => t.Categoria)
+                          .AsQueryable();
+
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (rol == "CLIENTE")
+            {
+                tickets = tickets.Where(t => t.UsuarioClienteID == userId);
+            }
+
+            foreach (var ticket in tickets)
+            {
+                var categoriaMostrar = vistaCategorias.FirstOrDefault(c => c.CategoriaId == ticket.CategoriaId);
+
+                if (categoriaMostrar == null)
+                {
+                    categoriaMostrar = new VistaCategorias
+                    {
+                        CategoriaId = ticket.CategoriaId,
+                        Descripcion = ticket.CategoriaString,
+                        Tickets = new List<VistaTicket>()
+                    };
+
+                    //inserto el objeto
+                    vistaCategorias.Add(categoriaMostrar);
+                }
+
+                var ticketMostrar = new VistaTicket
+                {
+                    TicketId = ticket.TicketId,
+                    Titulo = ticket.Titulo,
+                    Prioridad = ticket.Prioridad,
+                    EstadoString = ticket.Estado.ToString(),
+                    FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
+                    PrioridadString = ticket.Prioridad.ToString(),
+                    CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
+                    UsuarioClienteID = ticket.UsuarioClienteID,
+                    NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
+                    EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null
+                };
+
+                categoriaMostrar.Tickets.Add(ticketMostrar);
+        }
+        return vistaCategorias.ToList();
+        }
+
+        //METODO PARA OBTENER EL INFORME DE 2 NIVELES QUE ME TRAE LOS TICKETS POR CLIENTES
+
+        [HttpGet("ticketsClientes")]
+        public async Task<ActionResult<IEnumerable<VistaClientes>>> GetTicketsClientes()
+        {
+            List<VistaClientes> vistaClientes = new List<VistaClientes>();
+
+            
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            /* var clientes = _context.Clientes.AsQueryable(); */
+
+            var tickets = _context.Tickets
+                          .Include(t => t.Cliente)
+                          .Include(t=> t.Categoria)
+                          .AsQueryable();
+            
+            if (rol == "CLIENTE")
+            {
+                tickets = tickets.Where(t => t.UsuarioClienteID == userId);
+            }
+
+            foreach (var ticket in tickets)
+            {
+                var clienteMostrar = vistaClientes.FirstOrDefault(c => c.ClienteId == ticket.ClienteId);
+
+                if (clienteMostrar == null)
+                {
+                    clienteMostrar = new VistaClientes
+                    {
+                        ClienteId = ticket.ClienteId,
+                        Nombre = ticket.Cliente.Nombre,
+                        Email = ticket.Cliente.Email,
+                        Tickets = new List<VistaTicket>(),
+                    };
+
+                    vistaClientes.Add(clienteMostrar);
+                }
+
+                var ticketMostrar = new VistaTicket
+                {
+                    TicketId = ticket.TicketId,
+                    Titulo = ticket.Titulo,
+                    Prioridad = ticket.Prioridad,
+                    EstadoString = ticket.Estado.ToString(),
+                    FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
+                    PrioridadString = ticket.Prioridad.ToString(),
+                    CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
+                    UsuarioClienteID = ticket.UsuarioClienteID,
+                    NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
+                    EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null
+                };
+
+                clienteMostrar.Tickets.Add(ticketMostrar);
+
+            }
+
+            return vistaClientes.ToList();
+        }
 
         [HttpGet("GetTicketsPorCliente/{clienteId}")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketsPorCliente(int clienteId)
