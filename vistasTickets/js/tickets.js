@@ -76,7 +76,7 @@ async function MostrarTickets() {
                 <button class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">Eliminar</button>
             </td>
             <td>
-                <button class="btn btn-success" onclick="ValidacionEliminar(${ticket.ticketId})">Historial</button>
+                <button class="btn btn-success" onclick="AbrirModalHistorial(${ticket.ticketId})">Historial</button>
             </td>
       
       `;
@@ -298,6 +298,58 @@ async function EliminarTicket(ticketId) {
     });
   }
 };
+
+async function AbrirModalHistorial(ticketId) {
+     const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  try 
+  {
+
+    const res = await fetch(`${URL_BASE_API}historiales/${ticketId}`, {
+      method: "GET",
+      headers: authHeaders(),
+    });
+
+    if (!res.ok)
+    {
+      const errorMsg = await res.text();
+      throw new Error(errorMsg || "Error al eliminar ticket");
+    }
+
+    const resultado = await res.json()
+
+    const tablaHistorial = document.getElementById("tbody-Historial");
+    tablaHistorial.innerHTML = "";
+
+    resultado.forEach((historial) => {
+      let row = document.createElement("tr");
+
+      row.innerHTML = `
+                    <td>${historial.camposModificados}</td>
+                    <td>${historial.valorAnterior}</td>
+                    <td>${historial.valorNuevo}</td>
+                    <td>${historial.fechaModificacionString}</td>
+                    <td>${historial.nombreUsuario}</td>
+               `;
+
+               tablaHistorial.appendChild(row);
+    }) 
+
+    $("#modalHistorial").modal("show");
+  }
+  catch (error)
+  {
+    Swal.fire({
+      icon: "error",
+      text: "Error al mostrar historial: " + error.message,
+    });
+  }
+
+    
+}
 
 /* const inputFechaDesde = document.getElementById("buscarFechaDesde");
 inputFechaDesde.onchange = function () {
