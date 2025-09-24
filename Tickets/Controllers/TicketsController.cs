@@ -250,10 +250,118 @@ namespace gestionTickets.Controllers
 
         public async Task<IActionResult> PutTicketEditado(int id, Ticket ticketEditado)
         {
-            var ticket = await _context.Tickets.FindAsync(id);
+            /* var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; */
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
 
-            if (ticket == null)
-            { 
+            /* var ticket = await _context.Tickets.FindAsync(id); */
+
+
+
+
+
+            try
+            {
+                var ticketOriginal = await _context.Tickets
+                                 .Include(t => t.Categoria)
+                                 .FirstOrDefaultAsync(t => t.TicketId == id);
+
+                DateTime fechaCambio = DateTime.Now;
+
+                if (ticketOriginal.Titulo != ticketEditado.Titulo)
+                {
+                    var modificacionTitulo = new Historial
+                    {
+                        TicketId = ticketEditado.TicketId,
+                        CamposModificados = "Titulo",
+                        ValorAnterior = ticketOriginal.Titulo,
+                        ValorNuevo = ticketEditado.Titulo,
+                        FechaModificacion = fechaCambio,
+                        UsuarioClienteID = userId,
+
+                    };
+                    _context.Historial.Add(modificacionTitulo);
+                    /* _context.SaveChangesAsync(); */
+
+                    ticketOriginal.Titulo = ticketEditado.Titulo;
+
+                }
+
+                if (ticketOriginal.Descripcion != ticketEditado.Descripcion)
+                {
+                    var modificacionDescripcion = new Historial
+                    {
+                        TicketId = ticketEditado.TicketId,
+                        CamposModificados = "Descripcion",
+                        ValorAnterior = ticketOriginal.Descripcion,
+                        ValorNuevo = ticketEditado.Descripcion,
+                        FechaModificacion = fechaCambio,
+                        UsuarioClienteID = userId,
+                    };
+                    _context.Historial.Add(modificacionDescripcion);
+                    /* _context.SaveChangesAsync(); */
+
+                    ticketOriginal.Descripcion = ticketEditado.Descripcion;
+                }
+
+                if (ticketOriginal.Prioridad != ticketEditado.Prioridad)
+                {
+                    var modificacionPrioridad = new Historial
+                    {
+                        TicketId = ticketEditado.TicketId,
+                        CamposModificados = "Prioridad",
+                        ValorAnterior = ticketOriginal.PrioridadString,
+                        ValorNuevo = ticketEditado.PrioridadString,
+                        FechaModificacion = fechaCambio,
+                    };
+                    _context.Historial.Add(modificacionPrioridad);
+                    /* _context.SaveChangesAsync(); */
+
+                    ticketOriginal.Prioridad = ticketEditado.Prioridad;
+                }
+
+                if (ticketOriginal.CategoriaId != ticketEditado.CategoriaId)
+                {
+                    var categoriaAnterior = _context.Categorias.Where(c => c.CategoriaId == ticketEditado.CategoriaId).Single();
+                    var categoriaNueva = _context.Categorias.Where(c => c.CategoriaId == ticketEditado.CategoriaId).Single();
+
+                    var modificacionCategoria = new Historial
+                    {
+                        TicketId = ticketEditado.TicketId,
+                        CamposModificados = "Categoria",
+                        ValorAnterior = categoriaAnterior.Descripcion,
+                        ValorNuevo = categoriaNueva.Descripcion,
+                        FechaModificacion = fechaCambio,
+                        UsuarioClienteID = userId,
+                    };
+                    _context.Historial.Add(modificacionCategoria);
+                    /* _context.SaveChangesAsync(); */
+
+                    ticketOriginal.CategoriaId = ticketEditado.CategoriaId;
+
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                if (!TicketExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+                 return Ok();
+            }
+            
+
+
+            /* if (ticket == null)
+            {
                 return NotFound();
             }
 
@@ -262,10 +370,10 @@ namespace gestionTickets.Controllers
             ticket.Prioridad = ticketEditado.Prioridad;
             ticket.CategoriaId = ticketEditado.CategoriaId;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); */
 
-            return Ok();
-        }
+         /*    return Ok();
+        } */
         /* [HttpPut("{id}")]
         public async Task<IActionResult> PutTicket(int id, Ticket ticketEditado)
         {
@@ -486,10 +594,10 @@ namespace gestionTickets.Controllers
             return NoContent();
         }
 
-        /* private bool TicketExists(int id)
+        private bool TicketExists(int id)
         {
             return _context.Tickets.Any(e => e.TicketId == id);
-        } */
+        }
 
     }
 }
