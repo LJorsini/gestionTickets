@@ -75,6 +75,9 @@ async function MostrarTickets() {
             <td>
                 <button class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">Eliminar</button>
             </td>
+            <td>
+                <button class="btn btn-success" onclick="ValidacionEliminar(${ticket.ticketId})">Historial</button>
+            </td>
       
       `;
       tablaTickets.appendChild(row);
@@ -199,18 +202,16 @@ async function EditarTicket() {
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
-
+  
   let ticketId = document.getElementById("ticketidEditar").value;
   let titulo = document.getElementById("tituloTicketEditar").value.trim();
-  let descripcion = document
-    .getElementById("floatingTextareaEditar")
-    .value.trim();
+  let descripcion = document.getElementById("floatingTextareaEditar").value.trim();
   let categoriaId = document.getElementById("categoriasSelectEditar").value;
-  let prioridad = Number(
-    document.getElementById("prioridadTicketEditar").value
+  let prioridad = Number(document.getElementById("prioridadTicketEditar").value
   );
 
   const ticketEditado = {
+    ticketId: ticketId,
     titulo: titulo,
     descripcion: descripcion,
     categoriaId: categoriaId,
