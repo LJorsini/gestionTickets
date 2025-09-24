@@ -250,16 +250,9 @@ namespace gestionTickets.Controllers
 
         public async Task<IActionResult> PutTicketEditado(int id, Ticket ticketEditado)
         {
-            /* var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; */
+            
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             
-
-            /* var ticket = await _context.Tickets.FindAsync(id); */
-
-
-
-
-
             try
             {
                 var ticketOriginal = await _context.Tickets
@@ -278,11 +271,10 @@ namespace gestionTickets.Controllers
                         ValorNuevo = ticketEditado.Titulo,
                         FechaModificacion = fechaCambio,
                         UsuarioClienteID = userId,
+                        
 
                     };
                     _context.Historial.Add(modificacionTitulo);
-                    /* _context.SaveChangesAsync(); */
-
                     ticketOriginal.Titulo = ticketEditado.Titulo;
 
                 }
@@ -297,10 +289,9 @@ namespace gestionTickets.Controllers
                         ValorNuevo = ticketEditado.Descripcion,
                         FechaModificacion = fechaCambio,
                         UsuarioClienteID = userId,
+                        
                     };
                     _context.Historial.Add(modificacionDescripcion);
-                    /* _context.SaveChangesAsync(); */
-
                     ticketOriginal.Descripcion = ticketEditado.Descripcion;
                 }
 
@@ -313,10 +304,10 @@ namespace gestionTickets.Controllers
                         ValorAnterior = ticketOriginal.PrioridadString,
                         ValorNuevo = ticketEditado.PrioridadString,
                         FechaModificacion = fechaCambio,
+                        UsuarioClienteID = userId,
+                        
                     };
                     _context.Historial.Add(modificacionPrioridad);
-                    /* _context.SaveChangesAsync(); */
-
                     ticketOriginal.Prioridad = ticketEditado.Prioridad;
                 }
 
@@ -333,14 +324,13 @@ namespace gestionTickets.Controllers
                         ValorNuevo = categoriaNueva.Descripcion,
                         FechaModificacion = fechaCambio,
                         UsuarioClienteID = userId,
+                        
                     };
                     _context.Historial.Add(modificacionCategoria);
-                    /* _context.SaveChangesAsync(); */
-
                     ticketOriginal.CategoriaId = ticketEditado.CategoriaId;
 
                 }
-
+                
                 await _context.SaveChangesAsync();
             }
             catch
@@ -354,133 +344,11 @@ namespace gestionTickets.Controllers
                     throw;
                 }
             }
-
-                 return Ok();
+                return Ok();
             }
             
 
 
-            /* if (ticket == null)
-            {
-                return NotFound();
-            }
-
-            ticket.Titulo = ticketEditado.Titulo;
-            ticket.Descripcion = ticketEditado.Descripcion;
-            ticket.Prioridad = ticketEditado.Prioridad;
-            ticket.CategoriaId = ticketEditado.CategoriaId;
-
-            await _context.SaveChangesAsync(); */
-
-         /*    return Ok();
-        } */
-        /* [HttpPut("{id}")]
-        public async Task<IActionResult> PutTicket(int id, Ticket ticketEditado)
-        {
-
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (id != ticketEditado.TicketId)
-                return BadRequest();
-
-            
-            var ticketOriginal = await _context.Tickets
-                .Include(t => t.Categoria)
-                .FirstOrDefaultAsync(t => t.TicketId == id);
-
-            if (ticketOriginal == null)
-                return NotFound();
-
-            var historialCambios = new List<Historial>();
-            var fechaModificacion = DateTime.Now;
-
-            
-            if (ticketOriginal.Titulo != ticketEditado.Titulo)
-            {
-                historialCambios.Add(new Historial
-                {
-                    TicketId = ticketEditado.TicketId,
-                    CamposModificados = "Título",
-                    ValorAnterior = ticketOriginal.Titulo,
-                    ValorNuevo = ticketEditado.Titulo,
-                    FechaModificacion = fechaModificacion,
-                    UsuarioClienteID = userId,
-                });
-
-                ticketOriginal.Titulo = ticketEditado.Titulo;
-                
-            }
-
-            if (ticketOriginal.Descripcion != ticketEditado.Descripcion)
-            {
-                historialCambios.Add(new Historial
-                {
-                    TicketId = ticketEditado.TicketId,
-                    CamposModificados = "Descripción",
-                    ValorAnterior = ticketOriginal.Descripcion,
-                    ValorNuevo = ticketEditado.Descripcion,
-                    FechaModificacion = fechaModificacion,
-                    UsuarioClienteID = userId,
-                });
-
-                ticketOriginal.Descripcion = ticketEditado.Descripcion;
-                
-            }
-
-            if (ticketOriginal.Prioridad != ticketEditado.Prioridad)
-            {
-                historialCambios.Add(new Historial
-                {
-                    TicketId = ticketEditado.TicketId,
-                    CamposModificados = "Prioridad",
-                    ValorAnterior = ticketOriginal.Prioridad.ToString(),
-                    ValorNuevo = ticketEditado.Prioridad.ToString(),
-                    FechaModificacion = fechaModificacion,
-                    UsuarioClienteID = userId,
-                });
-
-                ticketOriginal.Prioridad = ticketEditado.Prioridad;
-                
-            }
-
-            if (ticketOriginal.CategoriaId != ticketEditado.CategoriaId)
-            {
-                
-                string valorAnterior = ticketOriginal.Categoria?.Descripcion ?? "Sin categoría";
-                string valorNuevo = ticketEditado.Categoria?.Descripcion ?? "Sin categoría";
-
-                historialCambios.Add(new Historial
-                {
-                    TicketId = ticketEditado.TicketId,
-                    CamposModificados = "Categoría",
-                    ValorAnterior = valorAnterior,
-                    ValorNuevo = valorNuevo,
-                    FechaModificacion = fechaModificacion,
-                    UsuarioClienteID = userId,
-                });
-
-                ticketOriginal.CategoriaId = ticketEditado.CategoriaId;
-                
-            }
-
-            _context.Update(ticketOriginal);
-
-            if (historialCambios.Any())
-                _context.Historial.AddRange(historialCambios);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TicketExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
-
-            return NoContent();
-        } */
         // POST: api/Categorias
 
         [HttpPost]
