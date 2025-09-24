@@ -29,15 +29,60 @@ namespace gestionTickets.Controllers
             _context = context;
         }
 
-        [HttpGet("informe")]
+        /* [HttpGet("informeCerrados")]
 
-        public async Task<ActionResult<IEnumerable<VistaCategorias>>> GetDesarrolladores()
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetInformesCerrados()
         {
-            List<VistaCatPuesto> vistaCatPuestos = new List<VistaCatPuesto>();
+            List<VistaDesarrollador> vistaCerrados = new List<VistaDesarrollador>();
+
+            
+
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+
+            var tickets = _context.Tickets.Where(t => t.UsuarioClienteID == userId);
+
+            var desarrolladores = _context.Desarrolladores
+                                .Include(t => t.Tickets)
+                                .AsQueryable();
+                                
+
+
+
+
+            foreach (var desarrollador in desarrolladores)
+            {
+                var vistaDesarrollador = new VistaDesarrollador
+                {
+                    DesarrolladorId = desarrollador.DesarrolladorId,
+                    NombreCompleto = desarrollador.NombreCompleto,
+                    TicketsCerrados = new List<VistaTicket>()
+                };
+
+                vistaCerrados.Add(vistaDesarrollador);
+            }
+
+            var ticketsmostrar = new VistaTicket
+            {
+                 
+            };
+
+                return Ok();
+
+
+        } */
+
+        [HttpGet("informe")]
+        public async Task<ActionResult<IEnumerable<VistaPuestoCategoria>>> GetDesarrolladores()
+        {
+            List<VistaPuestoCategoria> vistaCatPuestos = new List<VistaPuestoCategoria>();
 
             var categorias = _context.PuestoCategorias
-                            .Include(t => t.Puesto)
+
                             .Include(t => t.Categoria)
+                            .Include(t => t.Puesto)
+                             .ThenInclude(p => p.Desarrolladores)
                             .AsQueryable();
 
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -49,15 +94,38 @@ namespace gestionTickets.Controllers
 
                 if (categoriaMostrar == null)
                 {
-                     categoriaMostrar = new VistaCatPuesto
-                     {
-                         CategoriaId = categoria.CategoriaId,
-                         /* Descripcion = categoria.Descripcion, */
-                         Puestos = new List<VistaPuesto>(),
+                    categoriaMostrar = new VistaPuestoCategoria
+                    {
+                        CategoriaId = categoria.CategoriaId,
+                        NombreCategoria = categoria.Categoria.Descripcion,
+                        Puestos = new List<VistaPuesto>()
                     };
+                    vistaCatPuestos.Add(categoriaMostrar);
                 }
-            } 
-            return Ok();
+
+                var puestoMostrar = new VistaPuesto
+                {
+                    PuestoId = categoria.PuestoId,
+                    NombrePuesto = categoria.Puesto.NombrePuesto,
+                    Desarrollador = new List<VistaDesarrollador>(),
+                };
+
+                categoriaMostrar.Puestos.Add(puestoMostrar);
+
+                foreach (var dev in categoria.Puesto.Desarrolladores)
+                {
+                    var desarrolladorMostrar = new VistaDesarrollador
+                    {
+                        DesarrolladorId = dev.DesarrolladorId,
+                        NombreCompleto = dev.NombreCompleto,
+
+
+                    };
+
+                    puestoMostrar.Desarrollador.Add(desarrolladorMostrar);
+                }
+            }
+            return vistaCatPuestos.ToList();
         }
     }
 }

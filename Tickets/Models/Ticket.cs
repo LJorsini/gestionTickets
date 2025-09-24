@@ -24,13 +24,16 @@ namespace gestionTickets.Models
 
         [NotMapped]
         public string? CategoriaString { get { return Categoria?.Descripcion; } }
-        public DateTime? FechaCierre { get; set; }
+
+        public DateTime FechaComienzo { get; set; }
+        public DateTime FechaCierre { get; set; }
         public int CategoriaId { get; set; }
-        public int ClienteId { get; set; }
         public string? UsuarioClienteID { get; set; }
+
+        [NotMapped]
+        public string? UsuarioClienteEmail { get; set; }
         public virtual Categoria? Categoria { get; set; }
-        public virtual ApplicationUser? UsuarioCliente { get; set; }
-        public virtual Cliente? Cliente { get; set; }
+         
         
 
     }

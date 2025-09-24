@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using gestionTickets.Models;
+using gestionTickets.ModelsVistas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,17 +34,17 @@ namespace gestionTickets.Controllers
         }  */  ////cambio editar
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VistaCliente>>> GetCliente()
+        public async Task<ActionResult<IEnumerable<VistaClientes>>> GetCliente()
         {
-            List<VistaCliente> vistaClientes = new List<VistaCliente>();
+            List<VistaClientes> vistaClientes = new List<VistaClientes>();
 
             var clientes = await _context.Clientes.ToListAsync();
 
             foreach (var cliente in clientes)
             {
-                var mostrarCliente = new VistaCliente
+                var mostrarCliente = new VistaClientes
                 {
-                    ClineteId = cliente.ClienteId,
+                    ClienteId = cliente.ClienteId,
                     Nombre = cliente.Nombre,
                     Email = cliente.Email,
                     Telefono = cliente.Telefono,

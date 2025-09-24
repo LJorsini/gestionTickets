@@ -4,10 +4,19 @@ public class VistaTicket
     {
         public int TicketId { get; set; }
         public string Titulo { get; set; }
-        public Prioridad Prioridad { get; set; } //crear enum pero como string
+        public string Descripcion { get; set; }
+
+
+        public int Prioridad { get; set; } //crear enum pero como string
+        public string PrioridadString { get; set; }
+
+
+
         public string EstadoString { get; set; } //crear enum pero como string
         public string FechaCreacionString { get; set; }
-        public string PrioridadString { get; set; }
+        
+
+        public int CategoriaId { get; set; }
         public string? CategoriaString { get; set; }
         
         public string? UsuarioClienteID { get; set; }

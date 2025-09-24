@@ -107,6 +107,9 @@ namespace gestionTickets.Migrations
                     b.Property<int>("TicketId")
                         .HasColumnType("int");
 
+                    b.Property<string>("UsuarioClienteID")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ValorAnterior")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -116,6 +119,8 @@ namespace gestionTickets.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("HistorialId");
+
+                    b.HasIndex("UsuarioClienteID");
 
                     b.ToTable("Historial");
                 });
@@ -337,9 +342,6 @@ namespace gestionTickets.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UsuarioClienteID")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("DesarrolladorId");
 
                     b.HasIndex("PuestoId");
@@ -378,9 +380,6 @@ namespace gestionTickets.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -388,7 +387,10 @@ namespace gestionTickets.Migrations
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("FechaCierre")
+                    b.Property<DateTime>("FechaCierre")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaComienzo")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("FechaCreacion")
@@ -402,13 +404,11 @@ namespace gestionTickets.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UsuarioClienteID")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TicketId");
 
                     b.HasIndex("CategoriaId");
-
-                    b.HasIndex("UsuarioClienteID");
 
                     b.ToTable("Tickets");
                 });
@@ -434,6 +434,15 @@ namespace gestionTickets.Migrations
                     b.HasIndex("PuestoId");
 
                     b.ToTable("PuestoCategorias");
+                });
+
+            modelBuilder.Entity("Historial", b =>
+                {
+                    b.HasOne("ApplicationUser", "UsuarioCliente")
+                        .WithMany()
+                        .HasForeignKey("UsuarioClienteID");
+
+                    b.Navigation("UsuarioCliente");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -506,13 +515,7 @@ namespace gestionTickets.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ApplicationUser", "UsuarioCliente")
-                        .WithMany()
-                        .HasForeignKey("UsuarioClienteID");
-
                     b.Navigation("Categoria");
-
-                    b.Navigation("UsuarioCliente");
                 });
 
             modelBuilder.Entity("gestionTickets.PuestoCategoria", b =>

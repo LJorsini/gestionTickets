@@ -18,7 +18,7 @@ namespace gestionTickets.Models
 
     }
 
-    public class VistaCliente
+    /* public class VistaCliente
     {
         public int ClineteId { get; set; }
         public string Nombre { get; set; }
@@ -27,6 +27,6 @@ namespace gestionTickets.Models
         public string Cuit { get; set; }
         public string Observaciones { get; set; }
 
-        //public bool Eliminado { get; set; }
-    }
+        
+    } */
 }

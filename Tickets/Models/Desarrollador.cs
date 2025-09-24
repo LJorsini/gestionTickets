@@ -13,8 +13,11 @@ namespace gestionTickets.Models
         public string Telefono { get; set; }
         public int PuestoId { get; set; }
         public string Observacion { get; set; }
-        public string? UsuarioClienteID { get; set; }
+        /* public string? UsuarioClienteID { get; set; } */
         public virtual Puesto? Puesto { get; set; }
+
+        //public virtual ICollection<Ticket>? Tickets { get; set; } 
+        //public virtual ApplicationUser? UsuarioCliente { get; set; } 
 
     }
 

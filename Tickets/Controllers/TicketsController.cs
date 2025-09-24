@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using gestionTickets.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System.Security.Claims;
-using System.IO.Compression;
 using gestionTickets.Models.Vistas;
 using gestionTickets.ModelsVistas;
+using Microsoft.AspNetCore.Identity;
 
 namespace gestionTickets.Controllers
 {
@@ -21,29 +16,16 @@ namespace gestionTickets.Controllers
 
     public class TicketsController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public TicketsController(ApplicationDbContext context)
+        public TicketsController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-
-
-        //OBTENGO LAS CATEGORIAS PARA LLENAR EL DROPDOWN DEL SELECT
-        [HttpGet("ObtenerCategorias")]
-        public IActionResult ObtenerCategorias()
-        {
-            var categorias = _context.Categorias.Select(c => new
-            {
-                Id = c.CategoriaId,
-                Nombre = c.Descripcion
-
-            }).ToList();
-
-            return Json(categorias);
-        }
-
+        //GET para llenar desplegables
         //OBTENGO CLIENTES PARA EL SELECT DE FILTRAR TICKETS POR CLIENTE
         [HttpGet("SelectClientes")]
 
@@ -58,9 +40,100 @@ namespace gestionTickets.Controllers
 
             return Ok(clientes);
         }
+        //OBTENGO LAS CATEGORIAS PARA LLENAR EL DROPDOWN DEL SELECT
+        [HttpGet("categorias")]
+        public IActionResult ObtenerCategorias()
+        {
+            var categorias = _context.Categorias.Select(c => new
+            {
+                Id = c.CategoriaId,
+                Nombre = c.Descripcion
+
+            }).ToList();
+
+            return Json(categorias);
+        }
+
+
+        //Metodos GET....Aca agrupo todos los metodos GET
+
+        [HttpGet("obtenerTickets")]
+
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
+        {
+            var usuarioLogueadoId = HttpContext.User.Identity.Name;
+            
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            
+
+            List<VistaTicket> vistaTickets = new List<VistaTicket>();
+
+            var tickets = await _context.Tickets
+                          .Include(t => t.Categoria)
+                          .ToArrayAsync();
+
+            foreach (var ticket in tickets)
+            {
+                var usuario = await _userManager.FindByIdAsync(ticket.UsuarioClienteID);
+
+                var ticketMostrar = new VistaTicket
+                {
+                    TicketId = ticket.TicketId,
+                    Titulo = ticket.Titulo,
+                    FechaCreacionString = ticket.FechaCreacionString,
+                    CategoriaString = ticket.CategoriaString,
+                    EstadoString = ticket.EstadoString,
+                    Prioridad = (int)ticket.Prioridad,
+                    PrioridadString = ticket.PrioridadString,
+                    NombreUsuario = usuario?.NombreCompleto, // ✅ nombre real
+                    EmailUsuario = usuario?.Email
+
+
+                };
+                vistaTickets.Add(ticketMostrar);
+            };              
+
+
+            return Ok(vistaTickets);
+        }
+
+        [HttpGet("{id}")]
+
+        public async Task<ActionResult<VistaTicket>> GetTicketById(int id)
+
+        {
+            var ticket = await _context.Tickets
+                         .Include(t => t.Categoria)
+                         .FirstOrDefaultAsync(t => t.TicketId == id);
+            if (ticket == null)
+            { 
+                return NotFound();
+            }
+
+            var ticketMostrar = new VistaTicket
+            {
+                TicketId = ticket.TicketId,
+                Titulo = ticket.Titulo,
+                Descripcion = ticket.Descripcion,
+                Prioridad = (int)ticket.Prioridad,     // valor para el select
+                PrioridadString = ticket.Prioridad.ToString(),
+                CategoriaId = ticket.CategoriaId,
+                CategoriaString = ticket.Categoria?.Descripcion,
+                EstadoString = ticket.Estado.ToString(),
+                FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
+                UsuarioClienteID = ticket.UsuarioClienteID
+
+            };
+            return Ok(ticketMostrar);
+        }
+
+
+
 
         //METODO PARA OBTENER EL INFORME DE 2 NIVELES QUE ME TRAE LOS TICKETS POR CATEGORIA
-        [HttpGet("ticketsCategorias")]
+        /* [HttpGet("ticketsCategorias")]
 
         public async Task<ActionResult<IEnumerable<VistaCategorias>>> GetTicketsCategorias()
         {
@@ -91,7 +164,7 @@ namespace gestionTickets.Controllers
                         Tickets = new List<VistaTicket>()
                     };
 
-                    //inserto el objeto
+                    
                     vistaCategorias.Add(categoriaMostrar);
                 }
 
@@ -113,69 +186,10 @@ namespace gestionTickets.Controllers
         }
         return vistaCategorias.ToList();
         }
+ */
 
-        //METODO PARA OBTENER EL INFORME DE 2 NIVELES QUE ME TRAE LOS TICKETS POR CLIENTES
 
-        [HttpGet("ticketsClientes")]
-        public async Task<ActionResult<IEnumerable<VistaClientes>>> GetTicketsClientes()
-        {
-            List<VistaClientes> vistaClientes = new List<VistaClientes>();
-
-            
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-
-            /* var clientes = _context.Clientes.AsQueryable(); */
-
-            var tickets = _context.Tickets
-                          .Include(t => t.Cliente)
-                          .Include(t=> t.Categoria)
-                          .AsQueryable();
-            
-            if (rol == "CLIENTE")
-            {
-                tickets = tickets.Where(t => t.UsuarioClienteID == userId);
-            }
-
-            foreach (var ticket in tickets)
-            {
-                var clienteMostrar = vistaClientes.FirstOrDefault(c => c.ClienteId == ticket.ClienteId);
-
-                if (clienteMostrar == null)
-                {
-                    clienteMostrar = new VistaClientes
-                    {
-                        ClienteId = ticket.ClienteId,
-                        Nombre = ticket.Cliente.Nombre,
-                        Email = ticket.Cliente.Email,
-                        Tickets = new List<VistaTicket>(),
-                    };
-
-                    vistaClientes.Add(clienteMostrar);
-                }
-
-                var ticketMostrar = new VistaTicket
-                {
-                    TicketId = ticket.TicketId,
-                    Titulo = ticket.Titulo,
-                    Prioridad = ticket.Prioridad,
-                    EstadoString = ticket.Estado.ToString(),
-                    FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
-                    PrioridadString = ticket.Prioridad.ToString(),
-                    CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
-                    UsuarioClienteID = ticket.UsuarioClienteID,
-                    NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
-                    EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null
-                };
-
-                clienteMostrar.Tickets.Add(ticketMostrar);
-
-            }
-
-            return vistaClientes.ToList();
-        }
-
-        [HttpGet("GetTicketsPorCliente/{clienteId}")]
+        /* [HttpGet("GetTicketsPorCliente/{clienteId}")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketsPorCliente(int clienteId)
         {
             try
@@ -207,16 +221,16 @@ namespace gestionTickets.Controllers
             }
             catch (Exception ex)
             {
-                // Te da una pista clara del error en JSON
+                
                 return StatusCode(500, new { message = "Error al obtener tickets", detalle = ex.Message });
             }
         }
-
+ */
 
 
 
         // GET: api/tickets/5 --- el 5 hace referencia al id, puede ser cualquier otro número
-        [HttpGet("{id}")]
+        /* [HttpGet("{id}")]
         public async Task<ActionResult<Ticket>> GetTicket(int id)
         {
             var ticket = await _context.Tickets.FindAsync(id);
@@ -227,17 +241,40 @@ namespace gestionTickets.Controllers
             }
 
             return ticket;
-        }
+        } */
 
         // PUT: api/Categorias/5
 
+
         [HttpPut("{id}")]
+
+        public async Task<IActionResult> PutTicketEditado(int id, Ticket ticketEditado)
+        {
+            var ticket = await _context.Tickets.FindAsync(id);
+
+            if (ticket == null)
+            { 
+                return NotFound();
+            }
+
+            ticket.Titulo = ticketEditado.Titulo;
+            ticket.Descripcion = ticketEditado.Descripcion;
+            ticket.Prioridad = ticketEditado.Prioridad;
+            ticket.CategoriaId = ticketEditado.CategoriaId;
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        /* [HttpPut("{id}")]
         public async Task<IActionResult> PutTicket(int id, Ticket ticketEditado)
         {
+
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (id != ticketEditado.TicketId)
                 return BadRequest();
 
-            // Traer el ticket original con su categoría
+            
             var ticketOriginal = await _context.Tickets
                 .Include(t => t.Categoria)
                 .FirstOrDefaultAsync(t => t.TicketId == id);
@@ -248,7 +285,7 @@ namespace gestionTickets.Controllers
             var historialCambios = new List<Historial>();
             var fechaModificacion = DateTime.Now;
 
-            // Comparar y guardar cambios en historial
+            
             if (ticketOriginal.Titulo != ticketEditado.Titulo)
             {
                 historialCambios.Add(new Historial
@@ -258,9 +295,11 @@ namespace gestionTickets.Controllers
                     ValorAnterior = ticketOriginal.Titulo,
                     ValorNuevo = ticketEditado.Titulo,
                     FechaModificacion = fechaModificacion,
+                    UsuarioClienteID = userId,
                 });
 
                 ticketOriginal.Titulo = ticketEditado.Titulo;
+                
             }
 
             if (ticketOriginal.Descripcion != ticketEditado.Descripcion)
@@ -272,9 +311,11 @@ namespace gestionTickets.Controllers
                     ValorAnterior = ticketOriginal.Descripcion,
                     ValorNuevo = ticketEditado.Descripcion,
                     FechaModificacion = fechaModificacion,
+                    UsuarioClienteID = userId,
                 });
 
                 ticketOriginal.Descripcion = ticketEditado.Descripcion;
+                
             }
 
             if (ticketOriginal.Prioridad != ticketEditado.Prioridad)
@@ -286,14 +327,16 @@ namespace gestionTickets.Controllers
                     ValorAnterior = ticketOriginal.Prioridad.ToString(),
                     ValorNuevo = ticketEditado.Prioridad.ToString(),
                     FechaModificacion = fechaModificacion,
+                    UsuarioClienteID = userId,
                 });
 
                 ticketOriginal.Prioridad = ticketEditado.Prioridad;
+                
             }
 
             if (ticketOriginal.CategoriaId != ticketEditado.CategoriaId)
             {
-                // Manejo seguro si alguna categoría es null
+                
                 string valorAnterior = ticketOriginal.Categoria?.Descripcion ?? "Sin categoría";
                 string valorNuevo = ticketEditado.Categoria?.Descripcion ?? "Sin categoría";
 
@@ -304,9 +347,11 @@ namespace gestionTickets.Controllers
                     ValorAnterior = valorAnterior,
                     ValorNuevo = valorNuevo,
                     FechaModificacion = fechaModificacion,
+                    UsuarioClienteID = userId,
                 });
 
                 ticketOriginal.CategoriaId = ticketEditado.CategoriaId;
+                
             }
 
             _context.Update(ticketOriginal);
@@ -327,7 +372,7 @@ namespace gestionTickets.Controllers
             }
 
             return NoContent();
-        }
+        } */
         // POST: api/Categorias
 
         [HttpPost]
@@ -336,26 +381,26 @@ namespace gestionTickets.Controllers
             var usuarioLogueadoId = HttpContext.User.Identity.Name;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-
-            var cliente = _context.Clientes.FirstOrDefault(c => c.UsuarioClienteID == userId);
-            if (cliente == null)
-                return BadRequest("No se encontró un cliente asociado al usuario logueado.");
-
+            
             ticket.Estado = Estado.Abierto;
             ticket.FechaCreacion = DateTime.Now;
+            ticket.FechaComienzo = Convert.ToDateTime("01/01/0001");
             ticket.FechaCierre = Convert.ToDateTime("01/01/0001");
 
-            ticket.ClienteId = cliente.ClienteId;
             ticket.UsuarioClienteID = userId;
+
+            
+            
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTicket", new { id = ticket.TicketId }, ticket);
+            return CreatedAtAction("GetTickets", new { id = ticket.TicketId }, ticket);
 
 
         }
 
-        [HttpPost("filtrar")]
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/* [HttpPost("filtrar")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> FiltroTickets([FromBody] FiltroTickets filtro)
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -368,19 +413,11 @@ namespace gestionTickets.Controllers
                 .AsQueryable();
 
 
-            /*  if (rol == "ADMINISTRADOR")
+             if (rol == "ADMINISTRADOR")
              {
 
              }
-             else if (rol == "CLIENTE")
-             {
-                 tickets = tickets.Where(t => t.UsuarioClienteID == userId);
-             }
-             else if (rol == "TECNICO")
-             {
-                 tickets = tickets.Where(t => t.UsuarioClienteID == userId);
-             } */
-
+             
 
             if (DateTime.TryParse(filtro.FechaDesde, out var fechaDesde) &&
                 DateTime.TryParse(filtro.FechaHasta, out var fechaHasta))
@@ -427,9 +464,9 @@ namespace gestionTickets.Controllers
                 .ToListAsync();
 
             return vista;
-        }
+        } */
 
-
+/* -------------------------------------------------------------------------------------------------------------------------- */
 
 
 
@@ -449,10 +486,10 @@ namespace gestionTickets.Controllers
             return NoContent();
         }
 
-        private bool TicketExists(int id)
+        /* private bool TicketExists(int id)
         {
             return _context.Tickets.Any(e => e.TicketId == id);
-        }
+        } */
 
     }
 }

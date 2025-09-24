@@ -1,4 +1,4 @@
-   public class VistaDesarrollador
+public class VistaDesarrollador
 {
     public int DesarrolladorId { get; set; }
     public string NombreCompleto { get; set; }
@@ -8,4 +8,5 @@
     public string Observacion { get; set; }
     public int PuestoId { get; set; }
     public string? NombrePuesto { get; set; } // Nuevo campo para mostrar en la vista
+    public List<VistaTicket> TicketsCerrados {get; set;}
 }

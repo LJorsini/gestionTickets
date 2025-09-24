@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace gestionTickets.Migrations
 {
     /// <inheritdoc />
-    public partial class MigracionInicial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -76,28 +76,12 @@ namespace gestionTickets.Migrations
                     Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Cuit = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Eliminado = table.Column<bool>(type: "bit", nullable: true)
+                    Eliminado = table.Column<bool>(type: "bit", nullable: true),
+                    UsuarioClienteID = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clientes", x => x.ClienteId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Historial",
-                columns: table => new
-                {
-                    HistorialId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TicketId = table.Column<int>(type: "int", nullable: false),
-                    CamposModificados = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ValorAnterior = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ValorNuevo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FechaModificacion = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Historial", x => x.HistorialId);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,6 +205,29 @@ namespace gestionTickets.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Historial",
+                columns: table => new
+                {
+                    HistorialId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TicketId = table.Column<int>(type: "int", nullable: false),
+                    CamposModificados = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ValorAnterior = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ValorNuevo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UsuarioClienteID = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    FechaModificacion = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Historial", x => x.HistorialId);
+                    table.ForeignKey(
+                        name: "FK_Historial_AspNetUsers_UsuarioClienteID",
+                        column: x => x.UsuarioClienteID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tickets",
                 columns: table => new
                 {
@@ -231,7 +238,8 @@ namespace gestionTickets.Migrations
                     Estado = table.Column<int>(type: "int", nullable: false),
                     Prioridad = table.Column<int>(type: "int", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaCierre = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FechaComienzo = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaCierre = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CategoriaId = table.Column<int>(type: "int", nullable: false),
                     UsuarioClienteID = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -339,6 +347,11 @@ namespace gestionTickets.Migrations
                 name: "IX_Desarrolladores_PuestoId",
                 table: "Desarrolladores",
                 column: "PuestoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Historial_UsuarioClienteID",
+                table: "Historial",
+                column: "UsuarioClienteID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PuestoCategorias_CategoriaId",
