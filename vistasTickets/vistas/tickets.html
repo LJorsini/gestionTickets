@@ -57,9 +57,8 @@
             <th scope="col">Categoria</th>
             <th scope="col">Estado</th>
             <th scope="col">Prioridad</th>
-            <th scope="col">Usuario</th>
-            <th scope="col">Email</th>
-            <!-- <th scope="col">Id usuario</th> -->
+            <th scope="col">Creador</th>
+            <!-- <th scope="col">Email</th> -->
             <th scope="col"></th>
             <th scope="col"></th>
 
@@ -82,7 +81,7 @@
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    onclick="LimpiarModal()"></button>
+                    onclick="LimpiarFormularioTicket()"></button>
             </div>
             <div class="modal-body">
                 <form class="formCategorias">
@@ -109,14 +108,6 @@
                     </div>
 
                     <div class="row">
-                        <!-- <div class="mb-3 col-6">
-                                <label for="estadoTicket" class="form-label">Estado</label>
-                                <select class="form-select" id="estadoTicket">
-                                    <option class="option" value="" disabled selected>
-                                        [Seleccione]
-                                    </option>
-                                </select>
-                            </div> -->
                         <div class="mb-3 col-6">
                             <label for="prioridadTicket" class="form-label">Prioridad</label>
                             <select class="form-select" id="prioridadTicket">
@@ -126,27 +117,71 @@
                             </select>
                         </div>
                     </div>
-
-                    <!-- <div class="row">
-                            <div class="mb-3 col-6">
-                                <label for="fechaCreacionTicket" class="form-label">Fecha creacion</label>
-                                <input type="date" class="form-control" id="fechaCreacionTicket"
-                                    placeholder="Creado el:" style="text-transform: uppercase" />
-                            </div>
-                            <div class="mb-3 col-6">
-                                <label for="fechaCierreTicket" class="form-label">Fecha cierre</label>
-                                <input type="date" class="form-control" id="fechaCierreTicket" placeholder="Cerrado el:"
-                                    style="text-transform: uppercase" />
-                            </div>
-                        </div> -->
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarModal()">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarFormularioTicket()">
                     CERRAR
                 </button>
-                <button type="button" class="btn btn-primary" onclick="CrearEditarTicket()">
+                <button type="button" class="btn btn-primary" onclick="NuevoTicket()">
                     GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal editar ticket-->
+<div class="modal fade" id="modalEditarTickets" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    onclick="LimpiarFormularioTicketEditar()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="formCategorias">
+                    <input type="" id="ticketidEditar" value="0" />
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="tituloTicketEditar" class="form-label">Titulo</label>
+                            <input type="text" class="form-control" id="tituloTicketEditar"
+                                placeholder="Ingrese el titulo del ticket" style="text-transform: uppercase" />
+                        </div>
+                        <div class="mb-3 col-6">
+                            <label for="categoriasSelectEditar" class="form-label">Categoria</label>
+                            <select class="form-select" id="categoriasSelectEditar">
+                                <option class="option" value="" disabled selected>
+                                    [Seleccione]
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-floating">
+                        <textarea class="form-control" placeholder="Descripcion" id="floatingTextareaEditar"></textarea>
+                        <label for="floatingTextareaEditar">Descripcion</label>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-6">
+                            <label for="prioridadTicketEditar" class="form-label">Prioridad</label>
+                            <select class="form-select" id="prioridadTicketEditar">
+                                <option value="1">Baja</option>
+                                <option value="2">Media</option>
+                                <option value="3">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarFormularioTicketEditar()">
+                    CERRAR
+                </button>
+                <button type="button" class="btn btn-primary" onclick="EditarTicket()">
+                    EDITAR
                 </button>
             </div>
         </div>

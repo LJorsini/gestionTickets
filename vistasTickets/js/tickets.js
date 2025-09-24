@@ -1,167 +1,131 @@
-
 async function ObtenerCategorias() {
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
+
   console.log("Token:", getToken());
+
   const res = await fetch(`${URL_BASE_API}categorias`, {
     method: "GET",
     headers: authHeaders(),
   });
+
   const resultado = await res.json();
-  console.log(resultado);
+  console.log("LA categorias son:" + resultado);
 
   const selectCategoria = document.getElementById("categoriasSelect");
   selectCategoria.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
-  const selectCategoriaBuscar = document.getElementById("ticketBuscarCategoria");
-  selectCategoriaBuscar.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
+
+  const selectCategoriaEditar = document.getElementById(
+    "categoriasSelectEditar"
+  );
+  selectCategoriaEditar.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
 
   let opcionesBuscar = `<option value="0">[Todas las categorias]</option>`;
-  let opciones = "";
 
-  resultado.forEach(cat => {
-    opciones += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
+  resultado.forEach((cat) => {
     opcionesBuscar += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
-
-    
   });
-  selectCategoria.innerHTML = opciones;
-  selectCategoriaBuscar.innerHTML = opcionesBuscar;
+  selectCategoria.innerHTML = opcionesBuscar;
+  selectCategoriaEditar.innerHTML = opcionesBuscar;
 
   MostrarTickets(); // Llamo a la funcion MostrarTickets para que cargue los tickets con las categorias
 }
 
-const inputFechaDesde = document.getElementById("buscarFechaDesde");
-inputFechaDesde.onchange = function () {
-  MostrarTickets();
-};
-
-const inputFechaHasta = document.getElementById("buscarFechaHasta");
-inputFechaHasta.onchange = function () {
-  MostrarTickets();
-};
-
-const inputPrioridad = document.getElementById("ticketFiltroPrioridad");
-inputPrioridad.onchange = function () {
-  MostrarTickets();
-};
-
-const inputEstado = document.getElementById("ticketFiltroEstado");
-inputEstado.onchange = function () {
-  MostrarTickets();
-}
-
-const inputCategoria = document.getElementById("ticketBuscarCategoria");
-inputCategoria.onchange = function () {
-  MostrarTickets();
-};
-
 async function MostrarTickets() {
-
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
 
-  let fechaDesde = document.getElementById("buscarFechaDesde").value;
-  let fechaHasta = document.getElementById("buscarFechaHasta").value;
-
-
-  const fecha1 = new Date(fechaDesde);
-  const fecha2 = new Date(fechaHasta);
-
-  if (fecha1 > fecha2) {
-    fechaHasta = fechaDesde;
-    document.getElementById("buscarFechaHasta").value = fechaDesde;
-  }
-
-  const filtro = {
-    fechaDesde: fechaDesde,
-    fechaHasta: fechaHasta,
-    categoriaId: document.getElementById("ticketBuscarCategoria").value,
-    prioridad: document.getElementById("ticketFiltroPrioridad").value,
-    estado: document.getElementById("ticketFiltroEstado").value,
-  }
-
-  const res = await fetch(`${URL_BASE_API}tickets/filtrar`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify(filtro),
-  });
-  const tickets = await res.json();
-  console.log(tickets); // Ver tickets obtenidos.. sacar despues de las pruebas
-
-  const tbody_tickets = document.getElementById("tbody-Tickets");
-  tbody_tickets.innerHTML = ""; 
-
-  tickets.forEach(ticket => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-        <td>${ticket.titulo}</td>
-        <td>${ticket.fechaCreacionString}</td>
-        <td>${ticket.categoriaString}</td>
-        <td>${ticket.estadoString}</td>
-        <td>${ticket.prioridadString}</td>
-        <td>${ticket.nombreUsuario}</td>
-        <td>${ticket.emailUsuario}</td>
-        
-        
-        <td>
-                <button type="button" class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">ELIMINAR</button>
-            </td>
-
-            <td>
-                <button type="button" class="btn btn-primary btn-editar" onclick="AbrirModalEditar(${ticket.ticketId})">EDITAR</button>
-        </td>
-        <td>
-                <button type="button" class="btn btn-primary btn-editar" onclick="MostrarHistorial(${ticket.ticketId})">Historial</button>
-        </td>
- `;
-    tbody_tickets.appendChild(row);
-  });
-}
-
-
-
-function CrearEditarTicket(id) {
-  let ticketId = document.getElementById("ticketid").value;
-
-  if (ticketId == 0) {
-    CrearTicket();
-  } else {
-    EditarTicket(id);
-  }
-}
-//Funcion para cargar un nuevo ticket
-async function CrearTicket() {
-  const authHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken()}`,
-  });
-
-  const tituloTicket = document.getElementById("tituloTicket").value;
-  const floatingTextarea = document.getElementById("floatingTextarea").value;
-  const prioridadTicket = Number(document.getElementById("prioridadTicket").value)
-  const categoriasSelect = Number(document.getElementById("categoriasSelect").value);
-
-  if (!tituloTicket) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'El título del ticket es obligatorio.',
+  try {
+    const res = await fetch(`${URL_BASE_API}tickets/obtenerTickets`, {
+      method: "GET",
+      headers: authHeaders(),
     });
-    return;
+
+    if (!res.ok) {
+      if (!res.ok) {
+        const errorMsg = await res.text();
+        throw new Error(errorMsg || "Errr al traer los tickets");
+      }
+    }
+
+    const resultado = await res.json();
+    console.log(resultado);
+
+    const tablaTickets = document.getElementById("tbody-Tickets");
+    tablaTickets.innerHTML = "";
+
+    resultado.forEach((ticket) => {
+      let row = document.createElement("tr");
+
+      row.innerHTML = `
+            <td>${ticket.titulo}</td>
+            <td>${ticket.fechaCreacionString}</td>
+            <td>${ticket.categoriaString}</td>
+            <td>${ticket.estadoString}</td>
+            <td>${ticket.prioridadString}</td>
+            <td>${ticket.nombreUsuario}</td>
+            <!--<td>${ticket.emailUsuario}</td>-->
+            <td>
+                <button class="btn btn-primary" onclick="AbrirModalEditar(${ticket.ticketId})">Editar</button>
+            </td>
+            <td>
+                <button class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">Eliminar</button>
+            </td>
+      
+      `;
+      tablaTickets.appendChild(row);
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: "Error al traer ticket: " + error.message,
+    });
   }
+}
+
+async function NuevoTicket() {
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  let titulo = document.getElementById("tituloTicket").value.trim();
+  let descripcion = document.getElementById("floatingTextarea").value.trim();
+  let categoriaId = document.getElementById("categoriasSelect").value;
+  let prioridad = Number(document.getElementById("prioridadTicket").value);
 
   const ticket = {
-  
-    titulo: tituloTicket,
-    descripcion: floatingTextarea,
-    prioridad: prioridadTicket,
-    categoriaId: categoriasSelect,
+    titulo: titulo,
+    descripcion: descripcion,
+    categoriaId: categoriaId,
+    prioridad: prioridad,
   };
+
+  if (!titulo) {
+    return Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "El titulo es obligatorio",
+    });
+  }
+  if (!descripcion) {
+    return Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "La descripcion es obligatoria",
+    });
+  }
+  if (categoriaId == 0) {
+    return Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "La categoria es obligatoria",
+    });
+  }
 
   try {
     const res = await fetch(`${URL_BASE_API}tickets`, {
@@ -171,159 +135,180 @@ async function CrearTicket() {
     });
 
     if (!res.ok) {
-      const errorText = await res.text(); // <-- Acá obtenés el mensaje real
-      console.error("Error del servidor:", errorText); // <-- Mostralo en consola
-      throw new Error("Error al crear/actualizar el ticket");
+      const errorMsg = await res.text();
+      throw new Error(errorMsg || "Error al crear ticket");
     }
 
-    await MostrarTickets();
-    $("#modalTickets").modal("hide");
-  } catch (error) {
-    console.error("Error en CrearEditarTicket:", error);
-  }
-}
+    const resultado = await res.json();
 
-async function AbrirModalEditar(ticketId)
-{
-  const res = await fetch(`${URL_BASE_API}tickets/${ticketId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`,
-    },
-  })
-  const ticket = await res.json();
-  document.getElementById("ticketid").value = ticket.ticketId;
-  document.getElementById("tituloTicket").value = ticket.titulo;
-  document.getElementById("categoriasSelect").value = ticket.categoriaId;
-  document.getElementById("floatingTextarea").value = ticket.descripcion;
-  //document.getElementById("estadoTicket").value = estado;
-  document.getElementById("prioridadTicket").value = ticket.prioridad;
-  //document.getElementById("fechaCreacionTicket").value = fechaCreacion;
-  //document.getElementById("fechaCierreTicket").value = fechaCierre;
-
-  $("#modalTickets").modal("show");
-}
-
-async function MostrarHistorial(id) {
-  const authHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken()}`,
-  });
-
-  const res = await fetch(`${URL_BASE_API}historiales/${id}`, {
-    method: "GET",
-    headers: authHeaders(),
-  });
-  const historial = await res.json();
-  console.log(historial); // Ver tickets obtenidos.. sacar despues de las pruebas
-
-  const tbody_historial = document.getElementById("tbody-Historial");
-  tbody_historial.innerHTML = ""; // Limpio el contenido de la tabla antes de llenarla
-
-  historial.forEach((hist) => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-        <td>${hist.ticketId}</td>
-        <td>${hist.camposModificados}</td>
-        <td>${hist.valorAnterior}</td>
-        <td>${hist.valorNuevo}</td>
-        <td>${hist.fechaModificacionString}</td>`;
-    tbody_historial.appendChild(row);
-  });
-  $("#modalHistorial").modal("show");
-}
-
-async function EditarTicket(id) {
-  const authHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken()}`,
-  });
-
-  const ticketId = document.getElementById("ticketid").value;
-  const tituloTicket = document.getElementById("tituloTicket").value;
-  const floatingTextarea = document.getElementById("floatingTextarea").value;
-  //const estadoTicket = parseInt(document.getElementById("estadoTicket").value);
-  const prioridadTicket = parseInt(document.getElementById("prioridadTicket").value);
-  //const fechaCreacion = document.getElementById("fechaCreacionTicket").value;
-  //const fechaCierreTicket = document.getElementById("fechaCierreTicket").value;
-  const categoriasSelect = document.getElementById("categoriasSelect").value;
-
-  if (!tituloTicket) {
     Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'El título del ticket es obligatorio.',
+      icon: "success",
+      title: "¡Ticket creado!",
+      text: "El ticket se guardó correctamente",
     });
-    return;
-
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: "Error al crear ticket: " + error.message,
+    });
   }
+}
 
-  const ticket = {
-    ticketId: parseInt(ticketId),
-    titulo: tituloTicket,
-    descripcion: floatingTextarea,
-    //estado: estadoTicket,
-    prioridad: prioridadTicket,
-    //fechaCreacion: fechaCreacion,
-    //fechaCierre: fechaCierreTicket ? fechaCierreTicket : null,
-    categoriaId: categoriasSelect,
+async function AbrirModalEditar(ticketId) {
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  try {
+    const res = await fetch(`${URL_BASE_API}tickets/${ticketId}`, {
+      method: "GET",
+      headers: authHeaders(),
+    });
+
+    if (!res.ok) {
+      const errorMsg = await res.text();
+      throw new Error(errorMsg || "Error al traer ticket");
+    }
+
+    const respuesta = await res.json();
+    console.log(respuesta);
+
+    document.getElementById("ticketidEditar").value = respuesta.ticketId;
+    document.getElementById("tituloTicketEditar").value = respuesta.titulo;
+    document.getElementById("floatingTextareaEditar").value =
+      respuesta.descripcion;
+
+    let selectCategoria = document.getElementById("categoriasSelectEditar");
+    selectCategoria.value = respuesta.categoriaId;
+
+    let selectPrioridad = document.getElementById("prioridadTicketEditar");
+    selectPrioridad.value = respuesta.prioridad;
+
+    $("#modalEditarTickets").modal("show");
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: "Error al traer el ticket: " + error.message,
+    });
+  }
+}
+
+async function EditarTicket() {
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  let ticketId = document.getElementById("ticketidEditar").value;
+  let titulo = document.getElementById("tituloTicketEditar").value.trim();
+  let descripcion = document
+    .getElementById("floatingTextareaEditar")
+    .value.trim();
+  let categoriaId = document.getElementById("categoriasSelectEditar").value;
+  let prioridad = Number(
+    document.getElementById("prioridadTicketEditar").value
+  );
+
+  const ticketEditado = {
+    titulo: titulo,
+    descripcion: descripcion,
+    categoriaId: categoriaId,
+    prioridad: prioridad,
   };
 
   try {
     const res = await fetch(`${URL_BASE_API}tickets/${ticketId}`, {
       method: "PUT",
       headers: authHeaders(),
-      body: JSON.stringify(ticket),
+      body: JSON.stringify(ticketEditado),
     });
 
     if (!res.ok) {
-      const errorText = await res.text(); // <-- Acá obtenés el mensaje real
-      console.error("Error del servidor:", errorText); // <-- Mostralo en consola
-      throw new Error("Error al crear/actualizar el ticket");
+      const errorMsg = await res.text();
+      throw new Error(errorMsg || "Error al editar ticket");
     }
 
-    await MostrarTickets();
-    $("#modalTickets").modal("hide");
+    Swal.fire({
+      icon: "success",
+      title: "¡Ticket Editado!",
+      text: "El ticket se guardó correctamente",
+    });
   } catch (error) {
-    console.error("Error en EditarTicket:", error);
+    Swal.fire({
+      icon: "error",
+      text: "Error al editar ticket: " + error.message,
+    });
   }
+
+  MostrarTickets();
+  $("#modalEditarTickets").modal("hide");
 }
 
-function ValidacionEliminar(id) {
-  Swal.fire({
+async function ValidacionEliminar(ticketId) {
+  const result = Swal.fire({
     title: "¿Desea eliminar el ticket?",
-    showDenyButton: false,
+    showDenyButton: true,
     showCancelButton: true,
-    confirmButtonText: "Eliminar",
+    confirmButtonText: "Save",
+    denyButtonText: `Don't save`,
   }).then((result) => {
     /* Read more about isConfirmed, isDenied below */
     if (result.isConfirmed) {
-      EliminarTicket(id);
+      EliminarTicket(ticketId);
     } else if (result.isDenied) {
       Swal.fire("Changes are not saved", "", "info");
     }
   });
 }
 
-async function EliminarTicket(id) {
+async function EliminarTicket(ticketId) {
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
-  const res = await fetch(`${URL_BASE_API}tickets/${id}`, {
-    method: "DELETE",
-    headers: authHeaders(),
-  });
-  if (res.ok) {
-    Swal.fire("Ticket eliminada", "", "success");
-    //obtenerCategorias();
-  } else {
-    alert("Error al eliminar el ticket");
+
+  try 
+  {
+    const res = await fetch(`${URL_BASE_API}tickets/${ticketId}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    })
+
+    if (!res.ok) 
+    {
+      const errorMsg = await res.text();
+      throw new Error(errorMsg || "Error al eliminar ticket");
+    }
+
+    Swal.fire({
+      icon: "success",
+      title: "¡Ticket eliminado!",
+      text: "El ticket se eliminó correctamente",
+    });
+
+    MostrarTickets();
   }
+  catch (error) 
+  {
+    Swal.fire({
+      icon: "error",
+      text: "Error al eliminar ticket: " + error.message,
+    });
+  }
+};
+
+/* const inputFechaDesde = document.getElementById("buscarFechaDesde");
+inputFechaDesde.onchange = function () {
+  MostrarTickets();
+}; */
+
+function LimpiarFormularioTicket() {
+  document.getElementById("ticketid").value = 0;
+  document.getElementById("tituloTicket").value = "";
+  document.getElementById("floatingTextarea").value = "";
+  document.getElementById("categoriasSelect").value = 0;
 }
 
-MostrarTickets();
-/* ObtenerEstadosyPrioridad(); */
 ObtenerCategorias();
+/* EditarTicket(3); */

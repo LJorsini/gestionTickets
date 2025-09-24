@@ -87,7 +87,7 @@ function CargarScriptDeVista(nombreVista) {
         case "informes":
             rutaScript = "js/informes.js";
             break;
-        case "informes":
+        case "vistaParcial":
             rutaScript = "js/vistaParcial.js";
             break;
         default:
