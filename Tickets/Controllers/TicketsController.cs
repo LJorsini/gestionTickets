@@ -58,21 +58,22 @@ namespace gestionTickets.Controllers
         //Metodos GET....Aca agrupo todos los metodos GET
 
         [HttpGet("obtenerTickets")]
-
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
         {
-            var usuarioLogueadoId = HttpContext.User.Identity.Name;
+            List<VistaTicket> vistaTickets = new List<VistaTicket>();
+
             
+            var tickets = await _context.Tickets
+                .Include(t => t.Categoria)
+                .ToListAsync();
+
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
-            
-
-            List<VistaTicket> vistaTickets = new List<VistaTicket>();
-
-            var tickets = await _context.Tickets
-                          .Include(t => t.Categoria)
-                          .ToArrayAsync();
+            if (rol == "CLIENTE")
+            {
+                tickets = tickets.Where(t => t.UsuarioClienteID == userId).ToList();
+            }
 
             foreach (var ticket in tickets)
             {
@@ -87,17 +88,16 @@ namespace gestionTickets.Controllers
                     EstadoString = ticket.EstadoString,
                     Prioridad = (int)ticket.Prioridad,
                     PrioridadString = ticket.PrioridadString,
-                    NombreUsuario = usuario?.NombreCompleto, // ✅ nombre real
+                    NombreUsuario = usuario?.NombreCompleto, // nombre real
                     EmailUsuario = usuario?.Email
-
-
                 };
-                vistaTickets.Add(ticketMostrar);
-            };              
 
+                vistaTickets.Add(ticketMostrar);
+            }
 
             return Ok(vistaTickets);
         }
+
 
         [HttpGet("{id}")]
 
@@ -108,7 +108,7 @@ namespace gestionTickets.Controllers
                          .Include(t => t.Categoria)
                          .FirstOrDefaultAsync(t => t.TicketId == id);
             if (ticket == null)
-            { 
+            {
                 return NotFound();
             }
 
@@ -250,9 +250,9 @@ namespace gestionTickets.Controllers
 
         public async Task<IActionResult> PutTicketEditado(int id, Ticket ticketEditado)
         {
-            
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+
             try
             {
                 var ticketOriginal = await _context.Tickets
@@ -271,7 +271,7 @@ namespace gestionTickets.Controllers
                         ValorNuevo = ticketEditado.Titulo,
                         FechaModificacion = fechaCambio,
                         UsuarioClienteID = userId,
-                        
+
 
                     };
                     _context.Historial.Add(modificacionTitulo);
@@ -289,7 +289,7 @@ namespace gestionTickets.Controllers
                         ValorNuevo = ticketEditado.Descripcion,
                         FechaModificacion = fechaCambio,
                         UsuarioClienteID = userId,
-                        
+
                     };
                     _context.Historial.Add(modificacionDescripcion);
                     ticketOriginal.Descripcion = ticketEditado.Descripcion;
@@ -305,7 +305,7 @@ namespace gestionTickets.Controllers
                         ValorNuevo = ticketEditado.PrioridadString,
                         FechaModificacion = fechaCambio,
                         UsuarioClienteID = userId,
-                        
+
                     };
                     _context.Historial.Add(modificacionPrioridad);
                     ticketOriginal.Prioridad = ticketEditado.Prioridad;
@@ -324,13 +324,13 @@ namespace gestionTickets.Controllers
                         ValorNuevo = categoriaNueva.Descripcion,
                         FechaModificacion = fechaCambio,
                         UsuarioClienteID = userId,
-                        
+
                     };
                     _context.Historial.Add(modificacionCategoria);
                     ticketOriginal.CategoriaId = ticketEditado.CategoriaId;
 
                 }
-                
+
                 await _context.SaveChangesAsync();
             }
             catch
@@ -344,9 +344,9 @@ namespace gestionTickets.Controllers
                     throw;
                 }
             }
-                return Ok();
-            }
-            
+            return Ok();
+        }
+
 
 
         // POST: api/Categorias
@@ -357,7 +357,7 @@ namespace gestionTickets.Controllers
             var usuarioLogueadoId = HttpContext.User.Identity.Name;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-            
+
             ticket.Estado = Estado.Abierto;
             ticket.FechaCreacion = DateTime.Now;
             ticket.FechaComienzo = Convert.ToDateTime("01/01/0001");
@@ -365,8 +365,8 @@ namespace gestionTickets.Controllers
 
             ticket.UsuarioClienteID = userId;
 
-            
-            
+
+
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
 
@@ -375,74 +375,74 @@ namespace gestionTickets.Controllers
 
         }
 
-/* -------------------------------------------------------------------------------------------------------------------------- */
-/* [HttpPost("filtrar")]
-        public async Task<ActionResult<IEnumerable<VistaTicket>>> FiltroTickets([FromBody] FiltroTickets filtro)
-        {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-
-            var tickets = _context.Tickets
-                .Include(t => t.Categoria)
-                .Include(t => t.UsuarioCliente)
-                .Where(t => t.UsuarioClienteID == userId)
-                .AsQueryable();
-
-
-             if (rol == "ADMINISTRADOR")
-             {
-
-             }
-             
-
-            if (DateTime.TryParse(filtro.FechaDesde, out var fechaDesde) &&
-                DateTime.TryParse(filtro.FechaHasta, out var fechaHasta))
-            {
-                fechaHasta = fechaHasta.AddHours(23).AddMinutes(59).AddSeconds(59);
-                tickets = tickets.Where(t => t.FechaCreacion >= fechaDesde && t.FechaCreacion <= fechaHasta);
-            }
-
-            // 🔎 Filtro por categoría
-            if (filtro.CategoriaId > 0)
-            {
-                tickets = tickets.Where(t => t.CategoriaId == filtro.CategoriaId);
-            }
-
-            // 🔎 Filtro por prioridad
-            if (filtro.Prioridad > 0)
-            {
-                tickets = tickets.Where(t => t.Prioridad == (Prioridad)filtro.Prioridad);
-            }
-
-            // 🔎 Filtro por estado
-            if (filtro.Estado > 0)
-            {
-                tickets = tickets.Where(t => t.Estado == (Estado)filtro.Estado);
-            }
-
-
-            var vista = await tickets
-                .OrderByDescending(t => t.FechaCreacion)
-                .Select(ticket => new VistaTicket
+        /* -------------------------------------------------------------------------------------------------------------------------- */
+        /* [HttpPost("filtrar")]
+                public async Task<ActionResult<IEnumerable<VistaTicket>>> FiltroTickets([FromBody] FiltroTickets filtro)
                 {
-                    TicketId = ticket.TicketId,
-                    Titulo = ticket.Titulo,
-                    FechaCreacionString = ticket.FechaCreacionString,
-                    Prioridad = ticket.Prioridad,
-                    EstadoString = ticket.EstadoString,
-                    CategoriaString = ticket.CategoriaString,
-                    PrioridadString = ticket.PrioridadString,
-                    UsuarioClienteID = ticket.UsuarioClienteID,
-                    NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
-                    EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null
+                    var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
-                })
-                .ToListAsync();
+                    var tickets = _context.Tickets
+                        .Include(t => t.Categoria)
+                        .Include(t => t.UsuarioCliente)
+                        .Where(t => t.UsuarioClienteID == userId)
+                        .AsQueryable();
 
-            return vista;
-        } */
 
-/* -------------------------------------------------------------------------------------------------------------------------- */
+                     if (rol == "ADMINISTRADOR")
+                     {
+
+                     }
+
+
+                    if (DateTime.TryParse(filtro.FechaDesde, out var fechaDesde) &&
+                        DateTime.TryParse(filtro.FechaHasta, out var fechaHasta))
+                    {
+                        fechaHasta = fechaHasta.AddHours(23).AddMinutes(59).AddSeconds(59);
+                        tickets = tickets.Where(t => t.FechaCreacion >= fechaDesde && t.FechaCreacion <= fechaHasta);
+                    }
+
+                    // 🔎 Filtro por categoría
+                    if (filtro.CategoriaId > 0)
+                    {
+                        tickets = tickets.Where(t => t.CategoriaId == filtro.CategoriaId);
+                    }
+
+                    // 🔎 Filtro por prioridad
+                    if (filtro.Prioridad > 0)
+                    {
+                        tickets = tickets.Where(t => t.Prioridad == (Prioridad)filtro.Prioridad);
+                    }
+
+                    // 🔎 Filtro por estado
+                    if (filtro.Estado > 0)
+                    {
+                        tickets = tickets.Where(t => t.Estado == (Estado)filtro.Estado);
+                    }
+
+
+                    var vista = await tickets
+                        .OrderByDescending(t => t.FechaCreacion)
+                        .Select(ticket => new VistaTicket
+                        {
+                            TicketId = ticket.TicketId,
+                            Titulo = ticket.Titulo,
+                            FechaCreacionString = ticket.FechaCreacionString,
+                            Prioridad = ticket.Prioridad,
+                            EstadoString = ticket.EstadoString,
+                            CategoriaString = ticket.CategoriaString,
+                            PrioridadString = ticket.PrioridadString,
+                            UsuarioClienteID = ticket.UsuarioClienteID,
+                            NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
+                            EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null
+
+                        })
+                        .ToListAsync();
+
+                    return vista;
+                } */
+
+        /* -------------------------------------------------------------------------------------------------------------------------- */
 
 
 
