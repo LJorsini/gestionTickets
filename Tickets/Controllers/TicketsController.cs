@@ -7,6 +7,7 @@ using System.Security.Claims;
 using gestionTickets.Models.Vistas;
 using gestionTickets.ModelsVistas;
 using Microsoft.AspNetCore.Identity;
+using System.Runtime.Intrinsics.X86;
 
 namespace gestionTickets.Controllers
 {
@@ -57,7 +58,134 @@ namespace gestionTickets.Controllers
 
         //Metodos GET....Aca agrupo todos los metodos GET
 
+        /* [HttpGet("obtenerTickets")]
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            IQueryable<Ticket> query = _context.Tickets
+                .Include(t => t.Categoria);
+
+            
+            if (!string.Equals(rol, "ADMINISTRADOR", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.Equals(rol, "CLIENTE", StringComparison.OrdinalIgnoreCase))
+                {
+                    
+                    query = query.Where(t => t.UsuarioClienteID == userId);
+                }
+                else if (string.Equals(rol, "DESARROLLADOR", StringComparison.OrdinalIgnoreCase))
+                {
+                    var desarrollador = await _context.Desarrolladores
+                        .Include(d => d.Puesto)
+                        .FirstOrDefaultAsync(d => d.UsuarioClienteID == userId);
+
+                    if (desarrollador != null)
+                    {
+                        var categoriaIds = await _context.PuestoCategorias
+                            .Where(pc => pc.PuestoId == desarrollador.PuestoId)
+                            .Select(pc => pc.CategoriaId)
+                            .ToListAsync();
+
+                        query = query.Where(t => categoriaIds.Contains(t.CategoriaId));
+                    }
+                    else
+                    {
+                        
+                        query = query.Where(t => false);
+                    }
+                }
+            }
+
+            var tickets = await query.ToListAsync();
+
+            var vistaTickets = new List<VistaTicket>();
+
+            foreach (var ticket in tickets)
+            {
+                var usuario = await _userManager.FindByIdAsync(ticket.UsuarioClienteID);
+
+                vistaTickets.Add(new VistaTicket
+                {
+                    TicketId = ticket.TicketId,
+                    Titulo = ticket.Titulo,
+                    FechaCreacionString = ticket.FechaCreacionString,
+                    CategoriaString = ticket.CategoriaString,
+                    EstadoString = ticket.EstadoString,
+                    Prioridad = (int)ticket.Prioridad,
+                    PrioridadString = ticket.PrioridadString,
+                    NombreUsuario = usuario?.NombreCompleto,
+                    EmailUsuario = usuario?.Email
+                });
+            }
+
+            return Ok(vistaTickets);
+        }*/
+
         [HttpGet("obtenerTickets")]
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            var tickets = await _context.Tickets
+                .Include(t => t.Categoria)
+                .ToListAsync();
+
+            // Filtrar según rol
+            if (rol != "ADMINISTRADOR")
+            {
+                if (rol == "CLIENTE")
+                {
+                    tickets = tickets.Where(t => t.UsuarioClienteID == userId).ToList();
+                }
+                else if (rol == "DESARROLLADOR")
+                {
+                    var desarrollador = await _context.Desarrolladores
+                                        .Include(d => d.Puesto)
+                                        .FirstOrDefaultAsync(d => d.UsuarioClienteID == userId);
+
+                    if (desarrollador != null)
+                    {
+                        var categoriasAsociadas = await _context.PuestoCategorias
+                                                  .Where(pc => pc.PuestoId == desarrollador.PuestoId)
+                                                  .Select(pc => pc.CategoriaId)
+                                                  .ToListAsync();
+
+                        tickets = tickets.Where(t => categoriasAsociadas.Contains(t.CategoriaId)).ToList();
+                    }
+                   
+                }
+            }
+
+            /* var tickets = await query.ToListAsync(); */
+            var vistaTickets = new List<VistaTicket>();
+
+            foreach (var ticket in tickets)
+            {
+                var usuario = await _userManager.FindByIdAsync(ticket.UsuarioClienteID);
+
+                vistaTickets.Add(new VistaTicket
+                {
+                    TicketId = ticket.TicketId,
+                    Titulo = ticket.Titulo,
+                    FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
+                    CategoriaString = ticket.Categoria?.Descripcion,
+                    EstadoString = ticket.Estado.ToString(),
+                    Prioridad = (int)ticket.Prioridad,
+                    PrioridadString = ticket.Prioridad.ToString(),
+                    NombreUsuario = usuario?.NombreCompleto,
+                    EmailUsuario = usuario?.Email
+                });
+            }
+
+            return Ok(vistaTickets);
+        }
+
+
+
+        /* [HttpGet("obtenerTickets")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTickets()
         {
             List<VistaTicket> vistaTickets = new List<VistaTicket>();
@@ -70,10 +198,37 @@ namespace gestionTickets.Controllers
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
-            if (rol == "CLIENTE")
+            
+            if (!string.Equals(rol, "ADMINISTRADOR", StringComparison.OrdinalIgnoreCase))
             {
-                tickets = tickets.Where(t => t.UsuarioClienteID == userId).ToList();
-            }
+                if (string.Equals(rol, "CLIENTE", StringComparison.OrdinalIgnoreCase))
+                {
+                    
+                    tickets = tickets.Where(t => t.UsuarioClienteID == userId).ToList();
+                }
+                else if (string.Equals(rol, "DESARROLLADOR", StringComparison.OrdinalIgnoreCase))
+                {
+                    
+                    var desarrollador = await _context.Desarrolladores
+                                                    .Include(d => d.Puesto)
+                                                    .FirstOrDefaultAsync(d => d.UsuarioClienteID == userId);
+
+                    if (desarrollador != null && desarrollador.PuestoLaboralID.HasValue)
+                    {
+                        var categoriaIds = await _context.PuestoCategorias
+                                                        .Where(pc => pc.Puesto == desarrollador.PuestoLaboralID.Value)
+                                                        .Select(pc => pc.CategoriaId)
+                                                        .ToListAsync();
+
+                        tickets = tickets.Where(t => categoriaIds.Contains(t.CategoriaId));
+                    }
+                    else
+                    {
+                        
+                        tickets = tickets.Where(t => false).ToList();
+                    }
+                }
+            }   
 
             foreach (var ticket in tickets)
             {
@@ -88,15 +243,14 @@ namespace gestionTickets.Controllers
                     EstadoString = ticket.EstadoString,
                     Prioridad = (int)ticket.Prioridad,
                     PrioridadString = ticket.PrioridadString,
-                    NombreUsuario = usuario?.NombreCompleto, // nombre real
-                    EmailUsuario = usuario?.Email
+                    NombreUsuario = usuario?.NombreCompleto, 
                 };
 
                 vistaTickets.Add(ticketMostrar);
             }
 
             return Ok(vistaTickets);
-        }
+        } */
 
 
         [HttpGet("{id}")]
