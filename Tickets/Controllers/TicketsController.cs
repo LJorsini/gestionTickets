@@ -129,16 +129,19 @@ namespace gestionTickets.Controllers
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
-            var tickets = await _context.Tickets
+            Console.WriteLine($"[GetTickets] Usuario logueado: {userId}, Rol: {rol}");
+
+            var ticketsQuery = _context.Tickets
                 .Include(t => t.Categoria)
-                .ToListAsync();
+                .AsQueryable();
 
             // Filtrar según rol
             if (rol != "ADMINISTRADOR")
             {
                 if (rol == "CLIENTE")
                 {
-                    tickets = tickets.Where(t => t.UsuarioClienteID == userId).ToList();
+                    Console.WriteLine("[GetTickets] Filtro CLIENTE aplicado.");
+                    ticketsQuery = ticketsQuery.Where(t => t.UsuarioClienteID == userId);
                 }
                 else if (rol == "DESARROLLADOR")
                 {
@@ -148,20 +151,33 @@ namespace gestionTickets.Controllers
 
                     if (desarrollador != null)
                     {
+                        Console.WriteLine($"[GetTickets] Desarrollador encontrado. PuestoId: {desarrollador.PuestoId}");
+
                         var categoriasAsociadas = await _context.PuestoCategorias
                                                   .Where(pc => pc.PuestoId == desarrollador.PuestoId)
                                                   .Select(pc => pc.CategoriaId)
                                                   .ToListAsync();
 
-                        tickets = tickets.Where(t => categoriasAsociadas.Contains(t.CategoriaId)).ToList();
+                        Console.WriteLine("[GetTickets] Categorías asociadas: " + string.Join(", ", categoriasAsociadas));
+
+                        ticketsQuery = ticketsQuery.Where(t => categoriasAsociadas.Contains(t.CategoriaId));
                     }
-                   
+                    else
+                    {
+                        Console.WriteLine("[GetTickets] No se encontró desarrollador para este usuario.");
+                        ticketsQuery = ticketsQuery.Where(t => false);
+                    }
                 }
             }
+            else
+            {
+                Console.WriteLine("[GetTickets] Rol ADMINISTRADOR, sin filtro.");
+            }
 
-            /* var tickets = await query.ToListAsync(); */
+            var tickets = await ticketsQuery.ToListAsync();
+            Console.WriteLine($"[GetTickets] Cantidad de tickets obtenidos: {tickets.Count}");
+
             var vistaTickets = new List<VistaTicket>();
-
             foreach (var ticket in tickets)
             {
                 var usuario = await _userManager.FindByIdAsync(ticket.UsuarioClienteID);
@@ -182,6 +198,9 @@ namespace gestionTickets.Controllers
 
             return Ok(vistaTickets);
         }
+
+
+
 
 
 
@@ -342,7 +361,63 @@ namespace gestionTickets.Controllers
         }
  */
 
+        [HttpGet("getTicketsPorCliente/{clienteID}")]
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketsPorCliente(int clienteID)
+        {
+            try
+            {
+                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
+                List<VistaTicket> ticketsCliente = new List<VistaTicket>();
+
+                var cliente = _context.Clientes.FirstOrDefault(c => c.ClienteId == clienteID);
+
+                if (cliente == null)
+                {
+                    return NotFound(new { message = $"No existe un cliente con el ID {clienteID}" });
+                }
+
+                var usuarioId = cliente.UsuarioClienteID; //hago esto para traer el usuarioId del cliente seleccionado, si no no puedo comparar un string con un int
+
+                if (string.IsNullOrEmpty(cliente.UsuarioClienteID))
+                {
+                    return BadRequest(new { message = "El cliente no tiene un UsuarioClienteID asociado" });
+                }
+
+                var tickets = await _context.Tickets
+                              .Include(t => t.Categoria)
+                              .Where(t => t.UsuarioClienteID == usuarioId)
+                              .ToListAsync();
+
+                foreach (var ticket in tickets)
+                {
+                    
+                    
+                    var vistaTicket = new VistaTicket
+                    {
+                        TicketId = ticket.TicketId,
+                        Titulo = ticket.Titulo,
+                        Prioridad = (int)ticket.Prioridad,
+                        EstadoString = ticket.Estado.ToString(),
+                        FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
+                        PrioridadString = ticket.Prioridad.ToString(),
+                        CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
+                        UsuarioClienteID = ticket.UsuarioClienteID,
+                        /* NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
+                        EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null */
+                    };
+                    ticketsCliente.Add(vistaTicket);
+
+                }
+
+                return Ok(ticketsCliente);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener tickets", detalle = ex.Message });
+            }
+        }
         /* [HttpGet("GetTicketsPorCliente/{clienteId}")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketsPorCliente(int clienteId)
         {

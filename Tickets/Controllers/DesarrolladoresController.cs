@@ -149,16 +149,9 @@ namespace gestionTickets.Controllers
 
 
 
-        [HttpPost]
+        /* [HttpPost]
         public async Task<ActionResult<Desarrollador>> PostCliente(Desarrollador desarrollador)
         {
-            /* var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "DESARROLLADOR").SingleOrDefault();
-            if (nombreRolCrearExiste == null)
-            {
-                var roleResult = await _rolManager.CreateAsync(new IdentityRole("DESARROLLADOR"));
-            } */
-            _context.Desarrolladores.Add(desarrollador);
-            await _context.SaveChangesAsync();
 
             var usuario = new ApplicationUser
             {
@@ -167,6 +160,8 @@ namespace gestionTickets.Controllers
                 NombreCompleto = desarrollador.NombreCompleto,
 
             };
+            _context.Desarrolladores.Add(desarrollador);
+            await _context.SaveChangesAsync();
 
             var result = await _userManager.CreateAsync(usuario, "Ezpeleta2025");
 
@@ -179,7 +174,37 @@ namespace gestionTickets.Controllers
 
 
             return Ok();
+        } */
+
+        [HttpPost]
+        public async Task<ActionResult> PostDesarrollador(Desarrollador desarrollador)
+        {
+            // 1) Creamos primero el usuario de Identity
+            var usuario = new ApplicationUser
+            {
+                UserName = desarrollador.Email,
+                Email = desarrollador.Email,
+                NombreCompleto = desarrollador.NombreCompleto
+            };
+
+            var result = await _userManager.CreateAsync(usuario, "Ezpeleta2025"); // podés parametrizar la pass
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            // 2) Asignamos rol DESARROLLADOR
+            await _userManager.AddToRoleAsync(usuario, "DESARROLLADOR");
+
+            // 3) Ahora sí creamos el registro en la tabla Desarrolladores
+            desarrollador.UsuarioClienteID = usuario.Id; // 🔑 guardamos el GUID de Identity
+            _context.Desarrolladores.Add(desarrollador);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Desarrollador creado correctamente", UsuarioId = usuario.Id });
         }
+
 
         private bool DesarrolladorExist(int id)
         {
