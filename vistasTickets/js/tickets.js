@@ -1,3 +1,51 @@
+let rolUsuario = "";
+
+async function RolActual()
+{
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  try
+  {
+    const res = await fetch(`${URL_BASE_API}permisos/rolActual`, {
+      method: "GET",
+      headers: authHeaders(),
+    })
+
+    if (!res.ok)
+    {
+      throw new Error("Error en la solicitud");
+    }
+
+    const resultado = await res.json();
+
+    rolUsuario = resultado.rol;
+    console.log(rolUsuario);
+
+    let botonNuevo = document.getElementById("boton-NuevoTicket")
+
+if (rolUsuario === "DESARROLLADOR")
+{
+  botonNuevo.classList.add("d-none");
+  botonNuevo.disabled = true;
+}
+  }
+  catch (error)
+  {
+    console.error("Error al obtener el rol:", error);
+  }
+};
+
+/* let botonNuevo = document.getElementById("boton-NuevoTicket")
+
+if (rolUsuario === "DESARROLLADOR")
+{
+  botonNuevo.classList.add("d-none");
+  botonNuevo.disabled = true;
+} */
+
 async function ObtenerCategorias() {
   const authHeaders = () => ({
     "Content-Type": "application/json",
@@ -61,6 +109,17 @@ async function MostrarTickets() {
     resultado.forEach((ticket) => {
       let row = document.createElement("tr");
 
+      /* let btnEditar = ""
+
+      if (rolUsuario !== "DESARROLLADOR")
+      {
+        btnEditar = `<button id="boton-Editar" class="btn btn-primary" onclick="AbrirModalEditar(${ticket.ticketId})">Editar</button>`;
+      }
+      else {
+        btnEditar = `<button id="boton-Editar" class="btn btn-primary d-none"  disabled>Editar</button>`;
+      } */
+
+
       row.innerHTML = `
             <td>${ticket.titulo}</td>
             <td>${ticket.fechaCreacionString}</td>
@@ -70,13 +129,16 @@ async function MostrarTickets() {
             <td>${ticket.nombreUsuario}</td>
             <!--<td>${ticket.emailUsuario}</td>-->
             <td>
-                <button class="btn btn-primary" onclick="AbrirModalEditar(${ticket.ticketId})">Editar</button>
+                <button id="boton-Editar" class="btn btn-primary" onclick="AbrirModalEditar(${ticket.ticketId})">Editar</button>
             </td>
             <td>
                 <button class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">Eliminar</button>
             </td>
             <td>
                 <button class="btn btn-success" onclick="AbrirModalHistorial(${ticket.ticketId})">Historial</button>
+            </td>
+            <td>
+                <button class="btn btn-success" onclick="Iniciar(${ticket.ticketId})">Iniciar</button>
             </td>
       
       `;
@@ -363,5 +425,6 @@ function LimpiarFormularioTicket() {
   document.getElementById("categoriasSelect").value = 0;
 }
 
+RolActual();
 ObtenerCategorias();
 /* EditarTicket(3); */

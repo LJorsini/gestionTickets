@@ -1,3 +1,32 @@
+async function RolActual()
+{
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  try
+  {
+    const res = await fetch(`${URL_BASE_API}permisos/rolActual`, {
+      method: "GET",
+      headers: authHeaders(),
+    })
+
+    if (!res.ok)
+    {
+      throw new Error("Error en la solicitud");
+    }
+
+    const resultado = await res.json();
+
+    console.log(resultado);
+  }
+  catch (error)
+  {
+    console.error("Error al obtener el rol:", error);
+  }
+};
+
 async function CargarClientes() {
     const authHeaders = () => ({
     "Content-Type": "application/json",
@@ -24,8 +53,6 @@ async function CargarClientes() {
     
 });
 
-/* let clienteSeleccionado = resultadoClientes[0];
-document.getElementById("tituloTicketCliente").innerText = `Cliente: ${clienteSeleccionado.nombre}`; */
 
   console.log(resultadoClientes);
 
@@ -49,19 +76,25 @@ async function TicketPorCliente(clienteId) {
 
   console.log(clienteId);
 
-
-  const res = await fetch(`${URL_BASE_API}Tickets/GetTicketsPorCliente/${clienteId}`, {
+  try 
+  {
+    const res = await fetch(`${URL_BASE_API}Tickets/getTicketsPorCliente/${clienteId}`, {
     method: "GET",
     headers: authHeaders(),
   });
+  
+  
+  if (!res.ok) { 
+    throw new Error("Error en la solicitud");   
+  }
 
   const resultado = await res.json();
-  console.log(resultado);
 
- 
+
 
 
   
+  console.log(resultado);
 
   const tbodyTicketsClientes = document.getElementById("tbody-ticketsClientes");
   tbodyTicketsClientes.innerHTML = "";
@@ -80,9 +113,16 @@ async function TicketPorCliente(clienteId) {
             `
             tbodyTicketsClientes.appendChild(row);
   });
-  
+
+}
+  catch (error) 
+  {
+    console.error("Error al obtener los tickets:", error);
+  }
+
+   
 
 
 }
-
+RolActual();
 CargarClientes();
