@@ -399,7 +399,7 @@ namespace gestionTickets.Controllers
                         TicketId = ticket.TicketId,
                         Titulo = ticket.Titulo,
                         Prioridad = (int)ticket.Prioridad,
-                        EstadoString = ticket.Estado.ToString(),
+                        EstadoString = ticket.EstadoString,
                         FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
                         PrioridadString = ticket.Prioridad.ToString(),
                         CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
@@ -573,6 +573,52 @@ namespace gestionTickets.Controllers
                     throw;
                 }
             }
+            return Ok();
+        }
+
+        [HttpPost("estadoTicket/{ticketId}")]
+
+        public async Task <IActionResult> EstadoTicket(int ticketId)
+        {
+            var usuarioLogueadoId = HttpContext.User.Identity.Name;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            var ticket = await _context.Tickets.FindAsync(ticketId);
+
+            if (ticket == null)
+            { 
+                return BadRequest("El ticket no existe");
+            }
+            
+            ticket.Estado = Estado.EnProceso;
+            ticket.FechaComienzo = DateTime.Now;
+
+            
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost("finalizarTicket/{ticketId}")]
+
+        public async Task <IActionResult> FinalizarTicket(int ticketId)
+        {
+            var usuarioLogueadoId = HttpContext.User.Identity.Name;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            var ticket = await _context.Tickets.FindAsync(ticketId);
+
+            if (ticket == null)
+            { 
+                return BadRequest("El ticket no existe");
+            }
+            
+            ticket.Estado = Estado.Cerrado;
+            ticket.FechaCierre = DateTime.Now;
+
+            
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
