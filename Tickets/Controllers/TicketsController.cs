@@ -8,6 +8,8 @@ using gestionTickets.Models.Vistas;
 using gestionTickets.ModelsVistas;
 using Microsoft.AspNetCore.Identity;
 using System.Runtime.Intrinsics.X86;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace gestionTickets.Controllers
 {
@@ -306,60 +308,113 @@ namespace gestionTickets.Controllers
 
 
         //METODO PARA OBTENER EL INFORME DE 2 NIVELES QUE ME TRAE LOS TICKETS POR CATEGORIA
-        /* [HttpGet("ticketsCategorias")]
+
+        [HttpGet("ticketsCategorias")]
 
         public async Task<ActionResult<IEnumerable<VistaCategorias>>> GetTicketsCategorias()
         {
-            List<VistaCategorias> vistaCategorias = new List<VistaCategorias>();
+            List<VistaCategorias> vistaCategoria = new List<VistaCategorias>();
 
             var tickets = _context.Tickets
                           .Include(t => t.Categoria)
                           .AsQueryable();
 
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-
-            if (rol == "CLIENTE")
-            {
-                tickets = tickets.Where(t => t.UsuarioClienteID == userId);
-            }
-
             foreach (var ticket in tickets)
             {
-                var categoriaMostrar = vistaCategorias.FirstOrDefault(c => c.CategoriaId == ticket.CategoriaId);
+                var mostrarCategoria = vistaCategoria.FirstOrDefault(c => c.CategoriaId == ticket.CategoriaId);
 
-                if (categoriaMostrar == null)
+                if (mostrarCategoria == null)
                 {
-                    categoriaMostrar = new VistaCategorias
+                    mostrarCategoria = new VistaCategorias
                     {
                         CategoriaId = ticket.CategoriaId,
                         Descripcion = ticket.CategoriaString,
                         Tickets = new List<VistaTicket>()
+
+
+                    };
+                }
+                
+                    vistaCategoria.Add(mostrarCategoria);
+
+                    var mostrarTicket = new VistaTicket
+                    {
+                        TicketId = ticket.TicketId,
+                        Titulo = ticket.Titulo,
+                        Prioridad = (int)ticket.Prioridad,
+                        EstadoString = ticket.Estado.ToString(),
+                        FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
+                        PrioridadString = ticket.Prioridad.ToString(),
+                        CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
+                        UsuarioClienteID = ticket.UsuarioClienteID,
+                        /* NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
+                        EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null */
                     };
 
-                    
-                    vistaCategorias.Add(categoriaMostrar);
+                    mostrarCategoria.Tickets.Add(mostrarTicket);
+                
+            }
+            return vistaCategoria.ToList();
+        }
+
+        [HttpGet("ticketsClientes")]
+
+        public async Task<ActionResult<IEnumerable<VistaClientes>>> GetTicketsClientes()
+        {
+            List<VistaClientes> vistaClientes = new List<VistaClientes>();
+
+            var clientes = await _context.Clientes.ToListAsync();
+
+            /* var ticketsCliente = await _context.Tickets
+                              .Include(t => t.Categoria)
+                              .Where(t => t.UsuarioClienteID == clientes.UsuarioClienteID)
+                              .ToListAsync(); */
+
+            foreach (var cliente in clientes)
+            {
+                var mostrarCliente = vistaClientes.FirstOrDefault(c => c.ClienteId == cliente.ClienteId);
+
+                if (mostrarCliente == null)
+                {
+                    mostrarCliente = new VistaClientes
+                    {
+                        Nombre = cliente.Nombre,
+                        Email = cliente.Email,
+                        Tickets = new List<VistaTicket>()
+
+                    };
+
+                    vistaClientes.Add(mostrarCliente);
                 }
 
-                var ticketMostrar = new VistaTicket
-                {
-                    TicketId = ticket.TicketId,
-                    Titulo = ticket.Titulo,
-                    Prioridad = ticket.Prioridad,
-                    EstadoString = ticket.Estado.ToString(),
-                    FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
-                    PrioridadString = ticket.Prioridad.ToString(),
-                    CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
-                    UsuarioClienteID = ticket.UsuarioClienteID,
-                    NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
-                    EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null
-                };
+                var ticketCliente = await _context.Tickets
+                                    .Include(t => t.Categoria)
+                                    .Where(t => t.UsuarioClienteID == cliente.UsuarioClienteID)
+                                    .ToListAsync();
 
-                categoriaMostrar.Tickets.Add(ticketMostrar);
+                foreach (var ticket in ticketCliente)
+                {
+                    var mostrarTicket = new VistaTicket
+                    {
+                        Titulo = ticket.Titulo,
+                        
+
+                    };
+                    mostrarCliente.Tickets.Add(mostrarTicket);
+                    
+                }
+
+            }
+                            
+            
+
+            return Ok(vistaClientes);
+
         }
-        return vistaCategorias.ToList();
-        }
- */
+            
+            
+
+        
 
         [HttpGet("getTicketsPorCliente/{clienteID}")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketsPorCliente(int clienteID)
