@@ -50,6 +50,7 @@ async function VistaTicketsPorCliente()
 
         row.innerHTML = `
                 <td class='text-bold table-success' colspan='4'>${cliente.nombre}</td>
+                <td class='text-bold table-success' colspan='4'>${cliente.email}</td>
         `
         tbodyTicketsClientes.appendChild(row);
 

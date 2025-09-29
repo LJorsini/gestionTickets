@@ -1,4 +1,4 @@
-async function RolActual()
+/* async function RolActual()
 {
   const authHeaders = () => ({
     "Content-Type": "application/json",
@@ -25,7 +25,7 @@ async function RolActual()
   {
     console.error("Error al obtener el rol:", error);
   }
-};
+}; */
 
 async function CargarClientes() {
     const authHeaders = () => ({
@@ -124,5 +124,5 @@ async function TicketPorCliente(clienteId) {
 
 
 }
-RolActual();
+
 CargarClientes();
