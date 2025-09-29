@@ -1,21 +1,18 @@
 let rolUsuario = "";
 
-async function RolActual()
-{
+async function RolActual() {
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
 
-  try
-  {
+  try {
     const res = await fetch(`${URL_BASE_API}permisos/rolActual`, {
       method: "GET",
       headers: authHeaders(),
     })
 
-    if (!res.ok)
-    {
+    if (!res.ok) {
       throw new Error("Error en la solicitud");
     }
 
@@ -26,14 +23,12 @@ async function RolActual()
 
     let botonNuevo = document.getElementById("boton-NuevoTicket")
 
-if (rolUsuario === "DESARROLLADOR")
-{
-  botonNuevo.classList.add("d-none");
-  botonNuevo.disabled = true;
-}
+    if (rolUsuario === "DESARROLLADOR") {
+      botonNuevo.classList.add("d-none");
+      botonNuevo.disabled = true;
+    }
   }
-  catch (error)
-  {
+  catch (error) {
     console.error("Error al obtener el rol:", error);
   }
 };
@@ -109,17 +104,14 @@ async function MostrarTickets() {
     resultado.forEach((ticket) => {
       let row = document.createElement("tr");
 
-      /* let btnEditar = ""
 
-      if (rolUsuario !== "DESARROLLADOR")
-      {
-        btnEditar = `<button id="boton-Editar" class="btn btn-primary" onclick="AbrirModalEditar(${ticket.ticketId})">Editar</button>`;
-      }
-      else {
-        btnEditar = `<button id="boton-Editar" class="btn btn-primary d-none"  disabled>Editar</button>`;
-      } */
-
-
+      const btnEstadoTicket = ticket.estadoString === "Abierto"
+        ? `<button class="btn btn-success" onclick="IniciarTicket(${ticket.ticketId})">Iniciar</button>`
+          : ticket.estadoString === "EnProceso" 
+            ? `<button class="btn btn-danger" onclick="FinalizarTicket(${ticket.ticketId})">Finalizar</button>`
+            : `<button class="btn btn-secondary" disabled>Cerrado</button>`;
+        
+      
       row.innerHTML = `
             <td>${ticket.titulo}</td>
             <td>${ticket.fechaCreacionString}</td>
@@ -138,11 +130,14 @@ async function MostrarTickets() {
                 <button class="btn btn-success" onclick="AbrirModalHistorial(${ticket.ticketId})">Historial</button>
             </td>
             <td>
-                <button class="btn btn-success" onclick="Iniciar(${ticket.ticketId})">Iniciar</button>
+                ${btnEstadoTicket}
+                <!--<button class="btn btn-success" onclick="IniciarTicket(${ticket.ticketId})">Iniciar</button>-->
             </td>
       
       `;
       tablaTickets.appendChild(row);
+
+      /* MostrarTickets(); */
     });
   } catch (error) {
     Swal.fire({
@@ -264,7 +259,7 @@ async function EditarTicket() {
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
-  
+
   let ticketId = document.getElementById("ticketidEditar").value;
   let titulo = document.getElementById("tituloTicketEditar").value.trim();
   let descripcion = document.getElementById("floatingTextareaEditar").value.trim();
@@ -331,15 +326,13 @@ async function EliminarTicket(ticketId) {
     Authorization: `Bearer ${getToken()}`,
   });
 
-  try 
-  {
+  try {
     const res = await fetch(`${URL_BASE_API}tickets/${ticketId}`, {
       method: "DELETE",
       headers: authHeaders(),
     })
 
-    if (!res.ok) 
-    {
+    if (!res.ok) {
       const errorMsg = await res.text();
       throw new Error(errorMsg || "Error al eliminar ticket");
     }
@@ -352,8 +345,7 @@ async function EliminarTicket(ticketId) {
 
     MostrarTickets();
   }
-  catch (error) 
-  {
+  catch (error) {
     Swal.fire({
       icon: "error",
       text: "Error al eliminar ticket: " + error.message,
@@ -362,21 +354,19 @@ async function EliminarTicket(ticketId) {
 };
 
 async function AbrirModalHistorial(ticketId) {
-     const authHeaders = () => ({
+  const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
 
-  try 
-  {
+  try {
 
     const res = await fetch(`${URL_BASE_API}historiales/${ticketId}`, {
       method: "GET",
       headers: authHeaders(),
     });
 
-    if (!res.ok)
-    {
+    if (!res.ok) {
       const errorMsg = await res.text();
       throw new Error(errorMsg || "Error al eliminar ticket");
     }
@@ -397,20 +387,19 @@ async function AbrirModalHistorial(ticketId) {
                     <td>${historial.nombreUsuario}</td>
                `;
 
-               tablaHistorial.appendChild(row);
-    }) 
+      tablaHistorial.appendChild(row);
+    })
 
     $("#modalHistorial").modal("show");
   }
-  catch (error)
-  {
+  catch (error) {
     Swal.fire({
       icon: "error",
       text: "Error al mostrar historial: " + error.message,
     });
   }
 
-    
+
 }
 
 /* const inputFechaDesde = document.getElementById("buscarFechaDesde");
@@ -425,6 +414,93 @@ function LimpiarFormularioTicket() {
   document.getElementById("categoriasSelect").value = 0;
 }
 
+async function IniciarTicket(ticketId) {
+
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  try {
+
+    Swal.fire({
+      title: "¿Desea iniciar el ticket?",
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "Si, iniciar",
+      denyButtonText: `Cancelar`
+    }).then(async (result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        const res = await fetch(`${URL_BASE_API}tickets/estadoTicket/${ticketId}`,
+          {
+            method: "POST",
+            headers: authHeaders(),
+
+          });
+
+        if (!res.ok) {
+          const errorMsg = await res.text();
+          throw new Error(errorMsg || "Error al iniciar ticket");
+        }
+        Swal.fire("Tocket Iniciado!", "", "success");
+      } else if (result.isDenied) {
+        Swal.fire("El ticket no se inicio", "", "info");
+      }
+    });
+
+
+    /* const resultado = await res.json();  */
+  }
+  catch (err) {
+    Swal.fire({
+      icon: "error",
+      text: "Error al iniciar el ticket: " + err.message,
+    });
+  }
+
+};
+
+async function FinalizarTicket(ticketId) {
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  try {
+    Swal.fire({
+      title: "¿Desea Finalizar el ticket?",
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "Si, finalizar",
+      denyButtonText: `Cancelar`
+    }).then(async (result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        const res = await fetch(`${URL_BASE_API}tickets/finalizarTicket/${ticketId}`,
+          {
+            method: "POST",
+            headers: authHeaders(),
+
+          });
+
+        if (!res.ok) {
+          const errorMsg = await res.text();
+          throw new Error(errorMsg || "Error al finalizar ticket");
+        }
+        Swal.fire("Tocket finalizado!", "", "success");
+      } else if (result.isDenied) {
+        Swal.fire("El ticket finalizo", "", "info");
+      }
+    });
+  }
+  catch (err) {
+
+  }
+};
+
 RolActual();
 ObtenerCategorias();
+MostrarTickets();
+
 /* EditarTicket(3); */
