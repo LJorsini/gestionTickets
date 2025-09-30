@@ -334,25 +334,25 @@ namespace gestionTickets.Controllers
 
                     };
                 }
-                
-                    vistaCategoria.Add(mostrarCategoria);
 
-                    var mostrarTicket = new VistaTicket
-                    {
-                        TicketId = ticket.TicketId,
-                        Titulo = ticket.Titulo,
-                        Prioridad = (int)ticket.Prioridad,
-                        EstadoString = ticket.Estado.ToString(),
-                        FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
-                        PrioridadString = ticket.Prioridad.ToString(),
-                        CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
-                        UsuarioClienteID = ticket.UsuarioClienteID,
-                        /* NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
-                        EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null */
-                    };
+                vistaCategoria.Add(mostrarCategoria);
 
-                    mostrarCategoria.Tickets.Add(mostrarTicket);
-                
+                var mostrarTicket = new VistaTicket
+                {
+                    TicketId = ticket.TicketId,
+                    Titulo = ticket.Titulo,
+                    Prioridad = (int)ticket.Prioridad,
+                    EstadoString = ticket.Estado.ToString(),
+                    FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
+                    PrioridadString = ticket.Prioridad.ToString(),
+                    CategoriaString = ticket.Categoria != null ? ticket.Categoria.Descripcion : null,
+                    UsuarioClienteID = ticket.UsuarioClienteID,
+                    /* NombreUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.NombreCompleto : null,
+                    EmailUsuario = ticket.UsuarioCliente != null ? ticket.UsuarioCliente.Email : null */
+                };
+
+                mostrarCategoria.Tickets.Add(mostrarTicket);
+
             }
             return vistaCategoria.ToList();
         }
@@ -397,24 +397,72 @@ namespace gestionTickets.Controllers
                     var mostrarTicket = new VistaTicket
                     {
                         Titulo = ticket.Titulo,
-                        
+
 
                     };
                     mostrarCliente.Tickets.Add(mostrarTicket);
-                    
+
                 }
 
             }
-                            
-            
+
+
 
             return Ok(vistaClientes);
 
         }
-            
-            
 
-        
+        [HttpGet("informeCerrados")]
+
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketPorDesarrollador()
+        {
+
+            List<VistaDesarrollador> vistaDesarrollador = new List<VistaDesarrollador>();
+
+            var desarrolladores = await _context.Desarrolladores.ToListAsync();
+
+            foreach (var desarrollador in desarrolladores)
+            {
+                var mostrarDesarrollador = vistaDesarrollador.FirstOrDefault(t => t.DesarrolladorId == desarrollador.DesarrolladorId);
+
+                if (mostrarDesarrollador == null)
+                {
+                    mostrarDesarrollador = new VistaDesarrollador
+                    {
+                        NombreCompleto = desarrollador.NombreCompleto,
+                        Email = desarrollador.Email,
+                        TicketsCerrados = new List<VistaTicket>(),
+                    };
+
+                    vistaDesarrollador.Add(mostrarDesarrollador);
+
+
+                }
+
+                var ticketsCerrados = await _context.Tickets
+                                      .Include(t => t.Categoria)
+                                      .Where(t => t.Cerro == desarrollador.UsuarioClienteID).ToListAsync();
+
+                foreach (var ticketCerrado in ticketsCerrados)
+                {
+                    var mostrarTicket = new VistaTicket
+                    {
+                        Titulo = ticketCerrado.Titulo,
+
+                    };
+                    mostrarDesarrollador.TicketsCerrados.Add(mostrarTicket);
+
+
+                }
+
+            }
+
+            return Ok(vistaDesarrollador);
+        }
+
+
+
+
 
         [HttpGet("getTicketsPorCliente/{clienteID}")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketsPorCliente(int clienteID)
@@ -447,8 +495,8 @@ namespace gestionTickets.Controllers
 
                 foreach (var ticket in tickets)
                 {
-                    
-                    
+
+
                     var vistaTicket = new VistaTicket
                     {
                         TicketId = ticket.TicketId,
@@ -633,7 +681,7 @@ namespace gestionTickets.Controllers
 
         [HttpPost("estadoTicket/{ticketId}")]
 
-        public async Task <IActionResult> EstadoTicket(int ticketId)
+        public async Task<IActionResult> EstadoTicket(int ticketId)
         {
             var usuarioLogueadoId = HttpContext.User.Identity.Name;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -642,21 +690,21 @@ namespace gestionTickets.Controllers
             var ticket = await _context.Tickets.FindAsync(ticketId);
 
             if (ticket == null)
-            { 
+            {
                 return BadRequest("El ticket no existe");
             }
-            
+
             ticket.Estado = Estado.EnProceso;
             ticket.FechaComienzo = DateTime.Now;
 
-            
+
             await _context.SaveChangesAsync();
             return Ok();
         }
 
         [HttpPost("finalizarTicket/{ticketId}")]
 
-        public async Task <IActionResult> FinalizarTicket(int ticketId)
+        public async Task<IActionResult> FinalizarTicket(int ticketId)
         {
             var usuarioLogueadoId = HttpContext.User.Identity.Name;
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -665,14 +713,15 @@ namespace gestionTickets.Controllers
             var ticket = await _context.Tickets.FindAsync(ticketId);
 
             if (ticket == null)
-            { 
+            {
                 return BadRequest("El ticket no existe");
             }
-            
+
             ticket.Estado = Estado.Cerrado;
             ticket.FechaCierre = DateTime.Now;
+            ticket.Cerro = userId;
 
-            
+
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -792,10 +841,16 @@ namespace gestionTickets.Controllers
             return NoContent();
         }
 
+
+
         private bool TicketExists(int id)
         {
             return _context.Tickets.Any(e => e.TicketId == id);
         }
 
     }
+
+
+    /* GRAFICOS */
+    
 }

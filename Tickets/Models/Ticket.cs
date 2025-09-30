@@ -29,6 +29,7 @@ namespace gestionTickets.Models
         public DateTime FechaCierre { get; set; }
         public int CategoriaId { get; set; }
         public string? UsuarioClienteID { get; set; }
+        public string? Cerro { get; set; }
 
         [NotMapped]
         public string? UsuarioClienteEmail { get; set; }

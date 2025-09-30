@@ -8,5 +8,6 @@ public class VistaDesarrollador
     public string Observacion { get; set; }
     public int PuestoId { get; set; }
     public string? NombrePuesto { get; set; } // Nuevo campo para mostrar en la vista
-    public List<VistaTicket> TicketsCerrados {get; set;}
+    public string? Cerro { get; set; }
+    public List<VistaTicket> TicketsCerrados { get; set; }
 }
