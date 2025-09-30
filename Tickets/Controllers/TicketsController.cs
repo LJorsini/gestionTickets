@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Runtime.Intrinsics.X86;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.IO.Compression;
 
 namespace gestionTickets.Controllers
 {
@@ -462,6 +463,83 @@ namespace gestionTickets.Controllers
 
 
 
+        /* GTickets ultimo 4 meses */
+
+        [HttpGet("graficoBarraMes")]
+
+        public async Task<ActionResult<IEnumerable<VistaTicketMes>>> GetTicketCerradosMes()
+        {
+            List<VistaTicketMes> vistaTicketMes = new List<VistaTicketMes>();
+
+            var FechaActual = DateTime.Now;
+
+            var ticketsCerrados = await _context.Tickets
+                                  .Where(t => t.Estado == Estado.Cerrado)
+                                  .ToListAsync();
+
+            for (int i = 3; i >= 0; i--)
+            {
+                var mes = FechaActual.AddMonths(-i);
+
+                var cantidad = ticketsCerrados
+                               .Where(t => t.FechaCierre.Month == mes.Month && t.FechaCierre.Year == mes.Year)
+                               .Count();
+
+                vistaTicketMes.Add(new VistaTicketMes
+                {
+                    Mes = mes.Month,
+                    Anio = mes.Year,
+                    CantidadCerrados = cantidad,
+
+                });
+                
+
+            }
+            return vistaTicketMes;
+        }
+
+        [HttpGet("graficoBarrasCreadosCerrados")]
+
+        public async Task<ActionResult<IEnumerable<VistaTicketMes>>> GetTicketCreadosCerrados()
+        {
+            List<VistaTicketMes> vistaTicketMes = new List<VistaTicketMes>();
+
+            var FechaActual = DateTime.Now;
+
+            var ticketsCerrados = await _context.Tickets
+                                  .Where(t => t.Estado == Estado.Cerrado)
+                                  .ToListAsync();
+
+
+            var ticketsCreadaos = await _context.Tickets
+                                 .ToListAsync();
+                                
+
+            for (int i = 5; i >= 0; i--)
+            {
+                var mes = FechaActual.AddMonths(-i);
+
+                var cantidadCerrados = ticketsCerrados
+                               .Where(t => t.FechaCierre.Month == mes.Month && t.FechaCierre.Year == mes.Year)
+                               .Count();
+
+                var cantidadCreados = ticketsCreadaos
+                                      .Where(t => t.FechaCreacion.Month == mes.Month && t.FechaCreacion.Year == mes.Year)
+                                      .Count();
+               
+
+                vistaTicketMes.Add(new VistaTicketMes
+                {
+                    Mes = mes.Month,
+                    Anio = mes.Year,
+                    CantidadCerrados = cantidadCerrados,
+                    CantidadCreados =  cantidadCreados,
+
+                });
+}
+            return vistaTicketMes;
+        }
+
 
 
         [HttpGet("getTicketsPorCliente/{clienteID}")]
@@ -845,6 +923,9 @@ namespace gestionTickets.Controllers
 
         private bool TicketExists(int id)
         {
+
+            
+            
             return _context.Tickets.Any(e => e.TicketId == id);
         }
 
