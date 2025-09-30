@@ -1,23 +1,4 @@
-const ctx = document.getElementById('graficoBarras');
-
-  /* new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-      datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  }); */
+/* const ctx = document.getElementById('graficoBarras');
   const datos = {
       labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
@@ -72,4 +53,54 @@ const ctx = document.getElementById('graficoBarras');
       type: 'bar',
       data: datos,
       options: opciones
+    }); */
+
+async function TicketsPorMes ()
+{
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  try
+  {
+    const res = await fetch(`${URL_API_BASE}tickets/graficoBarraMes`, {
+       method: "GET",
+       headers: authHeaders(),
     });
+
+    if (!res.ok)
+    {
+       throw new Error("Error en la solicitud");   
+    }
+   
+    const resultado = await res.json();
+
+  }
+
+  catch
+  {
+    console.error("Error al obtener los tickets:", error);
+  }
+};
+
+  const ctx = document.getElementById('ticket-cerrados');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green'],
+      datasets: [{
+        label: 'Tickets cerrados los ultimos 4 meses',
+        data: [12, 19, 3, 5,],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });

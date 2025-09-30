@@ -112,7 +112,10 @@ async function TicketPorCliente(clienteId) {
             <td>${ticket.emailUsuario}</td>
             `
             tbodyTicketsClientes.appendChild(row);
-  });
+  }
+
+
+);
 
 }
   catch (error) 

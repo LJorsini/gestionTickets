@@ -1,4 +1,4 @@
-async function DesarrolladorPuestoCategoria()
+/* async function DesarrolladorPuestoCategoria()
 {
     const authHeaders = () => ({
     "Content-Type": "application/json",
@@ -34,24 +34,61 @@ async function DesarrolladorPuestoCategoria()
     });
 });
 
-} 
+}  */
 
 
-/* async function TicketsCerrados()
+async function TicketsCerrados()
 {
      const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
-
-   const res = await fetch(`${URL_BASE_API}vistaParcial/informeCerrados` , {
+  try
+  {
+     const res = await fetch(`${URL_BASE_API}tickets/informeCerrados` , {
          method: "GET",
         headers: authHeaders(),
   });
 
+  if (!res.ok)
+  {
+    throw new Error("Error en la solicitud");   
+  }
   const resultado = await res.json();
   console.log(resultado);
-} */
 
+  const tablaParcial = document.getElementById("tbody-Parcial");
+  tablaParcial.innerHTML = ""
 
-DesarrolladorPuestoCategoria();
+  resultado.forEach(tick => {
+    let row = document.createElement("tr")
+
+    row.innerHTML = `
+              <td>${tick.nombreCompleto}</td>
+              <td>${tick.email}</td>
+    `
+
+    tablaParcial.appendChild(row);
+
+    tick.ticketsCerrados.forEach(ticket => {
+
+      let row = document.createElement("tr")
+
+      row.innerHTML = `
+              <td>${ticket.titulo}</td>
+      `
+
+      tablaParcial.appendChild(row);
+    })
+    
+  });
+}
+catch (err)
+{
+  console.error("Error al obtener los tickets:", err);
+} 
+};
+  
+
+TicketsCerrados();
+/* DesarrolladorPuestoCategoria(); */
