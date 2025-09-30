@@ -1,59 +1,4 @@
-/* const ctx = document.getElementById('graficoBarras');
-  const datos = {
-      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-               'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-      datasets: [
-        {
-          label: 'Año 2023',
-          data: [120, 150, 130, 170, 180, 160, 140, 155, 165, 175, 190, 200],
-          backgroundColor: 'rgba(75, 192, 192, 0.5)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        },
-        {
-          label: 'Año 2024',
-          data: [130, 160, 140, 180, 190, 170, 150, 165, 175, 185, 200, 210],
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1
-        }
-      ]
-    };
 
-    const opciones = {
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Cantidad de patentamientos'
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: 'Meses'
-          }
-        }
-      },
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: 'Patentamientos por mes — comparativo'
-        },
-        tooltip: {
-          mode: 'index',
-          intersect: false
-        }
-      }
-    };
-
-    const miGrafico = new Chart(ctx, {
-      type: 'bar',
-      data: datos,
-      options: opciones
-    }); */
 
 async function TicketsPorMes ()
 {
@@ -64,7 +9,7 @@ async function TicketsPorMes ()
 
   try
   {
-    const res = await fetch(`${URL_API_BASE}tickets/graficoBarraMes`, {
+    const res = await fetch(`${URL_BASE_API}tickets/graficoBarraMes`, {
        method: "GET",
        headers: authHeaders(),
     });
@@ -76,23 +21,25 @@ async function TicketsPorMes ()
    
     const resultado = await res.json();
 
-  }
+    console.log(resultado);
 
-  catch
-  {
-    console.error("Error al obtener los tickets:", error);
-  }
-};
+    const labels = [];
+    const valores = [];
 
-  const ctx = document.getElementById('ticket-cerrados');
+    resultado.forEach(datos => {
+        labels.push(datos.mes + "/" + datos.anio)
+        valores.push(datos.cantidadCerrados)
+    });
+
+    const ctx = document.getElementById('ticket-cerrados');
 
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green'],
+      labels: labels,
       datasets: [{
         label: 'Tickets cerrados los ultimos 4 meses',
-        data: [12, 19, 3, 5,],
+        data: valores,
         borderWidth: 1
       }]
     },
@@ -104,3 +51,93 @@ async function TicketsPorMes ()
       }
     }
   });
+
+  }
+
+  catch (error)
+  {
+    console.error("Error al obtener los tickets:", error);
+  }
+};
+
+
+
+/* Ticket cerrados y creados */
+async function TicketsCerradosCreados ()
+{
+  const authHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getToken()}`,
+  });
+
+  try
+  {
+    const res = await fetch(`${URL_BASE_API}tickets/graficoBarrasCreadosCerrados`, {
+       method: "GET",
+       headers: authHeaders(),
+    });
+
+    if (!res.ok)
+    {
+       throw new Error("Error en la solicitud");   
+    }
+   
+    const resultado = await res.json();
+
+    console.log(resultado);
+
+    const labels = [];
+    const creados = [];
+    const cerrados = []
+
+    resultado.forEach(datos => {
+        labels.push(datos.mes + "/" + datos.anio)
+        cerrados.push(datos.cantidadCerrados)
+        creados.push(datos.cantidadCreados)
+    });
+
+    const ctx1 = document.getElementById('ticket-cerradosCreados');
+
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Tickets creados los ultimos 6 meses',
+        data: creados,
+        borderWidth: 1
+      },
+      {
+        label: 'Tickets cerrados los ultimos 6 meses',
+        data: cerrados,
+        borderWidth: 1
+      } 
+    
+    ]
+
+      
+
+      
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  }
+
+  catch (error)
+  {
+    console.error("Error al obtener los tickets:", error);
+  }
+};
+
+  
+
+  TicketsPorMes ();
+ TicketsCerradosCreados ()
+
