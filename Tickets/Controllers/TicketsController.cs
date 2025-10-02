@@ -294,11 +294,11 @@ namespace gestionTickets.Controllers
                 Titulo = ticket.Titulo,
                 Descripcion = ticket.Descripcion,
                 Prioridad = (int)ticket.Prioridad,     // valor para el select
-                PrioridadString = ticket.Prioridad.ToString(),
+                PrioridadString = ticket.PrioridadString,
                 CategoriaId = ticket.CategoriaId,
                 CategoriaString = ticket.Categoria?.Descripcion,
                 EstadoString = ticket.Estado.ToString(),
-                FechaCreacionString = ticket.FechaCreacion.ToString("dd/MM/yyyy"),
+                FechaCreacionString = ticket.FechaCierreString,
                 UsuarioClienteID = ticket.UsuarioClienteID
 
             };
