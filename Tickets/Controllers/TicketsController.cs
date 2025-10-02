@@ -599,6 +599,38 @@ namespace gestionTickets.Controllers
                 return StatusCode(500, new { message = "Error al obtener tickets", detalle = ex.Message });
             }
         }
+
+        [HttpGet("informeHome")]
+
+        public async Task<ActionResult<IEnumerable<VistaTicket>>> GetDatosHome()
+        {
+            List<VistaTicket> vistaHome = new List<VistaTicket>();
+
+            var tickets = await _context.Tickets
+                          .Include(t => t.Categoria)
+                          .ToListAsync();
+
+            foreach (var ticket in tickets)
+            {
+                var mostrarTicket = new VistaTicket
+                {
+                    TicketId = ticket.TicketId,
+                    Titulo = ticket.Titulo,
+                    Descripcion = ticket.Descripcion,
+                    EstadoString = ticket.EstadoString,
+                    PrioridadString = ticket.PrioridadString,
+                    FechaCreacionString = ticket.FechaCreacionString,
+                    FechaComienzoString = ticket.FechaComienzoString,
+                    FechaCierreString = ticket.FechaCierreString,
+                };
+
+                vistaHome.Add(mostrarTicket);
+            }
+
+            return vistaHome;
+
+
+        }
         /* [HttpGet("GetTicketsPorCliente/{clienteId}")]
         public async Task<ActionResult<IEnumerable<VistaTicket>>> GetTicketsPorCliente(int clienteId)
         {

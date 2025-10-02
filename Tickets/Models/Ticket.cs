@@ -26,7 +26,13 @@ namespace gestionTickets.Models
         public string? CategoriaString { get { return Categoria?.Descripcion; } }
 
         public DateTime FechaComienzo { get; set; }
+
+        [NotMapped]
+        public string? FechaComienzoString { get  { return FechaComienzo.ToString("dd/MM/yyyy"); } }
         public DateTime FechaCierre { get; set; }
+
+        [NotMapped]
+        public string? FechaCierreString { get  { return FechaCierre.ToString("dd/MM/yyyy"); } }
         public int CategoriaId { get; set; }
         public string? UsuarioClienteID { get; set; }
         public string? Cerro { get; set; }

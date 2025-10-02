@@ -14,6 +14,8 @@ public class VistaTicket
 
         public string EstadoString { get; set; } //crear enum pero como string
         public string FechaCreacionString { get; set; }
+        public string FechaComienzoString { get; set; }
+        public string FechaCierreString { get; set; }
         public int CategoriaId { get; set; }
         public string? CategoriaString { get; set; }
         
