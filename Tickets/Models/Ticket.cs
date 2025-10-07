@@ -64,8 +64,8 @@ namespace gestionTickets.Models
 
     public class FiltroTickets
     {
-        public string FechaDesde { get; set; }
-        public string FechaHasta { get; set; }
+        public string? FechaDesde { get; set; }
+        public string? FechaHasta { get; set; }
         public int CategoriaId { get; set; }
         public int Prioridad { get; set; }
         public int Estado { get; set; } // 1: Abierto, 2: EnProceso, 3: Cerrado, 4: Cancelado

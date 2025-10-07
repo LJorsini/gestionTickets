@@ -11,6 +11,8 @@ namespace gestionTickets.Models
         public string? PrioridadString { get; set; }
         public List<VistaTicket> Tickets { get; set; }
     }
+
+   
 }
 
 

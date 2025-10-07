@@ -35,7 +35,7 @@ namespace gestionTickets.Controllers
 
             var tickets = await _context.Tickets
                           .Include(t => t.Categoria)
-                          .ToArrayAsync();
+                          .ToListAsync();
             foreach (var ticket in tickets)
             {
                 var mostrarVistaFecha = vistaFechaPrioridad.FirstOrDefault(t => t.FechaCreacionString == ticket.FechaCreacionString);
@@ -68,9 +68,57 @@ namespace gestionTickets.Controllers
                     Descripcion = ticket.Descripcion
                 };
                 mostrarPrioridad.Tickets.Add(mostrarTicket);
-             }
+            }
             return vistaFechaPrioridad;
-        } 
+        }
+
+        [HttpGet("ticketsFechaEstado")]
+        public async Task<ActionResult<IEnumerable<VistaFechaEstado>>> GetTicketFechaEstado()
+        {
+
+            List<VistaFechaEstado> vistaFechaEstado = new List<VistaFechaEstado>();
+
+            var tickets = await _context.Tickets
+                          .Include(t => t.Categoria)
+                          .ToListAsync();
+
+            foreach (var ticket in tickets)
+            {
+                var mostrarVistaFecha = vistaFechaEstado.FirstOrDefault(t => t.FechaCreacionString == ticket.FechaCreacionString);
+
+                if (mostrarVistaFecha == null)
+                {
+                    mostrarVistaFecha = new VistaFechaEstado
+                    {
+                        FechaCreacionString = ticket.FechaCreacionString,
+                        Estados = new List<Estados>(),
+                    };
+                    vistaFechaEstado.Add(mostrarVistaFecha);
+                }
+
+                var mostrarEstados = mostrarVistaFecha.Estados.FirstOrDefault(t => t.EstadoString == ticket.EstadoString);
+
+                if (mostrarEstados == null)
+                {
+                    mostrarEstados = new Estados
+                    {
+                        EstadoString = ticket.EstadoString,
+                        Tickets = new List<VistaTicket>(),
+                    };
+                    mostrarVistaFecha.Estados.Add(mostrarEstados);
+                }
+
+                var vistaTickets = new VistaTicket
+                {
+                    Titulo = ticket.Titulo,
+                    Descripcion = ticket.Descripcion
+                };
+                mostrarEstados.Tickets.Add(vistaTickets);
+                
+
+            }
+            return vistaFechaEstado;
+        }
     }
 
 
