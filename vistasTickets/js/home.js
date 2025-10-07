@@ -115,7 +115,7 @@ async function ModalHome(ticketId)
     `;
 
     
-    document.getElementById("tituloModalHome").textContent = `Ticket #${respuesta.ticketId}`;
+    document.getElementById("tituloModalHome").textContent = `${respuesta.titulo}`.toUpperCase();
 
      $("#modalHome").modal("show");
   }

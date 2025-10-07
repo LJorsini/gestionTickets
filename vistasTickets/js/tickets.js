@@ -60,10 +60,11 @@ async function ObtenerCategorias() {
   const selectCategoria = document.getElementById("categoriasSelect");
   selectCategoria.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
 
-  const selectCategoriaEditar = document.getElementById(
-    "categoriasSelectEditar"
-  );
+  const selectCategoriaEditar = document.getElementById("categoriasSelectEditar");
   selectCategoriaEditar.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
+
+  const selectCategoriaFiltro = document.getElementById("ticketBuscarCategoria");
+  selectCategoriaFiltro.innerHTML = "";
 
   let opcionesBuscar = `<option value="0">[Todas las categorias]</option>`;
 
@@ -72,6 +73,7 @@ async function ObtenerCategorias() {
   });
   selectCategoria.innerHTML = opcionesBuscar;
   selectCategoriaEditar.innerHTML = opcionesBuscar;
+  selectCategoriaFiltro.innerHTML = opcionesBuscar;
 
   MostrarTickets(); // Llamo a la funcion MostrarTickets para que cargue los tickets con las categorias
 }

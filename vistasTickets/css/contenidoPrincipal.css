@@ -1,0 +1,17 @@
+main {
+    height: calc(100vh - 56px); /* 100% alto menos navbar */
+    overflow: hidden; /* evita scroll en el body */
+}
+
+.sidebar {
+    height: 100%;
+    overflow-y: auto; /* scroll interno para el menú */
+}
+
+#contenidoPrincipal {
+    flex-grow: 1;
+    overflow-y: auto; /* scroll solo dentro del contenido principal */
+    padding: 20px;
+    height: 100%;
+    background-color: #f8f9fa; /* opcional, para distinguir */
+}
