@@ -63,31 +63,85 @@ async function ObtenerCategorias() {
   const selectCategoriaEditar = document.getElementById("categoriasSelectEditar");
   selectCategoriaEditar.innerHTML = ""; // Limpio el contenido del select antes de llenarlo
 
-  const selectCategoriaFiltro = document.getElementById("ticketBuscarCategoria");
+  const selectCategoriaFiltro = document.getElementById("ticketFiltroCategoria");
   selectCategoriaFiltro.innerHTML = "";
 
   let opcionesBuscar = `<option value="0">[Todas las categorias]</option>`;
+  let opciones = `<option value="0">[Todas las categorias]</option>`;
 
   resultado.forEach((cat) => {
+    opciones += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
     opcionesBuscar += `<option value="${cat.categoriaId}">${cat.descripcion}</option>`;
   });
+  selectCategoriaFiltro.innerHTML = opciones;
   selectCategoria.innerHTML = opcionesBuscar;
   selectCategoriaEditar.innerHTML = opcionesBuscar;
-  selectCategoriaFiltro.innerHTML = opcionesBuscar;
+ 
 
   MostrarTickets(); // Llamo a la funcion MostrarTickets para que cargue los tickets con las categorias
 }
 
+
+/* Input filtros */
+const inputCategoria = document.getElementById("ticketFiltroCategoria");
+inputCategoria.onchange = function () {
+  MostrarTickets();
+};
+
+const inputPrioridad = document.getElementById("ticketFiltroPrioridad");
+inputPrioridad.onchange = function () {
+  MostrarTickets();
+};
+
+const inputEstado = document.getElementById("ticketFiltroEstado");
+inputEstado.onchange = function () {
+  MostrarTickets();
+};
+
+const inputFechaDesde = document.getElementById("buscarFechaDesde");
+inputFechaDesde.onchange = function () {
+  MostrarTickets();
+};
+
+const inputFechaHasta = document.getElementById("buscarFechaHasta");
+inputFechaHasta.onchange = function () {
+  MostrarTickets();
+};
+
 async function MostrarTickets() {
+
+   let fechaDesde = document.getElementById("buscarFechaDesde").value;
+   let fechaHasta = document.getElementById("buscarFechaHasta").value;
+
+ // Convertir a objetos Date
+    const fecha1 = new Date(fechaDesde);
+    const fecha2 = new Date(fechaHasta);
+
+    // Comparar
+    if (fecha1 > fecha2) {
+        //console.log("Fecha 1 es mayor que Fecha 2");
+        fechaHasta = fechaDesde ;
+        document.getElementById("buscarFechaHasta").value = fechaDesde;
+    } 
+
+    const filtros = {
+        FechaDesde: fechaDesde,
+        FechaHasta: fechaHasta,
+        CategoriaId: parseInt(document.getElementById("ticketFiltroCategoria").value) || 0,
+        Prioridad: document.getElementById("ticketFiltroPrioridad").value,
+        Estado: document.getElementById("ticketFiltroEstado").value
+    };
+
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
 
   try {
-    const res = await fetch(`${URL_BASE_API}tickets/obtenerTickets`, {
-      method: "GET",
+    const res = await fetch(`${URL_BASE_API}tickets/obtenerTicketsFiltrar`, {
+      method: "POST",
       headers: authHeaders(),
+      body: JSON.stringify(filtros)
     });
 
     if (!res.ok) {
@@ -96,6 +150,9 @@ async function MostrarTickets() {
         throw new Error(errorMsg || "Errr al traer los tickets");
       }
     }
+
+    LimpiarFormularioTicket();
+    $("#modalTickets").modal("hide");
 
     const resultado = await res.json();
     console.log(resultado);
@@ -208,6 +265,8 @@ async function NuevoTicket() {
       title: "¡Ticket creado!",
       text: "El ticket se guardó correctamente",
     });
+
+    MostrarTickets();
   } catch (error) {
     Swal.fire({
       icon: "error",
@@ -446,6 +505,7 @@ async function IniciarTicket(ticketId) {
           throw new Error(errorMsg || "Error al iniciar ticket");
         }
         Swal.fire("Tocket Iniciado!", "", "success");
+        MostrarTickets();
       } else if (result.isDenied) {
         Swal.fire("El ticket no se inicio", "", "info");
       }
@@ -491,6 +551,7 @@ async function FinalizarTicket(ticketId) {
           throw new Error(errorMsg || "Error al finalizar ticket");
         }
         Swal.fire("Tocket finalizado!", "", "success");
+        MostrarTickets();
       } else if (result.isDenied) {
         Swal.fire("El ticket finalizo", "", "info");
       }

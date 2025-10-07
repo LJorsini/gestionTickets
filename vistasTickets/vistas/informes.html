@@ -8,16 +8,20 @@
       <option value="1">Categoria</option>
       <option value="2">Cliente</option>
       <option value="3">Fecha - Prioridad</option>
+      <option value="4">Fecha - Estado</option>
+      <option value="5">Ticket - Historial</option>
     </select>
   </div>
 </div>
 
 <h2 id="tituloInformes"></h2>
 
+
+<!-- Categoria -->
 <table class="table">
   <thead>
     <tr>
-      <th id="tituloInformes" scope="col">Categoria</th>
+      <th scope="col">Categoria</th>
       <!-- <th scope="col">Fecha Creacion</th>
             <th scope="col">Categoria</th>
             <th scope="col">Estado</th>
@@ -30,10 +34,11 @@
   <tbody id="tbody-catClientes"></tbody>
 </table>
 
+<!-- Cliente -->
   <table class="table">
     <thead>
       <tr>
-        <th id="tituloInformes" scope="col">Cliente</th>
+        <th  scope="col">Cliente</th>
         <!-- <th scope="col">Fecha Creacion</th>
             <th scope="col">Categoria</th>
             <th scope="col">Estado</th>
@@ -44,8 +49,9 @@
       </tr>
     </thead>
     <tbody id="tbody-tickClientes"></tbody>
-    </table>
+  </table>
 
+  <!-- Fecha - Prioridad -->
     <table class="table">
       <thead>
         <tr>
@@ -57,5 +63,18 @@
         
       </tbody>
     </table>
-  </table>
+  
+
+
+<!-- Fecha - estado -->
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Fecha</th>
+      
+    </tr>
+  </thead>
+  <tbody id="tbody-fechaEstado">
+    
+  </tbody>
 </table>
