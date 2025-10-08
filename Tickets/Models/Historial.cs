@@ -17,7 +17,7 @@ public class Historial
     [NotMapped]
     public string FechaModificacionString { get { return FechaModificacion.ToString("dd/MM/yyyy HH:mm"); } }
 
-    /* public virtual Ticket Ticket { get; set; } */
+    public virtual Ticket? Ticket { get; set; }
 
 }
 

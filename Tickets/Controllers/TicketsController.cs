@@ -368,9 +368,9 @@ namespace gestionTickets.Controllers
 
         [HttpGet("ticketsClientes")]
 
-        public async Task<ActionResult<IEnumerable<VistaClientes>>> GetTicketsClientes()
+        public async Task<ActionResult<IEnumerable<VistaCliente>>> GetTicketsClientes()
         {
-            List<VistaClientes> vistaClientes = new List<VistaClientes>();
+            List<VistaCliente> vistaClientes = new List<VistaCliente>();
 
             var clientes = await _context.Clientes.ToListAsync();
 
@@ -385,7 +385,7 @@ namespace gestionTickets.Controllers
 
                 if (mostrarCliente == null)
                 {
-                    mostrarCliente = new VistaClientes
+                    mostrarCliente = new VistaCliente
                     {
                         Nombre = cliente.Nombre,
                         Email = cliente.Email,

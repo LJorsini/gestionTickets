@@ -1,8 +1,9 @@
 using gestionTickets.Models;
+using gestionTickets.Models.Vistas;
 
 namespace gestionTickets.ModelsVistas
 {
-    public class VistaClientes
+    public class VistaCliente
     {
         public int ClienteId { get; set; }
         public string? Nombre { get; set; }
@@ -13,5 +14,6 @@ namespace gestionTickets.ModelsVistas
         public bool? Eliminado { get; set; }
         public string? UsuarioClienteID { get; set; }
         public List<VistaTicket> Tickets { get; set; }
+        public List<VistaCategorias> Categorias { get; set; }
     }
 }

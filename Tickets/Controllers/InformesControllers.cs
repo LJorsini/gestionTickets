@@ -1,11 +1,14 @@
 using Ezpeleta2025.Models.Usuario;
 using gestionTickets.Models;
+using gestionTickets.Models.Vistas;
+using gestionTickets.ModelsVistas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO.Compression;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -82,6 +85,7 @@ namespace gestionTickets.Controllers
                           .Include(t => t.Categoria)
                           .ToListAsync();
 
+            
             foreach (var ticket in tickets)
             {
                 var mostrarVistaFecha = vistaFechaEstado.FirstOrDefault(t => t.FechaCreacionString == ticket.FechaCreacionString);
@@ -114,12 +118,117 @@ namespace gestionTickets.Controllers
                     Descripcion = ticket.Descripcion
                 };
                 mostrarEstados.Tickets.Add(vistaTickets);
-                
+
 
             }
             return vistaFechaEstado;
         }
+
+        [HttpGet("ticketsCantidad")]
+        public async Task<ActionResult<IEnumerable<VistaClienteTicket>>> GetTicketCantidad()
+        {
+            
+            List<VistaClienteTicket> vistaCantidad = new List<VistaClienteTicket>();
+
+            var tickets =  await _context.Tickets.Include(t => t.Categoria).ToListAsync();
+
+            foreach (var ticket in tickets)
+            {
+                //Busco El usurioClienteId del ticket
+                var clienteUser = _context.Users.Where(u => u.Id == ticket.UsuarioClienteID).FirstOrDefault();
+                var cliente = _context.Clientes.Where(c => c.Email == clienteUser.NormalizedEmail).FirstOrDefault();
+                
+
+                /* var mostrarCategoria = mostrarCliente.Categorias.Where(t => t.CategoriaId == ticket.CategoriaId).FirstOrDefault();
+
+                if (mostrarCategoria == null)
+                {
+                    mostrarCategoria = new VistaCategorias
+                    {
+                        CategoriaId = ticket.CategoriaId,
+                        Descripcion = ticket.CategoriaString,
+                        CantidadTicketsAbiertos = tickets.Where(t => t.CategoriaId == ticket.CategoriaId && t.UsuarioClienteID == cliente.UsuarioClienteID && t.Estado == Estado.Abierto).Count(),
+                        CantidadTicketProceso = tickets.Where(t => t.CategoriaId == ticket.CategoriaId && t.UsuarioClienteID == cliente.UsuarioClienteID && t.Estado == Estado.EnProceso).Count(),
+                        CantidadTicketsCerrados = tickets.Where(t => t.CategoriaId == ticket.CategoriaId && t.UsuarioClienteID == cliente.UsuarioClienteID && t.Estado == Estado.Cerrado).Count(),
+                    };
+                    mostrarCliente.Categorias.Add(mostrarCategoria);
+                } */
+
+
+            }
+                return Ok();
+        }
+    
     }
 
 
 }
+
+
+/* [HttpPost("cantidadticketsporClientes")] //Informe de 2 niveles por clientes
+        public async Task<ActionResult<IEnumerable<ClienteTicket>>> InformeCantidadTicketPorClientes([FromBody] FiltroTicket filtro)
+        {
+            List<ClienteTicket> clientesMostrar = new List<ClienteTicket>();
+
+            var tickets = _context.Ticket.Include(t => t.Categoria).AsQueryable();
+
+            //VER DE ACUERDO AL ROL QUE TIENE SI DEBE FILTRAR POR USUARIO O NO
+            //var usuarioLogueadoID = HttpContext.User.Identity.Name;
+            // var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            // if (rol == "CLIENTE")
+            // {
+            //     tickets = tickets.Where(t => t.UsuarioClienteID == userId);
+            // }
+
+            DateTime fechaDesde = new DateTime();
+            bool fechaDesdeValida = DateTime.TryParse(filtro.FechaDesde, out fechaDesde);
+
+            DateTime fechaHasta = new DateTime();
+            bool fechaHastaValida = DateTime.TryParse(filtro.FechaHasta, out fechaHasta);
+
+            if (fechaDesdeValida && fechaHastaValida)
+            {
+                fechaHasta = fechaHasta.AddHours(23);
+                fechaHasta = fechaHasta.AddMinutes(59);
+                fechaHasta = fechaHasta.AddSeconds(59);
+                tickets = tickets.Where(t => t.FechaCreacion >= fechaDesde && t.FechaCreacion <= fechaHasta);
+            }
+
+            foreach (var ticket in tickets)
+            {
+                //buscar el usuarioclienteID del Ticket
+                var clienteUser = await _context.Users.Where(u => u.Id == ticket.UsuarioClienteID).FirstOrDefaultAsync();
+                //comparamos el email guardado en user con el email de Cliente
+                var cliente = await _context.Cliente.Where(c => c.Email == clienteUser.Email).FirstOrDefaultAsync();
+                //ver si el cliente ya esta cargado en el listado
+                var clienteMostrar = clientesMostrar.Where(c => c.Email == cliente.Email).FirstOrDefault();
+                if (clienteMostrar == null)
+                {
+                    clienteMostrar = new ClienteTicket
+                    {
+                        ClienteID = cliente.ClienteID,
+                        Nombre = cliente.Nombre,
+                        Categorias = new List<CategoriaTickets>()
+                    };
+                    clientesMostrar.Add(clienteMostrar);
+                }
+
+                var categoriaMostrar = clienteMostrar.Categorias.Where(x => x.CategoriaID == ticket.CategoriaID).FirstOrDefault();
+                if (categoriaMostrar == null)
+                {
+                    categoriaMostrar = new CategoriaTickets
+                    {
+                        CategoriaID = ticket.CategoriaID,
+                        Nombre = ticket.CategoriaString,
+                        CantidadAbiertos = tickets.Where(t => t.CategoriaID == ticket.CategoriaID && t.UsuarioClienteID == clienteUser.Id && t.Estados == Estado.Abierto).Count(),
+                        CantidadCerrados = tickets.Where(t => t.CategoriaID == ticket.CategoriaID && t.UsuarioClienteID == clienteUser.Id && t.Estados == Estado.Cerrado).Count(),
+                        CantidadenProceso = tickets.Where(t => t.CategoriaID == ticket.CategoriaID && t.UsuarioClienteID == clienteUser.Id && t.Estados == Estado.EnProceso).Count()
+                    };
+                    clienteMostrar.Categorias.Add(categoriaMostrar);
+                }
+            }
+
+            return clientesMostrar;
+        } */

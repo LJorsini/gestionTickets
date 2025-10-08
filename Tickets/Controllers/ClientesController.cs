@@ -34,15 +34,15 @@ namespace gestionTickets.Controllers
         }  */  ////cambio editar
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VistaClientes>>> GetCliente()
+        public async Task<ActionResult<IEnumerable<VistaCliente>>> GetCliente()
         {
-            List<VistaClientes> vistaClientes = new List<VistaClientes>();
+            List<VistaCliente> vistaClientes = new List<VistaCliente>();
 
             var clientes = await _context.Clientes.ToListAsync();
 
             foreach (var cliente in clientes)
             {
-                var mostrarCliente = new VistaClientes
+                var mostrarCliente = new VistaCliente
                 {
                     ClienteId = cliente.ClienteId,
                     Nombre = cliente.Nombre,

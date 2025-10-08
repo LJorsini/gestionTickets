@@ -28,11 +28,11 @@ namespace gestionTickets.Models
         public DateTime FechaComienzo { get; set; }
 
         [NotMapped]
-        public string? FechaComienzoString { get  { return FechaComienzo.ToString("dd/MM/yyyy"); } }
+        public string? FechaComienzoString { get { return FechaComienzo.ToString("dd/MM/yyyy"); } }
         public DateTime FechaCierre { get; set; }
 
         [NotMapped]
-        public string? FechaCierreString { get  { return FechaCierre.ToString("dd/MM/yyyy"); } }
+        public string? FechaCierreString { get { return FechaCierre.ToString("dd/MM/yyyy"); } }
         public int CategoriaId { get; set; }
         public string? UsuarioClienteID { get; set; }
         public string? Cerro { get; set; }
@@ -40,6 +40,7 @@ namespace gestionTickets.Models
         [NotMapped]
         public string? UsuarioClienteEmail { get; set; }
         public virtual Categoria? Categoria { get; set; }
+        public virtual ICollection<Historial>? Historiales { get; set; } 
          
         
 
