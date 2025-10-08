@@ -54,7 +54,8 @@
             "tbody-catClientes",
             "tbody-tickClientes",
             "tbody-FechaPrioridad",
-            "tbody-fechaEstado"
+            "tbody-fechaEstado",
+            "tbody-ticketCantidad"
         ];
         tablas.forEach(id => {
             const tbody = document.getElementById(id);
@@ -79,10 +80,12 @@
             titulo.innerText = "Informe de Tickets por Fecha - Estado";
             document.getElementById("tbody-fechaEstado").parentElement.style.display = "table";
             VistaTickesFechaEstado();
-        } else if (filtro == "5") {
-            titulo.innerText = "Informe de Tickets Historial";
-            document.getElementById("tbody-ticketHistorial").parentElement.style.display = "table";
-            VistaTicketHistorial();
+        
+        } else if (filtro == "5")
+        {
+            titulo.innerText = "Informe cantidad de tickets";
+            document.getElementById("tbody-ticketCantidad").parentElement.style.display = "table";
+            VistaTicketCantidad();
         }
           else {
             titulo.innerText = "Seleccione una opción";
@@ -304,6 +307,45 @@ catch (error)
     console.error("Error al obtener los tickets:", error);
 }
 };
+
+async function  VistaTicketCantidad()
+{
+    const authHeaders = () => ({
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+    });
+
+    try
+    {
+        const respuesta = await fetch(`${URL_BASE_API}informes/ticketsCantidad`, {
+            method: "GET",
+            headers: authHeaders(),
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("Error en la solicitud");
+        }
+
+        const res = await respuesta.json();
+        console.log(res);
+
+        const tbodyTicketCantidad = document.getElementById("tbody-ticketCantidad");
+        tbodyTicketCantidad.innerHTML = "";
+
+        res.forEach(cliente => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${cliente.nombre}</td>
+            `
+            tbodyTicketCantidad.appendChild(row);
+        });
+    }
+    catch (error)
+    {
+        console.error("Error al obtener los tickets:", error);
+    }
+}
+
 
 /* VistaTicketsCategorias(); */
 ticketPor();
