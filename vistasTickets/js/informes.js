@@ -86,6 +86,15 @@
             titulo.innerText = "Informe cantidad de tickets";
             document.getElementById("tbody-ticketCantidad").parentElement.style.display = "table";
             VistaTicketCantidad();
+        } else if (filtro == "6"){
+            titulo.innerText = "Informe cantidad de desarrollador";
+            document.getElementById("tbody-ticketDesarrollador").parentElement.style.display = "table";
+            VistaTicketDesarrollador();
+        } else if(filtro == "7")
+        {
+            titulo.innerText = "Informe tickets clientesr";
+            document.getElementById("tbody-informeEstadistico").parentElement.style.display = "table";
+            VistaEstadisticaClientes();
         }
           else {
             titulo.innerText = "Seleccione una opción";
@@ -336,8 +345,24 @@ async function  VistaTicketCantidad()
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${cliente.nombre}</td>
+                <td>${cliente.cantidadTicketsAbiertos}</td>
+
+                
+                
             `
             tbodyTicketCantidad.appendChild(row);
+
+            cliente.categorias.forEach(cat => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td>${cliente.nombre}</td>
+                <td>Abiertos:${cat.cantidadTicketsAbiertos}</td>
+                <td>En Proceso:${cat.cantidadTicketProceso}</td>
+                <td>Cerrados:${cat.cantidadTicketsCerrados}</td>
+
+            `
+            tbodyTicketCantidad.appendChild(row);
+            });
         });
     }
     catch (error)
@@ -345,6 +370,83 @@ async function  VistaTicketCantidad()
         console.error("Error al obtener los tickets:", error);
     }
 }
+
+async function VistaTicketDesarrollador()
+{
+    const authHeaders = () => ({
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+    });
+try
+{
+    const respuesta = await fetch(`${URL_BASE_API}informes/ticketsDesarrollador`, {
+            method: "GET",
+            headers: authHeaders(),
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("Error en la solicitud");
+        }
+
+        const res = await respuesta.json();
+        console.log(res);
+}
+catch (error)
+{
+    console.error("Error al obtener los tickets:", error);
+}
+}
+
+async function  VistaEstadisticaClientes()
+{
+    const authHeaders = () => ({
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+    });
+
+try
+{
+    const respuesta = await fetch(`${URL_BASE_API}informes/informeEstadistico`, {
+            method: "GET",
+            headers: authHeaders(),
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("Error en la solicitud");
+        }
+
+        const res = await respuesta.json();
+        console.log(res);
+
+        const tbodyInformeEstadistico = document.getElementById("tbody-informeEstadistico");
+        tbodyInformeEstadistico.innerHTML = "";
+
+        res.forEach(cliente => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                    <td>${cliente.nombre}</td> 
+                    <td>${cliente.ticketsTotales}</td>
+                    <td>${cliente.ticketsAbiertos}</td>
+                    <td>${cliente.ticketsCerrados}</td>
+                    <td>${cliente.porcentajeCriticos} %</td>
+                    <td>${cliente.fechaUltimoCreado}</td>
+                    <td>${cliente.fechaUltimoCerrado}</td>
+            `
+            tbodyInformeEstadistico.appendChild(row);
+
+        });
+
+        
+        
+        
+}
+catch (error)
+{
+    console.error("Error al obtener los tickets:", error);
+}
+};
+
+
 
 
 /* VistaTicketsCategorias(); */

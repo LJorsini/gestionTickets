@@ -10,6 +10,9 @@
       <option value="3">Fecha - Prioridad</option>
       <option value="4">Fecha - Estado</option>
       <option value="5">Cantidad de tickets</option>
+      <option value="6">Cantidad de tickets - Desarrollador</option>
+      <option value="7">Vista Recuperatorio</option>
+
     </select>
   </div>
 </div>
@@ -83,11 +86,50 @@
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">Ticket cantidad</th>
+      <th scope="col">Cliente</th>
+      <th scope="col">TicketTotales</th>
+      <th scope="col">Abiertos</th>
+      <th scope="col">Cerrados</th>
+      <th scope="col">% criticos</th>
+      <th scope="col">Fecha Ultimo cerrado</th>
+      <th scope="col">Fecha Ultimo Abierto</th>
+
       
     </tr>
   </thead>
   <tbody id="tbody-ticketCantidad">
+    
+  </tbody>
+</table>
+
+<!-- Fecha - desarrollador -->
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Ticket Desarrollador</th>
+      
+    </tr>
+  </thead>
+  <tbody id="tbody-ticketDesarrollador">
+    
+  </tbody>
+</table>
+
+<!-- Cantidad de tickets -->
+ <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Cliente</th>
+      <th scope="col">Ticket totales</th>
+      <th scope="col">Abiertos</th>
+      <th scope="col">Cerrados</th>
+      <th scope="col">% criticos</th>
+      <th scope="col">FEcha ultimo creado</th>
+      <th scope="col">FEcha ultimo Finalizado</th>
+      
+    </tr>
+  </thead>
+  <tbody id="tbody-informeEstadistico">
     
   </tbody>
 </table>

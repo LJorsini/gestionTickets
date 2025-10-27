@@ -10,7 +10,7 @@ async function RolActual() {
     const res = await fetch(`${URL_BASE_API}permisos/rolActual`, {
       method: "GET",
       headers: authHeaders(),
-    })
+    });
 
     if (!res.ok) {
       throw new Error("Error en la solicitud");
@@ -21,17 +21,16 @@ async function RolActual() {
     rolUsuario = resultado.rol;
     console.log(rolUsuario);
 
-    let botonNuevo = document.getElementById("boton-NuevoTicket")
+    let botonNuevo = document.getElementById("boton-NuevoTicket");
 
     if (rolUsuario === "DESARROLLADOR") {
       botonNuevo.classList.add("d-none");
       botonNuevo.disabled = true;
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error al obtener el rol:", error);
   }
-};
+}
 
 /* let botonNuevo = document.getElementById("boton-NuevoTicket")
 
@@ -76,11 +75,9 @@ async function ObtenerCategorias() {
   selectCategoriaFiltro.innerHTML = opciones;
   selectCategoria.innerHTML = opcionesBuscar;
   selectCategoriaEditar.innerHTML = opcionesBuscar;
- 
 
   MostrarTickets(); // Llamo a la funcion MostrarTickets para que cargue los tickets con las categorias
 }
-
 
 /* Input filtros */
 const inputCategoria = document.getElementById("ticketFiltroCategoria");
@@ -109,28 +106,27 @@ inputFechaHasta.onchange = function () {
 };
 
 async function MostrarTickets() {
+  let fechaDesde = document.getElementById("buscarFechaDesde").value;
+  let fechaHasta = document.getElementById("buscarFechaHasta").value;
 
-   let fechaDesde = document.getElementById("buscarFechaDesde").value;
-   let fechaHasta = document.getElementById("buscarFechaHasta").value;
+  // Convertir a objetos Date
+  const fecha1 = new Date(fechaDesde);
+  const fecha2 = new Date(fechaHasta);
 
- // Convertir a objetos Date
-    const fecha1 = new Date(fechaDesde);
-    const fecha2 = new Date(fechaHasta);
+  // Comparar
+  if (fecha1 > fecha2) {
+    //console.log("Fecha 1 es mayor que Fecha 2");
+    fechaHasta = fechaDesde;
+    document.getElementById("buscarFechaHasta").value = fechaDesde;
+  }
 
-    // Comparar
-    if (fecha1 > fecha2) {
-        //console.log("Fecha 1 es mayor que Fecha 2");
-        fechaHasta = fechaDesde ;
-        document.getElementById("buscarFechaHasta").value = fechaDesde;
-    } 
-
-    const filtros = {
-        FechaDesde: fechaDesde,
-        FechaHasta: fechaHasta,
-        CategoriaId: parseInt(document.getElementById("ticketFiltroCategoria").value) || 0,
-        Prioridad: document.getElementById("ticketFiltroPrioridad").value,
-        Estado: document.getElementById("ticketFiltroEstado").value
-    };
+  const filtros = {
+    FechaDesde: fechaDesde,
+    FechaHasta: fechaHasta,
+    CategoriaId:parseInt(document.getElementById("ticketFiltroCategoria").value) || 0,
+    Prioridad: document.getElementById("ticketFiltroPrioridad").value,
+    Estado: document.getElementById("ticketFiltroEstado").value,
+  };
 
   const authHeaders = () => ({
     "Content-Type": "application/json",
@@ -141,7 +137,7 @@ async function MostrarTickets() {
     const res = await fetch(`${URL_BASE_API}tickets/obtenerTicketsFiltrar`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify(filtros)
+      body: JSON.stringify(filtros),
     });
 
     if (!res.ok) {
@@ -163,14 +159,13 @@ async function MostrarTickets() {
     resultado.forEach((ticket) => {
       let row = document.createElement("tr");
 
-
-      const btnEstadoTicket = ticket.estadoString === "Abierto"
-        ? `<button class="btn btn-success" onclick="IniciarTicket(${ticket.ticketId})">Iniciar</button>`
-          : ticket.estadoString === "EnProceso" 
+      const btnEstadoTicket =
+        ticket.estadoString === "Abierto"
+          ? `<button class="btn btn-success" onclick="IniciarTicket(${ticket.ticketId})">Iniciar</button>`
+          : ticket.estadoString === "EnProceso"
             ? `<button class="btn btn-danger" onclick="FinalizarTicket(${ticket.ticketId})">Finalizar</button>`
             : `<button class="btn btn-secondary" disabled>Cerrado</button>`;
-        
-      
+
       row.innerHTML = `
             <td>${ticket.titulo}</td>
             <td>${ticket.fechaCreacionString}</td>
@@ -183,7 +178,7 @@ async function MostrarTickets() {
                 <button id="boton-Editar" class="btn btn-primary" onclick="AbrirModalEditar(${ticket.ticketId})">Editar</button>
             </td>
             <td>
-                <button class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">Eliminar</button>
+                <button class="btn btn-danger" onclick="ValidacionEliminar(${ticket.ticketId})">Cancelar</button>
             </td>
             <td>
                 <button class="btn btn-success" onclick="AbrirModalHistorial(${ticket.ticketId})">Historial</button>
@@ -323,9 +318,12 @@ async function EditarTicket() {
 
   let ticketId = document.getElementById("ticketidEditar").value;
   let titulo = document.getElementById("tituloTicketEditar").value.trim();
-  let descripcion = document.getElementById("floatingTextareaEditar").value.trim();
+  let descripcion = document
+    .getElementById("floatingTextareaEditar")
+    .value.trim();
   let categoriaId = document.getElementById("categoriasSelectEditar").value;
-  let prioridad = Number(document.getElementById("prioridadTicketEditar").value
+  let prioridad = Number(
+    document.getElementById("prioridadTicketEditar").value
   );
 
   const ticketEditado = {
@@ -366,7 +364,7 @@ async function EditarTicket() {
 
 async function ValidacionEliminar(ticketId) {
   const result = Swal.fire({
-    title: "¿Desea eliminar el ticket?",
+    title: "¿Desea cancelar el ticket?",
     showDenyButton: true,
     showCancelButton: true,
     confirmButtonText: "Save",
@@ -388,10 +386,10 @@ async function EliminarTicket(ticketId) {
   });
 
   try {
-    const res = await fetch(`${URL_BASE_API}tickets/${ticketId}`, {
-      method: "DELETE",
+    const res = await fetch(`${URL_BASE_API}tickets/cancelar/${ticketId}`, {
+      method: "POST",
       headers: authHeaders(),
-    })
+    });
 
     if (!res.ok) {
       const errorMsg = await res.text();
@@ -400,19 +398,18 @@ async function EliminarTicket(ticketId) {
 
     Swal.fire({
       icon: "success",
-      title: "¡Ticket eliminado!",
-      text: "El ticket se eliminó correctamente",
+      title: "¡Ticket cancelado!",
+      text: "El ticket se cancelo correctamente",
     });
 
     MostrarTickets();
-  }
-  catch (error) {
+  } catch (error) {
     Swal.fire({
       icon: "error",
-      text: "Error al eliminar ticket: " + error.message,
+      text: "Error al cancelar ticket: " + error.message,
     });
   }
-};
+}
 
 async function AbrirModalHistorial(ticketId) {
   const authHeaders = () => ({
@@ -421,7 +418,6 @@ async function AbrirModalHistorial(ticketId) {
   });
 
   try {
-
     const res = await fetch(`${URL_BASE_API}historiales/${ticketId}`, {
       method: "GET",
       headers: authHeaders(),
@@ -432,7 +428,7 @@ async function AbrirModalHistorial(ticketId) {
       throw new Error(errorMsg || "Error al eliminar ticket");
     }
 
-    const resultado = await res.json()
+    const resultado = await res.json();
 
     const tablaHistorial = document.getElementById("tbody-Historial");
     tablaHistorial.innerHTML = "";
@@ -449,18 +445,15 @@ async function AbrirModalHistorial(ticketId) {
                `;
 
       tablaHistorial.appendChild(row);
-    })
+    });
 
     $("#modalHistorial").modal("show");
-  }
-  catch (error) {
+  } catch (error) {
     Swal.fire({
       icon: "error",
       text: "Error al mostrar historial: " + error.message,
     });
   }
-
-
 }
 
 /* const inputFechaDesde = document.getElementById("buscarFechaDesde");
@@ -476,29 +469,28 @@ function LimpiarFormularioTicket() {
 }
 
 async function IniciarTicket(ticketId) {
-
   const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
   });
 
   try {
-
     Swal.fire({
       title: "¿Desea iniciar el ticket?",
       showDenyButton: true,
       showCancelButton: false,
       confirmButtonText: "Si, iniciar",
-      denyButtonText: `Cancelar`
+      denyButtonText: `Cancelar`,
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        const res = await fetch(`${URL_BASE_API}tickets/estadoTicket/${ticketId}`,
+        const res = await fetch(
+          `${URL_BASE_API}tickets/estadoTicket/${ticketId}`,
           {
             method: "POST",
             headers: authHeaders(),
-
-          });
+          }
+        );
 
         if (!res.ok) {
           const errorMsg = await res.text();
@@ -511,17 +503,14 @@ async function IniciarTicket(ticketId) {
       }
     });
 
-
     /* const resultado = await res.json();  */
-  }
-  catch (err) {
+  } catch (err) {
     Swal.fire({
       icon: "error",
       text: "Error al iniciar el ticket: " + err.message,
     });
   }
-
-};
+}
 
 async function FinalizarTicket(ticketId) {
   const authHeaders = () => ({
@@ -535,16 +524,17 @@ async function FinalizarTicket(ticketId) {
       showDenyButton: true,
       showCancelButton: false,
       confirmButtonText: "Si, finalizar",
-      denyButtonText: `Cancelar`
+      denyButtonText: `Cancelar`,
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        const res = await fetch(`${URL_BASE_API}tickets/finalizarTicket/${ticketId}`,
+        const res = await fetch(
+          `${URL_BASE_API}tickets/finalizarTicket/${ticketId}`,
           {
             method: "POST",
             headers: authHeaders(),
-
-          });
+          }
+        );
 
         if (!res.ok) {
           const errorMsg = await res.text();
@@ -556,11 +546,8 @@ async function FinalizarTicket(ticketId) {
         Swal.fire("El ticket finalizo", "", "info");
       }
     });
-  }
-  catch (err) {
-
-  }
-};
+  } catch (err) { }
+}
 
 RolActual();
 ObtenerCategorias();
