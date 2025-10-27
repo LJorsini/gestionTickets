@@ -1,3 +1,5 @@
+using gestionTickets.Models.Vistas;
+
 public class VistaDesarrollador
 {
     public int DesarrolladorId { get; set; }
@@ -10,4 +12,5 @@ public class VistaDesarrollador
     public string? NombrePuesto { get; set; } // Nuevo campo para mostrar en la vista
     public string? Cerro { get; set; }
     public List<VistaTicket> TicketsCerrados { get; set; }
+    public List<VistaCategorias> Categorias { get; set; }
 }

@@ -13,8 +13,16 @@ public class VistaTicket
         public string FechaCreacionString { get; set; }
         public string FechaComienzoString { get; set; }
         public string FechaCierreString { get; set; }
+        public string FechaUltimoCreadoString { get; set; }
+        public string FechaUltimoFinalizado { get; set; }
         public int CategoriaId { get; set; }
         public string? CategoriaString { get; set; }
+        public int TicketsTotales { get; set; }
+        public int CantidadTicketProceso { get; set; }
+        public int CantidadCerrados { get; set; }
+        public int PorcentajeCritico { get; set; }
+         
+        
         
           
         public string? UsuarioClienteID { get; set; }

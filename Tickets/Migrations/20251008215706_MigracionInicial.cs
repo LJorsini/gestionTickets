@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace gestionTickets.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class MigracionInicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -205,29 +205,6 @@ namespace gestionTickets.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Historial",
-                columns: table => new
-                {
-                    HistorialId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TicketId = table.Column<int>(type: "int", nullable: false),
-                    CamposModificados = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ValorAnterior = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ValorNuevo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UsuarioClienteID = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FechaModificacion = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Historial", x => x.HistorialId);
-                    table.ForeignKey(
-                        name: "FK_Historial_AspNetUsers_UsuarioClienteID",
-                        column: x => x.UsuarioClienteID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Tickets",
                 columns: table => new
                 {
@@ -241,7 +218,8 @@ namespace gestionTickets.Migrations
                     FechaComienzo = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FechaCierre = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CategoriaId = table.Column<int>(type: "int", nullable: false),
-                    UsuarioClienteID = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UsuarioClienteID = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cerro = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -265,7 +243,8 @@ namespace gestionTickets.Migrations
                     DNI = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PuestoId = table.Column<int>(type: "int", nullable: false),
-                    Observacion = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Observacion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UsuarioClienteID = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -301,6 +280,35 @@ namespace gestionTickets.Migrations
                         column: x => x.PuestoId,
                         principalTable: "Puestos",
                         principalColumn: "PuestoId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Historial",
+                columns: table => new
+                {
+                    HistorialId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TicketId = table.Column<int>(type: "int", nullable: false),
+                    CamposModificados = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ValorAnterior = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ValorNuevo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UsuarioClienteID = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    FechaModificacion = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Historial", x => x.HistorialId);
+                    table.ForeignKey(
+                        name: "FK_Historial_AspNetUsers_UsuarioClienteID",
+                        column: x => x.UsuarioClienteID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Historial_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "TicketId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -347,6 +355,11 @@ namespace gestionTickets.Migrations
                 name: "IX_Desarrolladores_PuestoId",
                 table: "Desarrolladores",
                 column: "PuestoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Historial_TicketId",
+                table: "Historial",
+                column: "TicketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Historial_UsuarioClienteID",
@@ -400,13 +413,13 @@ namespace gestionTickets.Migrations
                 name: "PuestoCategorias");
 
             migrationBuilder.DropTable(
-                name: "Tickets");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Tickets");
 
             migrationBuilder.DropTable(
                 name: "Puestos");

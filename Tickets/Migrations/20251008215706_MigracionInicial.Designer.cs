@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace gestionTickets.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250924222807_SeSacoElcampoagregadoanteriormente")]
-    partial class SeSacoElcampoagregadoanteriormente
+    [Migration("20251008215706_MigracionInicial")]
+    partial class MigracionInicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -122,6 +122,8 @@ namespace gestionTickets.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("HistorialId");
+
+                    b.HasIndex("TicketId");
 
                     b.HasIndex("UsuarioClienteID");
 
@@ -345,6 +347,9 @@ namespace gestionTickets.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UsuarioClienteID")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("DesarrolladorId");
 
                     b.HasIndex("PuestoId");
@@ -382,6 +387,9 @@ namespace gestionTickets.Migrations
 
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Cerro")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
@@ -441,9 +449,17 @@ namespace gestionTickets.Migrations
 
             modelBuilder.Entity("Historial", b =>
                 {
+                    b.HasOne("gestionTickets.Models.Ticket", "Ticket")
+                        .WithMany("Historiales")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ApplicationUser", "UsuarioCliente")
                         .WithMany()
                         .HasForeignKey("UsuarioClienteID");
+
+                    b.Navigation("Ticket");
 
                     b.Navigation("UsuarioCliente");
                 });
@@ -552,6 +568,11 @@ namespace gestionTickets.Migrations
                     b.Navigation("Desarrolladores");
 
                     b.Navigation("PuestosCategorias");
+                });
+
+            modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
+                {
+                    b.Navigation("Historiales");
                 });
 #pragma warning restore 612, 618
         }

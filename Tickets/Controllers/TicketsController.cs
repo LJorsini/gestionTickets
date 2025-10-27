@@ -944,7 +944,7 @@ namespace gestionTickets.Controllers
 
 
         // DELETE: api/Categorias/5
-        [HttpDelete("{id}")]
+        [HttpPost("cancelar/{id}")]
         public async Task<IActionResult> DeleteTicket(int id)
         {
             var ticket = await _context.Tickets.FindAsync(id);
@@ -952,8 +952,9 @@ namespace gestionTickets.Controllers
             {
                 return NotFound();
             }
+            ticket.Estado = Estado.Cancelado;
 
-            _context.Tickets.Remove(ticket);
+            
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -969,9 +970,13 @@ namespace gestionTickets.Controllers
             return _context.Tickets.Any(e => e.TicketId == id);
         }
 
+       
+
+    
+
     }
 
 
-    /* GRAFICOS */
+    
 
 }

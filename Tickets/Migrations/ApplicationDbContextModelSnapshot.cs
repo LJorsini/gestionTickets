@@ -120,6 +120,8 @@ namespace gestionTickets.Migrations
 
                     b.HasKey("HistorialId");
 
+                    b.HasIndex("TicketId");
+
                     b.HasIndex("UsuarioClienteID");
 
                     b.ToTable("Historial");
@@ -444,9 +446,17 @@ namespace gestionTickets.Migrations
 
             modelBuilder.Entity("Historial", b =>
                 {
+                    b.HasOne("gestionTickets.Models.Ticket", "Ticket")
+                        .WithMany("Historiales")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ApplicationUser", "UsuarioCliente")
                         .WithMany()
                         .HasForeignKey("UsuarioClienteID");
+
+                    b.Navigation("Ticket");
 
                     b.Navigation("UsuarioCliente");
                 });
@@ -555,6 +565,11 @@ namespace gestionTickets.Migrations
                     b.Navigation("Desarrolladores");
 
                     b.Navigation("PuestosCategorias");
+                });
+
+            modelBuilder.Entity("gestionTickets.Models.Ticket", b =>
+                {
+                    b.Navigation("Historiales");
                 });
 #pragma warning restore 612, 618
         }
